@@ -6,14 +6,8 @@
 
 #include "params.h"
 
-/* specific to p, should perhaps be somewhere else */
-#define num_primes 74
-//fp invs_[9];
-
-//const unsigned primes[num_primes];
-
 typedef struct private_key {
-    int8_t e[num_primes];
+    int8_t e[NUM_PRIMES];
 } private_key;
 
 typedef struct public_key {

@@ -11,37 +11,7 @@
 #include "randombytes.h"
 #include "constants.h"
 
-#if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-#define REDUCEDSK
-#endif
-
-extern const unsigned primes[num_primes];
-
-#if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-void uart_puts(char *s)
-{
-    while (*s)
-    {
-        putch(*(s++));
-    }
-}
-#endif
-
-#if defined(ATTACK1) || defined(ATTACK1_D) || 1
-const unsigned primes[num_primes] = {5, 3, 349, 347, 337, 331, 317, 313, 311,
-                                     307, 293, 283, 281, 277, 271, 269, 263, 257, 251, 241, 239, 233, 229,
-                                     227, 223, 211, 199, 197, 193, 191, 181, 179, 173, 167, 163, 157, 151,
-                                     149, 139, 137, 131, 127, 113, 109, 107, 103, 101, 97, 89, 83, 79, 73,
-                                     71, 67, 61, 59, 53, 47, 43, 41, 37, 31, 29, 23, 19, 17, 13, 11, 7, 353, 359,
-                                     587, 373, 367};
-#elif defined(ATTACK2) || defined(ATTACK2_D)
-const unsigned primes[num_primes] = {359, 353, 349, 347, 337, 331, 317, 313, 311,
-                                     307, 293, 283, 281, 277, 271, 269, 263, 257, 251, 241, 239, 233, 229,
-                                     227, 223, 211, 199, 197, 193, 191, 181, 179, 173, 167, 163, 157, 151,
-                                     149, 139, 137, 131, 127, 113, 109, 107, 103, 101, 97, 89, 83, 79, 73,
-                                     71, 67, 61, 59, 53, 47, 43, 41, 37, 31, 29, 23, 19, 17, 13, 11, 7, 5, 3,
-                                     587, 373, 367};
-#endif
+extern const unsigned primes[NUM_PRIMES];
 
 const public_key base = {0}; /* A = 0 */
 
@@ -58,7 +28,7 @@ int32_t lookup(size_t pos, int8_t const *priv)
 {
     int b;
     int8_t r = priv[0];
-    for (size_t i = 1; i < num_primes; i++)
+    for (size_t i = 1; i < NUM_PRIMES; i++)
     {
         b = isequal(i, pos);
         //ISEQUAL(i, pos, b);
@@ -94,7 +64,7 @@ void cmov(int8_t *r, const int8_t *a, uint32_t b)
 void csidh_private(private_key *priv, const int8_t *max_exponent)
 {
     memset(&priv->e, 0, sizeof(priv->e));
-    for (size_t i = 0; i < num_primes;)
+    for (size_t i = 0; i < NUM_PRIMES;)
     {
         int8_t buf[64];
         randombytes((unsigned char *)buf, sizeof(buf));
@@ -103,7 +73,7 @@ void csidh_private(private_key *priv, const int8_t *max_exponent)
             if (buf[j] <= max_exponent[i] && buf[j] >= -max_exponent[i])
             {
                 priv->e[i] = lookup(j, buf);
-                if (++i >= num_primes)
+                if (++i >= NUM_PRIMES)
                     break;
             }
         }
@@ -144,7 +114,7 @@ bool validate(public_key const *in)
     do
     {
 
-        proj P[num_primes];
+        proj P[NUM_PRIMES];
         fp_random(&P->x);
         P->z = fp_1;
 
@@ -152,11 +122,11 @@ bool validate(public_key const *in)
         xDBL(P, &A, P);
         xDBL(P, &A, P);
 
-        cofactor_multiples(P, &A, 0, num_primes);
+        cofactor_multiples(P, &A, 0, NUM_PRIMES);
 
         uint_c order = uint_1;
 
-        for (size_t i = num_primes - 1; i < num_primes; --i)
+        for (size_t i = NUM_PRIMES - 1; i < NUM_PRIMES; --i)
         {
 
             /* we only gain information if [(p+1)/l] P is non-zero */
@@ -203,7 +173,7 @@ void elligator(proj *P, proj *Pd, const fp *A)
     fp u2m1, tmp, rhs;
     bool issquare;
 
-#if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
+#if defined(DETERMINISTIC)
     fp u2 = {{0xf73849b0ce4e064b, 0x94bbfb03237b4a47, 0x467d743c736b034f, 0xb3fee59267e9b9e8, 0x036bafb7d4af3814, 0x05b62c28c87084ce, 0x620a625431f0111e, 0x03d7f790ac52fd83}};
 #else
     fp u2;
@@ -317,17 +287,15 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     uint8_t last_iso[3], bc, ss;
     proj P, Pd, K;
     uint_c cof, l;
-    bool finished[num_primes] = {0};
+    bool finished[NUM_PRIMES] = {0};
 #ifdef REDUCEDSK
     memset(finished, 1, sizeof(finished));
     finished[0] = 0;
     finished[1] = 0;
-    // finished[2] = 0;
-    // finished[3] = 0;
-    // finished[4] = 0;
+
 #endif
 
-    int8_t e[num_primes] = {0};
+    int8_t e[NUM_PRIMES] = {0};
 
 #ifdef CM
     bool error = 0;
@@ -336,7 +304,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     proj lastA = {in->A, fp_1};
 #endif
 
-    int8_t counter[num_primes] = {0};
+    int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
     unsigned int isog_counter = 0;
 
@@ -351,20 +319,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
     proj A = {in->A, fp_1};
 
-    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-    char str[100];
-    #endif
-
-#if defined(ATTACK1) || defined(ATTACK1_D)
-    trigger_high();
-#endif
-
     while (isog_counter < num_isogenies)
     {
-        #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-        uart_puts("1\n");
-        #endif
-
         m = (m + 1) % num_batches;
 
         if (count == my * num_batches)
@@ -375,7 +331,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             num_batches = 1;
 
             // no need for constant-time, depends only on randomness
-            for (uint8_t i = 0; i < num_primes; i++)
+            for (uint8_t i = 0; i < NUM_PRIMES; i++)
             {
                 if (counter[i] == 0)
                 {
@@ -385,7 +341,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         }
 
 #ifdef CM
-        #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
+        #if defined(DETERMINISTIc)
         fp u = {{0x9b9499cf4466e265, 0x1890b03f447fc2c2, 0x59200afefa8db817, 0x9d45d54e769e45a7, 0x97ef18c3efd52e4f, 0xf20393bd845656fe, 0xda07eea2333775f1, 0x1b808024fce7c39d}};
         #else
          fp u;
@@ -410,20 +366,16 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             Pd.z = fp_1;
         }
 #endif
-        #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-        uart_puts("2\n");
-        #endif
+
         xMUL(&P, &A, &P, &k[m]);
 
         xMUL(&Pd, &A, &Pd, &k[m]);
-        #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-        uart_puts("3\n");
-        #endif
+
 #ifndef CM
         ps = 1; //initialized in elligator
 #endif
 
-        for (uint8_t i = m; i < num_primes; i = i + num_batches)
+        for (uint8_t i = m; i < NUM_PRIMES; i = i + num_batches)
         {
 #ifdef CM
             uint_set(&lastOrder, primes[i]);
@@ -435,11 +387,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             }
             else
             {
-                #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-                uart_puts("4\n");
-                #endif
                 cof = uint_1;
-                for (uint8_t j = i + num_batches; j < num_primes; j = j + num_batches)
+                for (uint8_t j = i + num_batches; j < NUM_PRIMES; j = j + num_batches)
                 {
                     if (finished[j] == false) //depends only on randomness
                         uint_mul3_64(&cof, &cof, primes[j]);
@@ -476,9 +425,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
                 uint_set(&l, primes[i]);
                 xMUL(&Pd, &A, &Pd, &l);
-                #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-                uart_puts("5\n");
-                #endif
 
 #ifdef CM
                 fp_add3(&lastA.x, &A.x, &fp_0);
@@ -487,9 +433,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
                 { //depends only on randomness
-                    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-                    uart_puts("6\n");
-                    #endif
 #ifdef TWIST_ATTACK_CM
                     fp XZ, AC, XZ2, Z2, C2, C2XZ, ACXZ2, X2, C2X3Z, C2XZ3, check;
 
@@ -524,22 +467,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                     }
                     else
                     {
-#ifdef ATTACK2
-                        char c = 'A';
-                        trigger_high();
-#ifdef CM
-                        error |= xISOG(&A, &P, &Pd, &K, primes[i], bc);
-#else
-                        xISOG(&A, &P, &Pd, &K, primes[i], bc);
-#endif
-                        trigger_low();
-                        // wait for next "signal"
-                        while ((c != 'n'))
-                        {
-                            c = getch();
-                        }
-                        c = 'A';
-#else
 
 #ifdef CM
                         error |= xISOG(&A, &P, &Pd, &K, primes[i], bc);
@@ -547,7 +474,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                         xISOG(&A, &P, &Pd, &K, primes[i], bc);
 #endif
 
-#endif
                     }
 
                     e[i] = ec - (1 ^ bc) + (s << 1);
@@ -557,10 +483,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
                     counter[i] = counter[i] - 1;
                     isog_counter = isog_counter + 1;
-                    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-                    sprintf(str, "isog_counter = %d, k = %d\n", isog_counter, primes[i]);
-                    uart_puts(str);
-                    #endif
                 }
             }
 
@@ -589,27 +511,16 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     fp_inv(&A.z);
     fp_mul2(&A.x, &A.z);
 #endif
-    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-    uart_puts("7\n");
-    #endif
     out->A = A.x;
-
-#if defined(ATTACK1) || defined(ATTACK1_D)
-    trigger_low();
-#endif
 
 #ifdef CM
     error |= (isog_counter ^ 404);
     for (int8_t i = 0; i < num_primes; i++)
         error |= (counter[i] ^ 0);
     error |= validate_cheaper(out);
-    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
-    sprintf(str, "error = %d\n", error);
-    uart_puts(str);
-    #endif
     return error;
 #else
-        return 0;
+    return 0;
 #endif
 
 }
@@ -618,7 +529,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 bool validate_cheaper(const public_key *in)
 {
     const proj A = {in->A, fp_1};
-    #if defined(ATTACK1) || defined(ATTACK1_D) || defined(ATTACK2) || defined(ATTACK2_D)
+    #if defined(DETERMINISTIC)
     proj P = {{{0x9b9499cf4466e265, 0x1890b03f447fc2c2, 0x59200afefa8db817, 0x9d45d54e769e45a7, 0x97ef18c3efd52e4f, 0xf20393bd845656fe, 0xda07eea2333775f1, 0x1b808024fce7c39d}}, {{0xc8fc8df598726f0a, 0x7b1bc81750a6af95, 0x5d319e67c1e961b4, 0xb0aa7275301955f1, 0x4a080672d9ba6c64, 0x97a5ef8a246ee77b, 0x06ea9e5d4383676a, 0x3496e2e117e0ec80,}}};
     #else
      proj P;

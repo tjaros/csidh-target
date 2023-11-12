@@ -10,8 +10,6 @@
 
 #include "simpleserial.h"
 
-#define REDUCEDSK
-
 public_key pk = {.A.c = {0}};
 private_key sk = {.e = {0}};
 public_key result;
