@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "params.h"
+#include "parametrization.h"
 
 typedef struct private_key {
     int8_t e[NUM_PRIMES];

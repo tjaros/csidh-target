@@ -9,13 +9,8 @@
 #include "mont.h"
 #include "csidh.h"
 #include "randombytes.h"
-#include "constants.h"
-
-extern const unsigned primes[NUM_PRIMES];
 
 const public_key base = {0}; /* A = 0 */
-
-const uint_c p_plus_one = {{0x1b81b90533c6c87c, 0xc2721bf457aca835, 0x516730cc1f0b4f25, 0xa7aac6c567f35507, 0x5afbfcc69322c9cd, 0xb42d083aedc88c42, 0xfc8ab0d15e3e4c4a, 0x65b48e8f740f89bf}};
 
 //TODO remove
 //int8_t error = 0;
@@ -274,12 +269,15 @@ static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t 
 bool action(public_key *out, public_key const *in, private_key const *priv,
             uint8_t num_batches, int8_t const *max_exponent, unsigned int const num_isogenies, uint8_t const my)
 {
+#ifdef F419
+#else
     //factors k for different batches
     uint_c k[3] = {{{0x1b5933af628d005c, 0x9d4af02b1d7b7f56, 0x8977a8435092262a, 0xb86302ff54a37ca2, 0xd6e09db2af04d095, 0x5c73f, 0x0, 0x0}},
                  {{0xd97b8b6bc6f6be1c, 0x315872c44ea6e448, 0x1aae7c54fd380c86, 0x237ec4cf2da454a2, 0x3733f9e3d9fea1b4, 0x1fdc0e, 0x0, 0x0}},
                  {{0x629ea97b02169a84, 0xc4b9616a12d48d22, 0x492a10278ad7b45a, 0xc44ac4dce55b87f8, 0x9e12876886632d6e, 0xe0c0c5, 0x0, 0x0}}};
 
     uint_c p_order = {{0x24403b2c196b9323, 0x8a8759a31723c208, 0xb4a93a543937992b, 0xcdd1f791dc7eb773, 0xff470bd36fd7823b, 0xfbcf1fc39d553409, 0x9478a78dd697be5c, 0x0ed9b5fb0f251816}};
+#endif
 
     int8_t ec = 0, m = 0;
     uint8_t count = 0;

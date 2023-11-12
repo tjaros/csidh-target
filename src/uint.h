@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "params.h"
+#include "parametrization.h"
 
 extern const uint_c uint_1;
 

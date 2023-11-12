@@ -1,7 +1,7 @@
 #ifndef MONT_H
 #define MONT_H
 
-#include "params.h"
+#include "parametrization.h"
 
 void xDBL(proj *Q, proj const *A, proj const *P);
 void xADD(proj *S, proj const *P, proj const *Q, proj const *PQ);

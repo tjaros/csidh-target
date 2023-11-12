@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "params.h"
+#include "parametrization.h"
 
 void fp_set(fp *x, uint64_t y);
 void fp_cswap(fp *x, fp *y, bool c);

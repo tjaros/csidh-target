@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "params.h"
+#include "parametrization.h"
 #include "uint.h"
 #include "fp.h"
 #include "randombytes.h"

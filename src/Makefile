@@ -34,7 +34,7 @@ TARGET = main
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += main.c  constants.c csidh.c fp.c mont.c randombytes.c uint.c
+SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 
 # -----------------------------------------------------------------------------
 
