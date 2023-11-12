@@ -27,7 +27,7 @@ void uart_puts(char *s)
 }
 #endif
 
-#if defined(ATTACK1) || defined(ATTACK1_D)
+#if defined(ATTACK1) || defined(ATTACK1_D) || 1
 const unsigned primes[num_primes] = {5, 3, 349, 347, 337, 331, 317, 313, 311,
                                      307, 293, 283, 281, 277, 271, 269, 263, 257, 251, 241, 239, 233, 229,
                                      227, 223, 211, 199, 197, 193, 191, 181, 179, 173, 167, 163, 157, 151,

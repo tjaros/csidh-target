@@ -30,31 +30,22 @@
 
 # Target file name (without extension).
 # This is the name of the compiled .hex file.
-TARGET = speed
+TARGET = main
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += speed.c constants.c csidh.c fp.c mont.c randombytes.c uint.c
+SRC += main.c  constants.c csidh.c fp.c mont.c randombytes.c uint.c
 
 # -----------------------------------------------------------------------------
 
 
 FUNC_SEL = TRACE
 
-ifneq ($(TYPE),)
-  CFLAGS += -D$(TYPE)
-endif
-
-
 CFLAGS += -D$(FUNC_SEL)
 CFLAGS += --specs=nosys.specs
 
-ifeq ($(CRYPTO_OPTIONS),)
-CRYPTO_OPTIONS = AES128C
-endif
-
 #Add simpleserial project to build
-#include ../simpleserial/Makefile.simpleserial
+include ./simpleserial/Makefile.simpleserial
 
 FIRMWAREPATH = .
 include $(FIRMWAREPATH)/Makefile.inc
