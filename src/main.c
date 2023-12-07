@@ -7,15 +7,20 @@
 #include "csidh.h"
 #include "mont.h"
 #include "uint.h"
+#include "parametrization.h"
 
 #include "simpleserial.h"
 
 public_key pk = {.A.c = {0}};
 private_key sk = {.e = {0}};
 public_key result;
+#ifdef F419
+uint8_t num_batches = 1;
+#else
 uint8_t num_batches = 3;
-int8_t max_exponent[NUM_PRIMES] = {2};
-unsigned int num_isogenies = 2;
+#endif
+int8_t max_exponent[NUM_PRIMES] = {2, 2};
+unsigned int num_isogenies = 4;
 uint8_t my = 0;
 
 uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
@@ -23,7 +28,7 @@ uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
     if (scmd == 0x01)
         pk = base;
     else
-        memcpy(pk.A.c, (void *) data, 64);
+        memcpy(pk.A.c, (void *) data, LIMBS * 8);
     return 0;
 }
  
@@ -61,7 +66,7 @@ uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
 void api(void)
 {
     // Set/Get public
-    simpleserial_addcmd('1', 64, set_public);
+    simpleserial_addcmd('1', LIMBS * 8, set_public);
     simpleserial_addcmd('2', 0, get_public);
     // Set/Get private
     simpleserial_addcmd('3', NUM_PRIMES, set_secret);

@@ -9,11 +9,22 @@
 #include "mont.h"
 #include "csidh.h"
 #include "randombytes.h"
+#include "parametrization.h"
 
 const public_key base = {0}; /* A = 0 */
 
 //TODO remove
 //int8_t error = 0;
+
+#ifdef DBG
+void uart_puts(char *s)
+{
+    while (*s)
+    {
+        putch(*(s++));
+    }
+}
+#endif
 
 extern unsigned long long overflowcnt;
 extern unsigned long long startcnt;
@@ -269,7 +280,16 @@ static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t 
 bool action(public_key *out, public_key const *in, private_key const *priv,
             uint8_t num_batches, int8_t const *max_exponent, unsigned int const num_isogenies, uint8_t const my)
 {
+
+#ifdef DBG
+    char str[1000];
+#endif
+
+
+
 #ifdef F419
+    uint_c k[1] = {{{3 * 5 * 7}}};
+    uint_c p_order = {{119}};
 #else
     //factors k for different batches
     uint_c k[3] = {{{0x1b5933af628d005c, 0x9d4af02b1d7b7f56, 0x8977a8435092262a, 0xb86302ff54a37ca2, 0xd6e09db2af04d095, 0x5c73f, 0x0, 0x0}},
@@ -306,25 +326,47 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     int8_t s, ps;
     unsigned int isog_counter = 0;
 
+#ifdef F419
+    last_iso[0] = 2;
+#elif
     //index for skipping point evaluations
     last_iso[0] = 72;
     last_iso[1] = 73;
     last_iso[2] = 71;
+#endif
 
     memcpy(e, priv->e, sizeof(priv->e));
 
     memcpy(counter, max_exponent, sizeof(counter));
 
     proj A = {in->A, fp_1};
-
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Entered the while isog_counter=%d < num_isogenies=%d loop\n",
+    isog_counter,
+    num_isogenies
+    );
+    uart_puts(str);
+#endif
     while (isog_counter < num_isogenies)
     {
+#ifdef DBG
+    sprintf(str, 
+    "[DBG][while isog_counter=%d] ****************************************\n",
+    isog_counter
+    );
+    uart_puts(str);
+#endif
         m = (m + 1) % num_batches;
 
         if (count == my * num_batches)
         { //merge the batches after my rounds
             m = 0;
+#ifdef F419
+            last_iso[0] = 2;
+#elif
             last_iso[0] = 73;   //doesn't skip point evaluations anymore after merging batches
+#endif
             uint_set(&k[m], 4); //recompute factor k
             num_batches = 1;
 
@@ -336,6 +378,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                     uint_mul3_64(&k[m], &k[m], primes[i]);
                 }
             }
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Recomputed the factor k=%lu\n",
+    (long unsigned int)k[0].c[0]
+    );
+    uart_puts(str);
+#endif
         }
 
 #ifdef CM
@@ -351,18 +400,28 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #else
 
-        if (memcmp(&A.x, &fp_0, sizeof(fp)))
-        {
-
-            elligator(&P, &Pd, &A.x);
-        }
-        else
-        {
-            fp_enc(&P.x, &p_order); // point of full order on E_a with a=0
-            fp_sub3(&Pd.x, &fp_0, &P.x);
-            P.z = fp_1;
-            Pd.z = fp_1;
-        }
+//        if (memcmp(&A.x, &fp_0, sizeof(fp)))
+//        {
+//
+          elligator(&P, &Pd, &A.x);
+//        }
+//        else
+//        {
+//            fp_enc(&P.x, &p_order); // point of full order on E_a with a=0
+//            fp_sub3(&Pd.x, &fp_0, &P.x);
+//            P.z = fp_1;
+//            Pd.z = fp_1;
+//        }
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Sampled the point P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+    (long unsigned int)P.x.c[0],
+    (long unsigned int)P.z.c[0],
+    (long unsigned int)Pd.x.c[0],
+    (long unsigned int)Pd.z.c[0]
+    );
+    uart_puts(str);
+#endif
 #endif
 
         xMUL(&P, &A, &P, &k[m]);
@@ -373,14 +432,31 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         ps = 1; //initialized in elligator
 #endif
 
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Entered the for loop\n"
+    );
+    uart_puts(str);
+#endif
         for (uint8_t i = m; i < NUM_PRIMES; i = i + num_batches)
         {
+#ifdef DBG
+    sprintf(str, 
+    "[DBG][for i=%d] ========================================\n",
+    i
+    );
+    uart_puts(str);
+#endif
 #ifdef CM
             uint_set(&lastOrder, primes[i]);
 
 #endif
             if (finished[i] == true)
             { //depends only on randomness
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] finished[%d] == true\n", i);
+#endif
                 continue;
             }
             else
@@ -460,7 +536,26 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #ifdef CM
                         error |= lastxISOG(&A, &K, primes[i], bc); // doesn't compute the images of points
 #else
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Computing lastxISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu\n",
+    (long unsigned int)A.x.c[0],
+    (long unsigned int)A.z.c[0],
+    (long unsigned int)primes[i],
+    (long unsigned int)K.x.c[0],
+    (long unsigned int)K.z.c[0]
+    );
+    uart_puts(str);
+#endif
                         lastxISOG(&A, &K, primes[i], bc); // doesn't compute the images of points
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Result lastxISOG A.x=%lu A.z=%lu\n",
+    (long unsigned int)A.x.c[0],
+    (long unsigned int)A.z.c[0]
+    );
+    uart_puts(str);
+#endif
 #endif
                     }
                     else
@@ -469,7 +564,30 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #ifdef CM
                         error |= xISOG(&A, &P, &Pd, &K, primes[i], bc);
 #else
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Computing xISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+    (long unsigned int)A.x.c[0],
+    (long unsigned int)A.z.c[0],
+    (long unsigned int)primes[i],
+    (long unsigned int)K.x.c[0],
+    (long unsigned int)K.z.c[0],
+    (long unsigned int)P.x.c[0],
+    (long unsigned int)P.z.c[0],
+    (long unsigned int)Pd.x.c[0],
+    (long unsigned int)Pd.z.c[0]
+    );
+    uart_puts(str);
+#endif
                         xISOG(&A, &P, &Pd, &K, primes[i], bc);
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Result xISOG A.x=%lu A.z=%lu\n",
+    (long unsigned int)A.x.c[0],
+    (long unsigned int)A.z.c[0]
+    );
+    uart_puts(str);
+#endif
 #endif
 
                     }
@@ -510,6 +628,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     fp_mul2(&A.x, &A.z);
 #endif
     out->A = A.x;
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] END A.x=%lu\n",
+    (long unsigned int)A.x.c[0]
+    );
+    uart_puts(str);
+#endif
 
 #ifdef CM
     error |= (isog_counter ^ 404);
