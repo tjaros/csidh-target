@@ -8,7 +8,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CFLAGS ?= -DF419 -DDBG
+CFLAGS ?= -DDBG -DF419
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $(OBJS) 
