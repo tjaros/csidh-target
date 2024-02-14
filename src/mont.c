@@ -1,7 +1,6 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "hal.h"
 #include "parametrization.h"
 #include "uint.h"
 #include "fp.h"

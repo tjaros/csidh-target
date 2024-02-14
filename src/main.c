@@ -1,4 +1,3 @@
-#include "hal.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,11 +9,6 @@
 #include "uint.h"
 #include "parametrization.h"
 
-#include "simpleserial.h"
-#include "hal.h"
-
-
-
 
 public_key pk = {.A.c = {0}};
 private_key sk = {.e = {0}};
@@ -24,22 +18,22 @@ uint8_t num_batches = 1;
 #else
 uint8_t num_batches = 3;
 #endif
-int8_t max_exponent[NUM_PRIMES] = {1};
-unsigned int num_isogenies = 1;
+int8_t max_exponent[NUM_PRIMES] = {5};
+unsigned int num_isogenies = 5;
 uint8_t my = 0;
 
-uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t set_public(uint8_t* data)
 {
-    if (scmd == 0x01)
-        pk = base;
-    else
-        memcpy(pk.A.c, (void *) data, LIMBS * 8);
+    memcpy(pk.A.c, (void *) data, LIMBS * 8);
     return 0;
 }
  
-uint8_t get_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t get_public()
 {
-    simpleserial_put('r', (uint8_t) sizeof(pk.A.c), (void *) pk.A.c);
+    printf("\npublic: ");
+    for (int i = 0; i < sizeof(pk.A.c); i++)
+        printf("%x", ((uint8_t*) pk.A.c)[i]);
+    printf("\n");
     return 0;
 }
 
@@ -49,14 +43,17 @@ uint8_t set_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
     return 0;
 }
 
-uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t get_secret()
 {
-    simpleserial_put('r', (uint8_t) sizeof(sk.e), (void *) sk.e);
+    printf("\nsecret: ");
+    for (int i = 0; i < sizeof(sk.e); i++)
+        printf("%x", ((uint8_t*) sk.e)[i]);
+    printf("\n");
     return 0;
 }
 
 // Runs a group action on current public key and the secret
-uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t run_csidh()
 {
     uint8_t error = csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
     pk = result;
@@ -111,38 +108,33 @@ uint8_t tests(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
 
 #endif
 
-void api(void)
-{
-    // Set/Get public
-    simpleserial_addcmd('1', LIMBS * 8, set_public);
-    simpleserial_addcmd('2', 0, get_public);
-    // Set/Get private
-    simpleserial_addcmd('3', NUM_PRIMES, set_secret);
-    simpleserial_addcmd('4', 0, get_secret);
-    // csidh does not need arguments
-    simpleserial_addcmd('5', 0, run_csidh);
-    #ifdef DBG
-    simpleserial_addcmd('6', 0, tests);
-    #endif
-
-    while (1)
-    {
-        simpleserial_get();
-    }
-}
-
 int main(void)
 {
-    platform_init();
-    init_uart();
+    printf("Running csidh with %d limbs", LIMBS);
+    get_public();
+    get_secret();
 
-    putch('r');
-    putch('e');
-    putch('s');
-    putch('e');
-    putch('t');
+    sk.e[0] = -5;
+    sk.e[1] = -2;
+    sk.e[2] = 3;
+
+    get_secret();
+
+    run_csidh();
+
+    get_public();
 
 
-    simpleserial_init();
-    api();
+    sk.e[0] = 5; 
+    sk.e[1] = 2; 
+    sk.e[2] = -3;
+
+    get_secret();
+
+    run_csidh();
+
+    get_public();
+
+
+    
 }

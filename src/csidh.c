@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "hal.h"
 #include "uint.h"
 #include "fp.h"
 #include "mont.h"
@@ -15,14 +14,15 @@ const public_key base = {0}; /* A = 0 */
 
 //TODO remove
 //int8_t error = 0;
-
+#ifdef DBG
 void uart_puts(char *s)
 {
     while (*s)
     {
-        putch(*(s++));
+        putchar(*(s++));
     }
 }
+#endif
 
 extern unsigned long long overflowcnt;
 extern unsigned long long startcnt;
