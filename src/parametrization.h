@@ -6,7 +6,7 @@
 
 #ifdef F419
 
-#define LIMBS 1
+#define LIMBS 2
 #define NUM_PRIMES 3
 #define MAX_EXPONENT 5
 

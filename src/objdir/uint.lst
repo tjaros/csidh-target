@@ -1,0 +1,978 @@
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"uint.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "uint.c"
+  18              		.section	.text.uint_set,"ax",%progbits
+  19              		.align	1
+  20              		.global	uint_set
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	uint_set:
+  26              	.LVL0:
+  27              	.LFB0:
+   1:uint.c        **** 
+   2:uint.c        **** #include <stddef.h>
+   3:uint.c        **** 
+   4:uint.c        **** #include "parametrization.h"
+   5:uint.c        **** #include "uint.h"
+   6:uint.c        **** 
+   7:uint.c        **** /* assumes little-endian throughout. */
+   8:uint.c        **** 
+   9:uint.c        **** uint_c const uint_1 = {{1}};
+  10:uint.c        **** 
+  11:uint.c        **** 
+  12:uint.c        **** void uint_set(uint_c *x, uint64_t y)
+  13:uint.c        **** {
+  28              		.loc 1 13 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  14:uint.c        ****     x->c[0] = y;
+  33              		.loc 1 14 5 view .LVU1
+  34              		.loc 1 14 13 is_stmt 0 view .LVU2
+  35 0000 E0E80223 		strd	r2, [r0], #8
+  36              	.LVL1:
+  15:uint.c        ****     for (size_t i = 1; i < LIMBS; ++i)
+  37              		.loc 1 15 5 is_stmt 1 view .LVU3
+  38              	.LBB2:
+  39              		.loc 1 15 10 view .LVU4
+  40              		.loc 1 15 26 view .LVU5
+  16:uint.c        ****         x->c[i] = 0;
+  41              		.loc 1 16 17 is_stmt 0 view .LVU6
+  42 0004 0021     		movs	r1, #0
+  43 0006 3822     		movs	r2, #56
+  44              	.LVL2:
+  45              		.loc 1 16 17 view .LVU7
+  46 0008 FFF7FEBF 		b	memset
+  47              	.LVL3:
+  48              		.loc 1 16 17 view .LVU8
+  49              	.LBE2:
+  50              		.cfi_endproc
+  51              	.LFE0:
+  53              		.section	.text.uint_bit,"ax",%progbits
+  54              		.align	1
+  55              		.global	uint_bit
+  56              		.syntax unified
+  57              		.thumb
+  58              		.thumb_func
+  60              	uint_bit:
+  61              	.LVL4:
+  62              	.LFB1:
+  17:uint.c        **** }
+  18:uint.c        **** 
+  19:uint.c        **** bool uint_bit(uint_c const *x,  uint64_t k)
+  20:uint.c        **** {
+  63              		.loc 1 20 1 is_stmt 1 view -0
+  64              		.cfi_startproc
+  65              		@ args = 0, pretend = 0, frame = 0
+  66              		@ frame_needed = 0, uses_anonymous_args = 0
+  21:uint.c        ****     return 1 & (x->c[k / 64] >> k % 64);
+  67              		.loc 1 21 5 view .LVU10
+  68              		.loc 1 21 24 is_stmt 0 view .LVU11
+  69 0000 9109     		lsrs	r1, r2, #6
+  70 0002 41EA8361 		orr	r1, r1, r3, lsl #26
+  71              		.loc 1 21 21 view .LVU12
+  72 0006 00EBC103 		add	r3, r0, r1, lsl #3
+  73              		.loc 1 21 35 view .LVU13
+  74 000a 02F03F02 		and	r2, r2, #63
+  75              	.LVL5:
+  76              		.loc 1 21 30 view .LVU14
+  77 000e 50F83100 		ldr	r0, [r0, r1, lsl #3]
+  78              	.LVL6:
+  20:uint.c        ****     return 1 & (x->c[k / 64] >> k % 64);
+  79              		.loc 1 20 1 view .LVU15
+  80 0012 10B5     		push	{r4, lr}
+  81              	.LCFI0:
+  82              		.cfi_def_cfa_offset 8
+  83              		.cfi_offset 4, -8
+  84              		.cfi_offset 14, -4
+  85              		.loc 1 21 30 view .LVU16
+  86 0014 5C68     		ldr	r4, [r3, #4]
+  87 0016 C2F12001 		rsb	r1, r2, #32
+  88 001a A2F12003 		sub	r3, r2, #32
+  89 001e D040     		lsrs	r0, r0, r2
+  90 0020 04FA01F1 		lsl	r1, r4, r1
+  91 0024 0843     		orrs	r0, r0, r1
+  92 0026 24FA03F3 		lsr	r3, r4, r3
+  93 002a 1843     		orrs	r0, r0, r3
+  22:uint.c        **** }
+  94              		.loc 1 22 1 view .LVU17
+  95 002c 00F00100 		and	r0, r0, #1
+  96 0030 10BD     		pop	{r4, pc}
+  97              		.cfi_endproc
+  98              	.LFE1:
+ 100              		.section	.text.uint_add3,"ax",%progbits
+ 101              		.align	1
+ 102              		.global	uint_add3
+ 103              		.syntax unified
+ 104              		.thumb
+ 105              		.thumb_func
+ 107              	uint_add3:
+ 108              	.LVL7:
+ 109              	.LFB2:
+  23:uint.c        **** 
+  24:uint.c        **** 
+  25:uint.c        **** bool uint_add3(uint_c *x, uint_c const *y, uint_c const *z)
+  26:uint.c        **** {
+ 110              		.loc 1 26 1 is_stmt 1 view -0
+ 111              		.cfi_startproc
+ 112              		@ args = 0, pretend = 0, frame = 0
+ 113              		@ frame_needed = 0, uses_anonymous_args = 0
+  27:uint.c        ****     bool c = 0;
+ 114              		.loc 1 27 5 view .LVU19
+  28:uint.c        ****     for (size_t i = 0; i < LIMBS; ++i) {
+ 115              		.loc 1 28 5 view .LVU20
+ 116              	.LBB3:
+ 117              		.loc 1 28 10 view .LVU21
+ 118              		.loc 1 28 26 view .LVU22
+ 119              	.LBE3:
+  26:uint.c        ****     bool c = 0;
+ 120              		.loc 1 26 1 is_stmt 0 view .LVU23
+ 121 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 122              	.LCFI1:
+ 123              		.cfi_def_cfa_offset 20
+ 124              		.cfi_offset 4, -20
+ 125              		.cfi_offset 5, -16
+ 126              		.cfi_offset 6, -12
+ 127              		.cfi_offset 7, -8
+ 128              		.cfi_offset 14, -4
+ 129 0002 083A     		subs	r2, r2, #8
+ 130              	.LVL8:
+  26:uint.c        ****     bool c = 0;
+ 131              		.loc 1 26 1 view .LVU24
+ 132 0004 A1F10807 		sub	r7, r1, #8
+ 133 0008 A0F10805 		sub	r5, r0, #8
+ 134 000c 3831     		adds	r1, r1, #56
+ 135              	.LVL9:
+  27:uint.c        ****     bool c = 0;
+ 136              		.loc 1 27 10 view .LVU25
+ 137 000e 0020     		movs	r0, #0
+ 138              	.LVL10:
+ 139              	.L8:
+ 140              	.LBB6:
+ 141              	.LBB4:
+  29:uint.c        ****         uint64_t t;
+ 142              		.loc 1 29 9 is_stmt 1 discriminator 3 view .LVU26
+  30:uint.c        ****         c = __builtin_add_overflow(y->c[i], c, &t);
+ 143              		.loc 1 30 9 discriminator 3 view .LVU27
+ 144              		.loc 1 30 13 is_stmt 0 discriminator 3 view .LVU28
+ 145 0010 57F8083F 		ldr	r3, [r7, #8]!
+  31:uint.c        ****         c |= __builtin_add_overflow(t, z->c[i], &x->c[i]);
+ 146              		.loc 1 31 14 discriminator 3 view .LVU29
+ 147 0014 52F8086F 		ldr	r6, [r2, #8]!
+  30:uint.c        ****         c = __builtin_add_overflow(y->c[i], c, &t);
+ 148              		.loc 1 30 13 discriminator 3 view .LVU30
+ 149 0018 7C68     		ldr	r4, [r7, #4]
+ 150 001a 1B18     		adds	r3, r3, r0
+ 151 001c 54F10004 		adcs	r4, r4, #0
+ 152 0020 4FF0000C 		mov	ip, #0
+ 153 0024 28BF     		it	cs
+ 154 0026 4FF0010C 		movcs	ip, #1
+ 155              	.LVL11:
+ 156              		.loc 1 31 9 is_stmt 1 discriminator 3 view .LVU31
+ 157              		.loc 1 31 14 is_stmt 0 discriminator 3 view .LVU32
+ 158 002a 9B19     		adds	r3, r3, r6
+ 159              	.LVL12:
+ 160              		.loc 1 31 14 discriminator 3 view .LVU33
+ 161 002c 5668     		ldr	r6, [r2, #4]
+ 162 002e 45F8083F 		str	r3, [r5, #8]!
+ 163              	.LVL13:
+ 164              		.loc 1 31 14 discriminator 3 view .LVU34
+ 165 0032 7441     		adcs	r4, r4, r6
+ 166 0034 4FF00000 		mov	r0, #0
+ 167 0038 28BF     		it	cs
+ 168 003a 0120     		movcs	r0, #1
+ 169              	.LBE4:
+  28:uint.c        ****         uint64_t t;
+ 170              		.loc 1 28 26 discriminator 3 view .LVU35
+ 171 003c 8F42     		cmp	r7, r1
+ 172              	.LBB5:
+ 173              		.loc 1 31 14 discriminator 3 view .LVU36
+ 174 003e 6C60     		str	r4, [r5, #4]
+ 175              		.loc 1 31 11 discriminator 3 view .LVU37
+ 176 0040 4CEA0000 		orr	r0, ip, r0
+ 177              	.LVL14:
+ 178              		.loc 1 31 11 discriminator 3 view .LVU38
+ 179              	.LBE5:
+  28:uint.c        ****         uint64_t t;
+ 180              		.loc 1 28 35 is_stmt 1 discriminator 3 view .LVU39
+  28:uint.c        ****         uint64_t t;
+ 181              		.loc 1 28 26 discriminator 3 view .LVU40
+ 182 0044 E4D1     		bne	.L8
+ 183              	.LBE6:
+  32:uint.c        ****     }
+  33:uint.c        ****     return c;
+ 184              		.loc 1 33 5 view .LVU41
+  34:uint.c        **** }
+ 185              		.loc 1 34 1 is_stmt 0 view .LVU42
+ 186 0046 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 187              		.cfi_endproc
+ 188              	.LFE2:
+ 190              		.section	.text.uint_sub3,"ax",%progbits
+ 191              		.align	1
+ 192              		.global	uint_sub3
+ 193              		.syntax unified
+ 194              		.thumb
+ 195              		.thumb_func
+ 197              	uint_sub3:
+ 198              	.LVL15:
+ 199              	.LFB3:
+  35:uint.c        **** 
+  36:uint.c        **** bool uint_sub3(uint_c *x, uint_c const *y, uint_c const *z)
+  37:uint.c        **** {
+ 200              		.loc 1 37 1 is_stmt 1 view -0
+ 201              		.cfi_startproc
+ 202              		@ args = 0, pretend = 0, frame = 0
+ 203              		@ frame_needed = 0, uses_anonymous_args = 0
+  38:uint.c        ****     bool b = 0;
+ 204              		.loc 1 38 5 view .LVU44
+  39:uint.c        ****     for (size_t i = 0; i < LIMBS; ++i) {
+ 205              		.loc 1 39 5 view .LVU45
+ 206              	.LBB7:
+ 207              		.loc 1 39 10 view .LVU46
+ 208              		.loc 1 39 26 view .LVU47
+ 209              	.LBE7:
+  37:uint.c        ****     bool b = 0;
+ 210              		.loc 1 37 1 is_stmt 0 view .LVU48
+ 211 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 212              	.LCFI2:
+ 213              		.cfi_def_cfa_offset 20
+ 214              		.cfi_offset 4, -20
+ 215              		.cfi_offset 5, -16
+ 216              		.cfi_offset 6, -12
+ 217              		.cfi_offset 7, -8
+ 218              		.cfi_offset 14, -4
+ 219 0002 A0F10805 		sub	r5, r0, #8
+  38:uint.c        ****     bool b = 0;
+ 220              		.loc 1 38 10 view .LVU49
+ 221 0006 0020     		movs	r0, #0
+ 222              	.LVL16:
+  38:uint.c        ****     bool b = 0;
+ 223              		.loc 1 38 10 view .LVU50
+ 224 0008 A1F10806 		sub	r6, r1, #8
+ 225 000c 083A     		subs	r2, r2, #8
+ 226              	.LVL17:
+  38:uint.c        ****     bool b = 0;
+ 227              		.loc 1 38 10 view .LVU51
+ 228 000e 3831     		adds	r1, r1, #56
+ 229              	.LVL18:
+ 230              	.LBB10:
+ 231              	.LBB8:
+  40:uint.c        ****         uint64_t t;
+  41:uint.c        ****         b = __builtin_sub_overflow(y->c[i], b, &t);
+ 232              		.loc 1 41 13 view .LVU52
+ 233 0010 8646     		mov	lr, r0
+ 234              	.LVL19:
+ 235              	.L15:
+  40:uint.c        ****         uint64_t t;
+ 236              		.loc 1 40 9 is_stmt 1 discriminator 3 view .LVU53
+ 237              		.loc 1 41 9 discriminator 3 view .LVU54
+ 238              		.loc 1 41 13 is_stmt 0 discriminator 3 view .LVU55
+ 239 0012 56F8084F 		ldr	r4, [r6, #8]!
+  42:uint.c        ****         b |= __builtin_sub_overflow(t, z->c[i], &x->c[i]);
+ 240              		.loc 1 42 14 discriminator 3 view .LVU56
+ 241 0016 52F8087F 		ldr	r7, [r2, #8]!
+  41:uint.c        ****         b |= __builtin_sub_overflow(t, z->c[i], &x->c[i]);
+ 242              		.loc 1 41 13 discriminator 3 view .LVU57
+ 243 001a 7368     		ldr	r3, [r6, #4]
+ 244 001c 241A     		subs	r4, r4, r0
+ 245 001e 4FF0000C 		mov	ip, #0
+ 246 0022 73EB0E03 		sbcs	r3, r3, lr
+ 247 0026 38BF     		it	cc
+ 248 0028 4FF0010C 		movcc	ip, #1
+ 249              	.LVL20:
+ 250              		.loc 1 42 9 is_stmt 1 discriminator 3 view .LVU58
+ 251              		.loc 1 42 14 is_stmt 0 discriminator 3 view .LVU59
+ 252 002c E41B     		subs	r4, r4, r7
+ 253              	.LVL21:
+ 254              		.loc 1 42 14 discriminator 3 view .LVU60
+ 255 002e 5768     		ldr	r7, [r2, #4]
+ 256 0030 45F8084F 		str	r4, [r5, #8]!
+ 257              	.LVL22:
+ 258              		.loc 1 42 14 discriminator 3 view .LVU61
+ 259 0034 BB41     		sbcs	r3, r3, r7
+ 260 0036 4FF00000 		mov	r0, #0
+ 261 003a 38BF     		it	cc
+ 262 003c 0120     		movcc	r0, #1
+ 263              	.LBE8:
+  39:uint.c        ****         uint64_t t;
+ 264              		.loc 1 39 26 discriminator 3 view .LVU62
+ 265 003e 8E42     		cmp	r6, r1
+ 266              	.LBB9:
+ 267              		.loc 1 42 14 discriminator 3 view .LVU63
+ 268 0040 6B60     		str	r3, [r5, #4]
+ 269              		.loc 1 42 11 discriminator 3 view .LVU64
+ 270 0042 4CEA0000 		orr	r0, ip, r0
+ 271              	.LVL23:
+ 272              		.loc 1 42 11 discriminator 3 view .LVU65
+ 273              	.LBE9:
+  39:uint.c        ****         uint64_t t;
+ 274              		.loc 1 39 35 is_stmt 1 discriminator 3 view .LVU66
+  39:uint.c        ****         uint64_t t;
+ 275              		.loc 1 39 26 discriminator 3 view .LVU67
+ 276 0046 E4D1     		bne	.L15
+ 277              	.LBE10:
+  43:uint.c        ****     }
+  44:uint.c        ****     return b;
+ 278              		.loc 1 44 5 view .LVU68
+  45:uint.c        **** }
+ 279              		.loc 1 45 1 is_stmt 0 view .LVU69
+ 280 0048 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 281              		.cfi_endproc
+ 282              	.LFE3:
+ 284              		.section	.text.add128,"ax",%progbits
+ 285              		.align	1
+ 286              		.global	add128
+ 287              		.syntax unified
+ 288              		.thumb
+ 289              		.thumb_func
+ 291              	add128:
+ 292              	.LVL24:
+ 293              	.LFB5:
+  46:uint.c        **** 
+  47:uint.c        **** inline void uint_mul3_64(uint_c *x, const uint_c* const y, const uint64_t z)
+  48:uint.c        **** {
+  49:uint.c        **** 	uint128 c;
+  50:uint.c        **** 	c.Hi = 0;
+  51:uint.c        **** 	c.Lo = 0;
+  52:uint.c        ****     uint128 t;
+  53:uint.c        ****     t.Hi = 0;
+  54:uint.c        ****     t.Lo = 0;
+  55:uint.c        ****     for (size_t i = 0; i < LIMBS; ++i) {
+  56:uint.c        **** 
+  57:uint.c        ****     	if((y->c[i]>0) || (z>0)) {
+  58:uint.c        ****     			mult64to128(y->c[i], z, &t);
+  59:uint.c        ****     			add128(&t, &t, &c);
+  60:uint.c        **** 
+  61:uint.c        **** 			    //c = t >> 64;
+  62:uint.c        ****   	    	c.Lo = t.Hi;
+  63:uint.c        ****   	    	c.Hi = 0;
+  64:uint.c        **** 
+  65:uint.c        **** 			    //x->c[i] = t;
+  66:uint.c        **** 			    x->c[i] = t.Lo;
+  67:uint.c        ****     	} else {
+  68:uint.c        **** 
+  69:uint.c        ****         	c.Lo = t.Hi;
+  70:uint.c        ****         	c.Hi = 0;
+  71:uint.c        **** 
+  72:uint.c        **** 			    //x->c[i] = t;
+  73:uint.c        **** 			    x->c[i] = t.Lo;
+  74:uint.c        **** 
+  75:uint.c        ****     	}
+  76:uint.c        **** 
+  77:uint.c        **** 
+  78:uint.c        **** 
+  79:uint.c        ****     }
+  80:uint.c        **** //    uint64_t c = 0;
+  81:uint.c        **** //    for (size_t i = 0; i < LIMBS; ++i) {
+  82:uint.c        **** //        __uint128_t t = y->c[i] * (__uint128_t) z + c;
+  83:uint.c        **** //        c = t >> 64;
+  84:uint.c        **** //        x->c[i] = t;
+  85:uint.c        **** //    }
+  86:uint.c        **** }
+  87:uint.c        **** 
+  88:uint.c        **** 
+  89:uint.c        **** inline void add128(uint128* out, const uint128* const op1, const uint128* const op2)
+  90:uint.c        **** {
+ 294              		.loc 1 90 1 is_stmt 1 view -0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 0
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 298              		.loc 1 91 2 view .LVU71
+  90:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 299              		.loc 1 90 1 is_stmt 0 view .LVU72
+ 300 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 301              	.LCFI3:
+ 302              		.cfi_def_cfa_offset 20
+ 303              		.cfi_offset 4, -20
+ 304              		.cfi_offset 5, -16
+ 305              		.cfi_offset 6, -12
+ 306              		.cfi_offset 7, -8
+ 307              		.cfi_offset 14, -4
+  90:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 308              		.loc 1 90 1 view .LVU73
+ 309 0002 9446     		mov	ip, r2
+ 310              		.loc 1 91 25 view .LVU74
+ 311 0004 D1E90256 		ldrd	r5, r6, [r1, #8]
+ 312              		.loc 1 91 35 view .LVU75
+ 313 0008 D2E90227 		ldrd	r2, r7, [r2, #8]
+ 314              	.LVL25:
+  92:uint.c        ****     out->Hi = op1->Hi + op2->Hi + carry;
+ 315              		.loc 1 92 5 is_stmt 1 view .LVU76
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 316              		.loc 1 91 57 is_stmt 0 view .LVU77
+ 317 000c 6C08     		lsrs	r4, r5, #1
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 318              		.loc 1 91 74 view .LVU78
+ 319 000e 4FEA520E 		lsr	lr, r2, #1
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 320              		.loc 1 91 57 view .LVU79
+ 321 0012 44EAC674 		orr	r4, r4, r6, lsl #31
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 322              		.loc 1 91 74 view .LVU80
+ 323 0016 4EEAC77E 		orr	lr, lr, r7, lsl #31
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 324              		.loc 1 91 63 view .LVU81
+ 325 001a 14EB0E04 		adds	r4, r4, lr
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 326              		.loc 1 91 30 view .LVU82
+ 327 001e 05EA020E 		and	lr, r5, r2
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 328              		.loc 1 91 41 view .LVU83
+ 329 0022 0EF0010E 		and	lr, lr, #1
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 330              		.loc 1 91 74 view .LVU84
+ 331 0026 4FEA5703 		lsr	r3, r7, #1
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 332              		.loc 1 91 63 view .LVU85
+ 333 002a 43EB5603 		adc	r3, r3, r6, lsr #1
+ 334 002e 14EB0E04 		adds	r4, r4, lr
+ 335              		.loc 1 92 23 view .LVU86
+ 336 0032 D1E90041 		ldrd	r4, r1, [r1]
+ 337              	.LVL26:
+ 338              		.loc 1 92 23 view .LVU87
+ 339 0036 DCE900EC 		ldrd	lr, ip, [ip]
+ 340              	.LVL27:
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 341              		.loc 1 91 63 view .LVU88
+ 342 003a 43F10003 		adc	r3, r3, #0
+  91:uint.c        **** 	uint64_t carry = (((op1->Lo & op2->Lo) & 1) + (op1->Lo >> 1) + (op2->Lo >> 1)) >> 63;
+ 343              		.loc 1 91 11 view .LVU89
+ 344 003e DB0F     		lsrs	r3, r3, #31
+ 345              		.loc 1 92 23 view .LVU90
+ 346 0040 14EB0E04 		adds	r4, r4, lr
+ 347 0044 41EB0C01 		adc	r1, r1, ip
+ 348              		.loc 1 92 33 view .LVU91
+ 349 0048 1B19     		adds	r3, r3, r4
+ 350 004a 41F10001 		adc	r1, r1, #0
+  93:uint.c        ****     out->Lo = op1->Lo + op2->Lo;
+ 351              		.loc 1 93 23 view .LVU92
+ 352 004e AD18     		adds	r5, r5, r2
+ 353              	.LVL28:
+ 354              		.loc 1 93 23 view .LVU93
+ 355 0050 46EB0706 		adc	r6, r6, r7
+ 356              	.LVL29:
+  92:uint.c        ****     out->Hi = op1->Hi + op2->Hi + carry;
+ 357              		.loc 1 92 13 view .LVU94
+ 358 0054 C0E90031 		strd	r3, r1, [r0]
+ 359              		.loc 1 93 5 is_stmt 1 view .LVU95
+ 360              		.loc 1 93 13 is_stmt 0 view .LVU96
+ 361 0058 C0E90256 		strd	r5, r6, [r0, #8]
+ 362              	.LVL30:
+  94:uint.c        **** }
+ 363              		.loc 1 94 1 view .LVU97
+ 364 005c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 365              		.cfi_endproc
+ 366              	.LFE5:
+ 368              		.section	.text.mult64to128,"ax",%progbits
+ 369              		.align	1
+ 370              		.global	mult64to128
+ 371              		.syntax unified
+ 372              		.thumb
+ 373              		.thumb_func
+ 375              	mult64to128:
+ 376              	.LVL31:
+ 377              	.LFB6:
+  95:uint.c        **** 
+  96:uint.c        **** 
+  97:uint.c        **** inline void mult64to128(const uint64_t op1, const uint64_t op2, uint128* out)
+  98:uint.c        **** {
+ 378              		.loc 1 98 1 is_stmt 1 view -0
+ 379              		.cfi_startproc
+ 380              		@ args = 4, pretend = 0, frame = 0
+ 381              		@ frame_needed = 0, uses_anonymous_args = 0
+  99:uint.c        ****     uint64_t u1 = (op1 & 0xffffffff);
+ 382              		.loc 1 99 5 view .LVU99
+ 100:uint.c        ****     uint64_t v1 = (op2 & 0xffffffff);
+ 383              		.loc 1 100 5 view .LVU100
+ 101:uint.c        ****     uint64_t t = (u1 * v1);
+ 384              		.loc 1 101 5 view .LVU101
+  98:uint.c        ****     uint64_t u1 = (op1 & 0xffffffff);
+ 385              		.loc 1 98 1 is_stmt 0 view .LVU102
+ 386 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 387              	.LCFI4:
+ 388              		.cfi_def_cfa_offset 20
+ 389              		.cfi_offset 4, -20
+ 390              		.cfi_offset 5, -16
+ 391              		.cfi_offset 6, -12
+ 392              		.cfi_offset 7, -8
+ 393              		.cfi_offset 14, -4
+ 394              		.loc 1 101 14 view .LVU103
+ 395 0002 A0FB0256 		umull	r5, r6, r0, r2
+ 396              	.LVL32:
+ 102:uint.c        ****     uint64_t w3 = (t & 0xffffffff);
+ 397              		.loc 1 102 5 is_stmt 1 view .LVU104
+ 103:uint.c        ****     uint64_t k = (t >> 32);
+ 398              		.loc 1 103 5 view .LVU105
+ 104:uint.c        **** 
+ 105:uint.c        ****     //op1 >>= 32;
+ 106:uint.c        ****     t = ((op1 >> 32) * v1) + k;
+ 399              		.loc 1 106 5 view .LVU106
+ 400              		.loc 1 106 22 is_stmt 0 view .LVU107
+ 401 0006 A1FB0227 		umull	r2, r7, r1, r2
+ 402              	.LVL33:
+ 403              		.loc 1 106 7 view .LVU108
+ 404 000a 9219     		adds	r2, r2, r6
+ 107:uint.c        ****     k = (t & 0xffffffff);
+ 108:uint.c        ****     uint64_t w1 = (t >> 32);
+ 109:uint.c        **** 
+ 110:uint.c        ****     //op2 >>= 32;
+ 111:uint.c        ****     t = (u1 * (op2 >> 32)) + k;
+ 405              		.loc 1 111 13 view .LVU109
+ 406 000c A3FB0006 		umull	r0, r6, r3, r0
+ 407              	.LVL34:
+ 106:uint.c        ****     k = (t & 0xffffffff);
+ 408              		.loc 1 106 7 view .LVU110
+ 409 0010 47F10007 		adc	r7, r7, #0
+ 410              	.LVL35:
+ 107:uint.c        ****     k = (t & 0xffffffff);
+ 411              		.loc 1 107 5 is_stmt 1 view .LVU111
+ 108:uint.c        **** 
+ 412              		.loc 1 108 5 view .LVU112
+ 413              		.loc 1 111 5 view .LVU113
+ 112:uint.c        ****     k = (t >> 32);
+ 113:uint.c        **** 
+ 114:uint.c        ****     out->Hi = ((op1 >> 32)* (op2 >> 32)) + w1 + k;
+ 414              		.loc 1 114 27 is_stmt 0 view .LVU114
+ 415 0014 A1FB0313 		umull	r1, r3, r1, r3
+ 111:uint.c        ****     k = (t >> 32);
+ 416              		.loc 1 111 7 view .LVU115
+ 417 0018 8018     		adds	r0, r0, r2
+ 418 001a 46F10002 		adc	r2, r6, #0
+ 419              	.LVL36:
+ 112:uint.c        ****     k = (t >> 32);
+ 420              		.loc 1 112 5 is_stmt 1 view .LVU116
+ 421              		.loc 1 114 5 view .LVU117
+ 422              		.loc 1 114 42 is_stmt 0 view .LVU118
+ 423 001e C919     		adds	r1, r1, r7
+  98:uint.c        ****     uint64_t u1 = (op1 & 0xffffffff);
+ 424              		.loc 1 98 1 view .LVU119
+ 425 0020 059C     		ldr	r4, [sp, #20]
+ 426              		.loc 1 114 42 view .LVU120
+ 427 0022 43F10003 		adc	r3, r3, #0
+ 428              		.loc 1 114 47 view .LVU121
+ 429 0026 8918     		adds	r1, r1, r2
+ 430 0028 43F10003 		adc	r3, r3, #0
+ 431              		.loc 1 114 13 view .LVU122
+ 432 002c C4E90013 		strd	r1, r3, [r4]
+ 115:uint.c        ****     out->Lo = (t << 32) + w3;
+ 433              		.loc 1 115 5 is_stmt 1 view .LVU123
+ 434              		.loc 1 115 13 is_stmt 0 view .LVU124
+ 435 0030 C4E90250 		strd	r5, r0, [r4, #8]
+ 116:uint.c        **** }
+ 436              		.loc 1 116 1 view .LVU125
+ 437 0034 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 438              		.loc 1 116 1 view .LVU126
+ 439              		.cfi_endproc
+ 440              	.LFE6:
+ 442              		.section	.text.uint_mul3_64,"ax",%progbits
+ 443              		.align	1
+ 444              		.global	uint_mul3_64
+ 445              		.syntax unified
+ 446              		.thumb
+ 447              		.thumb_func
+ 449              	uint_mul3_64:
+ 450              	.LVL37:
+ 451              	.LFB4:
+  48:uint.c        **** 	uint128 c;
+ 452              		.loc 1 48 1 is_stmt 1 view -0
+ 453              		.cfi_startproc
+ 454              		@ args = 0, pretend = 0, frame = 32
+ 455              		@ frame_needed = 0, uses_anonymous_args = 0
+  49:uint.c        **** 	c.Hi = 0;
+ 456              		.loc 1 49 2 view .LVU128
+  50:uint.c        **** 	c.Lo = 0;
+ 457              		.loc 1 50 2 view .LVU129
+  48:uint.c        **** 	uint128 c;
+ 458              		.loc 1 48 1 is_stmt 0 view .LVU130
+ 459 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 460              	.LCFI5:
+ 461              		.cfi_def_cfa_offset 28
+ 462              		.cfi_offset 4, -28
+ 463              		.cfi_offset 5, -24
+ 464              		.cfi_offset 6, -20
+ 465              		.cfi_offset 7, -16
+ 466              		.cfi_offset 8, -12
+ 467              		.cfi_offset 9, -8
+ 468              		.cfi_offset 14, -4
+ 469 0004 1746     		mov	r7, r2
+ 470 0006 8BB0     		sub	sp, sp, #44
+ 471              	.LCFI6:
+ 472              		.cfi_def_cfa_offset 72
+  50:uint.c        **** 	c.Lo = 0;
+ 473              		.loc 1 50 7 view .LVU131
+ 474 0008 0022     		movs	r2, #0
+ 475              	.LVL38:
+  48:uint.c        **** 	uint128 c;
+ 476              		.loc 1 48 1 view .LVU132
+ 477 000a 9846     		mov	r8, r3
+  50:uint.c        **** 	c.Lo = 0;
+ 478              		.loc 1 50 7 view .LVU133
+ 479 000c 0023     		movs	r3, #0
+ 480 000e CDE90223 		strd	r2, [sp, #8]
+  51:uint.c        ****     uint128 t;
+ 481              		.loc 1 51 2 is_stmt 1 view .LVU134
+  51:uint.c        ****     uint128 t;
+ 482              		.loc 1 51 7 is_stmt 0 view .LVU135
+ 483 0012 CDE90423 		strd	r2, [sp, #16]
+  52:uint.c        ****     t.Hi = 0;
+ 484              		.loc 1 52 5 is_stmt 1 view .LVU136
+  53:uint.c        ****     t.Lo = 0;
+ 485              		.loc 1 53 5 view .LVU137
+  53:uint.c        ****     t.Lo = 0;
+ 486              		.loc 1 53 10 is_stmt 0 view .LVU138
+ 487 0016 CDE90623 		strd	r2, [sp, #24]
+  54:uint.c        ****     for (size_t i = 0; i < LIMBS; ++i) {
+ 488              		.loc 1 54 5 is_stmt 1 view .LVU139
+  54:uint.c        ****     for (size_t i = 0; i < LIMBS; ++i) {
+ 489              		.loc 1 54 10 is_stmt 0 view .LVU140
+ 490 001a CDE90823 		strd	r2, [sp, #32]
+  55:uint.c        **** 
+ 491              		.loc 1 55 5 is_stmt 1 view .LVU141
+ 492              	.LBB11:
+  55:uint.c        **** 
+ 493              		.loc 1 55 10 view .LVU142
+ 494              	.LVL39:
+  55:uint.c        **** 
+ 495              		.loc 1 55 26 view .LVU143
+ 496 001e A1F10805 		sub	r5, r1, #8
+ 497 0022 A0F10806 		sub	r6, r0, #8
+ 498 0026 01F13804 		add	r4, r1, #56
+  58:uint.c        ****     			add128(&t, &t, &c);
+ 499              		.loc 1 58 8 is_stmt 0 view .LVU144
+ 500 002a 0DF11809 		add	r9, sp, #24
+ 501              	.LVL40:
+ 502              	.L22:
+  57:uint.c        ****     			mult64to128(y->c[i], z, &t);
+ 503              		.loc 1 57 6 is_stmt 1 view .LVU145
+  57:uint.c        ****     			mult64to128(y->c[i], z, &t);
+ 504              		.loc 1 57 14 is_stmt 0 view .LVU146
+ 505 002e 55F8080F 		ldr	r0, [r5, #8]!
+ 506 0032 6968     		ldr	r1, [r5, #4]
+  57:uint.c        ****     			mult64to128(y->c[i], z, &t);
+ 507              		.loc 1 57 8 view .LVU147
+ 508 0034 40EA0703 		orr	r3, r0, r7
+ 509 0038 41EA0802 		orr	r2, r1, r8
+ 510 003c 1343     		orrs	r3, r3, r2
+ 511 003e 0AD0     		beq	.L20
+  58:uint.c        ****     			add128(&t, &t, &c);
+ 512              		.loc 1 58 8 is_stmt 1 view .LVU148
+ 513 0040 3A46     		mov	r2, r7
+ 514 0042 CDF80090 		str	r9, [sp]
+ 515 0046 4346     		mov	r3, r8
+ 516 0048 FFF7FEFF 		bl	mult64to128
+ 517              	.LVL41:
+  59:uint.c        **** 
+ 518              		.loc 1 59 8 view .LVU149
+ 519 004c 02AA     		add	r2, sp, #8
+ 520 004e 4946     		mov	r1, r9
+ 521 0050 4846     		mov	r0, r9
+ 522 0052 FFF7FEFF 		bl	add128
+ 523              	.LVL42:
+  62:uint.c        ****   	    	c.Hi = 0;
+ 524              		.loc 1 62 9 view .LVU150
+ 525              	.L20:
+  69:uint.c        ****         	c.Hi = 0;
+ 526              		.loc 1 69 10 view .LVU151
+  69:uint.c        ****         	c.Hi = 0;
+ 527              		.loc 1 69 15 is_stmt 0 view .LVU152
+ 528 0056 DDE90623 		ldrd	r2, [sp, #24]
+ 529 005a CDE90423 		strd	r2, [sp, #16]
+  70:uint.c        **** 
+ 530              		.loc 1 70 10 is_stmt 1 view .LVU153
+  73:uint.c        **** 
+ 531              		.loc 1 73 8 view .LVU154
+  73:uint.c        **** 
+ 532              		.loc 1 73 19 is_stmt 0 view .LVU155
+ 533 005e DDE90823 		ldrd	r2, [sp, #32]
+  55:uint.c        **** 
+ 534              		.loc 1 55 26 view .LVU156
+ 535 0062 A542     		cmp	r5, r4
+  66:uint.c        ****     	} else {
+ 536              		.loc 1 66 16 view .LVU157
+ 537 0064 E6E90223 		strd	r2, [r6, #8]!
+  55:uint.c        **** 
+ 538              		.loc 1 55 35 is_stmt 1 view .LVU158
+  55:uint.c        **** 
+ 539              		.loc 1 55 26 view .LVU159
+ 540 0068 E1D1     		bne	.L22
+ 541              	.LBE11:
+  86:uint.c        **** 
+ 542              		.loc 1 86 1 is_stmt 0 view .LVU160
+ 543 006a 0BB0     		add	sp, sp, #44
+ 544              	.LCFI7:
+ 545              		.cfi_def_cfa_offset 28
+ 546              		@ sp needed
+ 547 006c BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+  86:uint.c        **** 
+ 548              		.loc 1 86 1 view .LVU161
+ 549              		.cfi_endproc
+ 550              	.LFE4:
+ 552              		.section	.text.shiftright128,"ax",%progbits
+ 553              		.align	1
+ 554              		.global	shiftright128
+ 555              		.syntax unified
+ 556              		.thumb
+ 557              		.thumb_func
+ 559              	shiftright128:
+ 560              	.LVL43:
+ 561              	.LFB7:
+ 117:uint.c        **** 
+ 118:uint.c        **** 
+ 119:uint.c        **** 
+ 120:uint.c        **** void shiftright128(uint128* op1, unsigned shift, uint128* out)
+ 121:uint.c        **** {
+ 562              		.loc 1 121 1 is_stmt 1 view -0
+ 563              		.cfi_startproc
+ 564              		@ args = 0, pretend = 0, frame = 0
+ 565              		@ frame_needed = 0, uses_anonymous_args = 0
+ 122:uint.c        **** 	shift &= 127;
+ 566              		.loc 1 122 2 view .LVU163
+ 123:uint.c        **** 
+ 124:uint.c        ****     if(shift != 0)
+ 567              		.loc 1 124 5 view .LVU164
+ 568              		.loc 1 124 7 is_stmt 0 view .LVU165
+ 569 0000 11F07F03 		ands	r3, r1, #127
+ 570              	.LVL44:
+ 121:uint.c        **** 	shift &= 127;
+ 571              		.loc 1 121 1 view .LVU166
+ 572 0004 F0B5     		push	{r4, r5, r6, r7, lr}
+ 573              	.LCFI8:
+ 574              		.cfi_def_cfa_offset 20
+ 575              		.cfi_offset 4, -20
+ 576              		.cfi_offset 5, -16
+ 577              		.cfi_offset 6, -12
+ 578              		.cfi_offset 7, -8
+ 579              		.cfi_offset 14, -4
+ 125:uint.c        ****     {
+ 126:uint.c        ****         if(shift > 64)
+ 127:uint.c        ****         {
+ 128:uint.c        ****             out->Hi = op1->Hi >> (shift - 64);
+ 580              		.loc 1 128 26 view .LVU167
+ 581 0006 D0E90045 		ldrd	r4, r5, [r0]
+ 124:uint.c        ****     {
+ 582              		.loc 1 124 7 view .LVU168
+ 583 000a 53D0     		beq	.L25
+ 126:uint.c        ****         {
+ 584              		.loc 1 126 9 is_stmt 1 view .LVU169
+ 126:uint.c        ****         {
+ 585              		.loc 1 126 11 is_stmt 0 view .LVU170
+ 586 000c 402B     		cmp	r3, #64
+ 587 000e 14D9     		bls	.L26
+ 588              		.loc 1 128 13 is_stmt 1 view .LVU171
+ 589              		.loc 1 128 41 is_stmt 0 view .LVU172
+ 590 0010 A3F14001 		sub	r1, r3, #64
+ 591              		.loc 1 128 31 view .LVU173
+ 592 0014 C3F16000 		rsb	r0, r3, #96
+ 593              	.LVL45:
+ 594              		.loc 1 128 31 view .LVU174
+ 595 0018 CC40     		lsrs	r4, r4, r1
+ 596 001a 05FA00F0 		lsl	r0, r5, r0
+ 597 001e 603B     		subs	r3, r3, #96
+ 598              	.LVL46:
+ 599              		.loc 1 128 31 view .LVU175
+ 600 0020 0443     		orrs	r4, r4, r0
+ 601 0022 25FA03F3 		lsr	r3, r5, r3
+ 602              	.LVL47:
+ 603              		.loc 1 128 31 view .LVU176
+ 604 0026 25FA01F1 		lsr	r1, r5, r1
+ 605              	.LVL48:
+ 606              		.loc 1 128 31 view .LVU177
+ 607 002a 1C43     		orrs	r4, r4, r3
+ 608              		.loc 1 128 21 view .LVU178
+ 609 002c C2E90041 		strd	r4, r1, [r2]
+ 129:uint.c        ****             out->Lo = 0;
+ 610              		.loc 1 129 13 is_stmt 1 view .LVU179
+ 611              		.loc 1 129 21 is_stmt 0 view .LVU180
+ 612 0030 0020     		movs	r0, #0
+ 613 0032 0021     		movs	r1, #0
+ 614              	.L29:
+ 130:uint.c        ****         }
+ 131:uint.c        ****         else if(shift < 64)
+ 132:uint.c        ****         {
+ 133:uint.c        ****             out->Lo = (op1->Lo >> shift) | (op1->Hi << (64 - shift));
+ 134:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 135:uint.c        ****         }
+ 136:uint.c        ****         else
+ 137:uint.c        ****         {
+ 138:uint.c        ****         	out->Lo = op1->Hi;
+ 139:uint.c        ****             out->Hi = 0;
+ 140:uint.c        ****         }
+ 141:uint.c        ****     }
+ 142:uint.c        ****     else
+ 143:uint.c        ****     {
+ 144:uint.c        ****     	out->Hi = op1->Hi;
+ 145:uint.c        ****     	out->Lo = op1->Lo;
+ 615              		.loc 1 145 14 view .LVU181
+ 616 0034 C2E90201 		strd	r0, [r2, #8]
+ 146:uint.c        ****     }
+ 147:uint.c        **** }
+ 617              		.loc 1 147 1 view .LVU182
+ 618 0038 34E0     		b	.L24
+ 619              	.LVL49:
+ 620              	.L26:
+ 131:uint.c        ****         {
+ 621              		.loc 1 131 14 is_stmt 1 view .LVU183
+ 131:uint.c        ****         {
+ 622              		.loc 1 131 16 is_stmt 0 view .LVU184
+ 623 003a 4906     		lsls	r1, r1, #25
+ 624 003c 33D4     		bmi	.L28
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 625              		.loc 1 133 13 is_stmt 1 view .LVU185
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 626              		.loc 1 133 32 is_stmt 0 view .LVU186
+ 627 003e D0E90210 		ldrd	r1, r0, [r0, #8]
+ 628              	.LVL50:
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 629              		.loc 1 133 32 view .LVU187
+ 630 0042 C3F12007 		rsb	r7, r3, #32
+ 631 0046 00FA07F7 		lsl	r7, r0, r7
+ 632 004a A3F12006 		sub	r6, r3, #32
+ 633 004e D940     		lsrs	r1, r1, r3
+ 634 0050 20FA06F6 		lsr	r6, r0, r6
+ 635 0054 3943     		orrs	r1, r1, r7
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 636              		.loc 1 133 53 view .LVU188
+ 637 0056 C3F1200E 		rsb	lr, r3, #32
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 638              		.loc 1 133 60 view .LVU189
+ 639 005a C3F14007 		rsb	r7, r3, #64
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 640              		.loc 1 133 32 view .LVU190
+ 641 005e 3143     		orrs	r1, r1, r6
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 642              		.loc 1 133 53 view .LVU191
+ 643 0060 A3F1200C 		sub	ip, r3, #32
+ 644 0064 05FA07F6 		lsl	r6, r5, r7
+ 645 0068 04FA0EFE 		lsl	lr, r4, lr
+ 646 006c 24FA0CFC 		lsr	ip, r4, ip
+ 647 0070 46EA0E06 		orr	r6, r6, lr
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 648              		.loc 1 133 32 view .LVU192
+ 649 0074 D840     		lsrs	r0, r0, r3
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 650              		.loc 1 133 53 view .LVU193
+ 651 0076 04FA07F7 		lsl	r7, r4, r7
+ 652 007a 46EA0C06 		orr	r6, r6, ip
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 653              		.loc 1 133 42 view .LVU194
+ 654 007e 3943     		orrs	r1, r1, r7
+ 655 0080 3043     		orrs	r0, r0, r6
+ 133:uint.c        ****             out->Hi = op1->Hi >> shift;
+ 656              		.loc 1 133 21 view .LVU195
+ 657 0082 C2E90210 		strd	r1, r0, [r2, #8]
+ 134:uint.c        ****         }
+ 658              		.loc 1 134 13 is_stmt 1 view .LVU196
+ 134:uint.c        ****         }
+ 659              		.loc 1 134 31 is_stmt 0 view .LVU197
+ 660 0086 C3F12000 		rsb	r0, r3, #32
+ 661 008a A3F12001 		sub	r1, r3, #32
+ 662 008e DC40     		lsrs	r4, r4, r3
+ 663 0090 05FA00F0 		lsl	r0, r5, r0
+ 664 0094 0443     		orrs	r4, r4, r0
+ 665 0096 25FA01F1 		lsr	r1, r5, r1
+ 666 009a 0C43     		orrs	r4, r4, r1
+ 667 009c 25FA03F3 		lsr	r3, r5, r3
+ 668              	.LVL51:
+ 134:uint.c        ****         }
+ 669              		.loc 1 134 21 view .LVU198
+ 670 00a0 C2E90043 		strd	r4, r3, [r2]
+ 671              	.L24:
+ 672              		.loc 1 147 1 view .LVU199
+ 673 00a4 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 674              	.LVL52:
+ 675              	.L28:
+ 138:uint.c        ****             out->Hi = 0;
+ 676              		.loc 1 138 10 is_stmt 1 view .LVU200
+ 139:uint.c        ****         }
+ 677              		.loc 1 139 21 is_stmt 0 view .LVU201
+ 678 00a6 0020     		movs	r0, #0
+ 679              	.LVL53:
+ 139:uint.c        ****         }
+ 680              		.loc 1 139 21 view .LVU202
+ 681 00a8 0021     		movs	r1, #0
+ 138:uint.c        ****             out->Hi = 0;
+ 682              		.loc 1 138 18 view .LVU203
+ 683 00aa C2E90245 		strd	r4, r5, [r2, #8]
+ 139:uint.c        ****         }
+ 684              		.loc 1 139 13 is_stmt 1 view .LVU204
+ 139:uint.c        ****         }
+ 685              		.loc 1 139 21 is_stmt 0 view .LVU205
+ 686 00ae C2E90001 		strd	r0, [r2]
+ 687 00b2 F7E7     		b	.L24
+ 688              	.LVL54:
+ 689              	.L25:
+ 144:uint.c        ****     	out->Lo = op1->Lo;
+ 690              		.loc 1 144 6 is_stmt 1 view .LVU206
+ 144:uint.c        ****     	out->Lo = op1->Lo;
+ 691              		.loc 1 144 14 is_stmt 0 view .LVU207
+ 692 00b4 C2E90045 		strd	r4, r5, [r2]
+ 145:uint.c        ****     }
+ 693              		.loc 1 145 6 is_stmt 1 view .LVU208
+ 145:uint.c        ****     }
+ 694              		.loc 1 145 19 is_stmt 0 view .LVU209
+ 695 00b8 D0E90201 		ldrd	r0, [r0, #8]
+ 696              	.LVL55:
+ 145:uint.c        ****     }
+ 697              		.loc 1 145 19 view .LVU210
+ 698 00bc BAE7     		b	.L29
+ 699              		.cfi_endproc
+ 700              	.LFE7:
+ 702              		.global	uint_1
+ 703              		.section	.rodata
+ 704              		.align	3
+ 707              	uint_1:
+ 708 0000 01000000 		.word	1
+ 709 0004 00000000 		.word	0
+ 710 0008 00000000 		.space	56
+ 710      00000000 
+ 710      00000000 
+ 710      00000000 
+ 710      00000000 
+ 711              		.text
+ 712              	.Letext0:
+ 713              		.file 2 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/lib/gcc/arm-none-e
+ 714              		.file 3 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 715              		.file 4 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 716              		.file 5 "parametrization.h"
+ 717              		.file 6 "uint.h"
+ 718              		.file 7 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 uint.c
+     /tmp/ccPdnseM.s:19     .text.uint_set:0000000000000000 $t
+     /tmp/ccPdnseM.s:25     .text.uint_set:0000000000000000 uint_set
+     /tmp/ccPdnseM.s:54     .text.uint_bit:0000000000000000 $t
+     /tmp/ccPdnseM.s:60     .text.uint_bit:0000000000000000 uint_bit
+     /tmp/ccPdnseM.s:101    .text.uint_add3:0000000000000000 $t
+     /tmp/ccPdnseM.s:107    .text.uint_add3:0000000000000000 uint_add3
+     /tmp/ccPdnseM.s:191    .text.uint_sub3:0000000000000000 $t
+     /tmp/ccPdnseM.s:197    .text.uint_sub3:0000000000000000 uint_sub3
+     /tmp/ccPdnseM.s:285    .text.add128:0000000000000000 $t
+     /tmp/ccPdnseM.s:291    .text.add128:0000000000000000 add128
+     /tmp/ccPdnseM.s:369    .text.mult64to128:0000000000000000 $t
+     /tmp/ccPdnseM.s:375    .text.mult64to128:0000000000000000 mult64to128
+     /tmp/ccPdnseM.s:443    .text.uint_mul3_64:0000000000000000 $t
+     /tmp/ccPdnseM.s:449    .text.uint_mul3_64:0000000000000000 uint_mul3_64
+     /tmp/ccPdnseM.s:553    .text.shiftright128:0000000000000000 $t
+     /tmp/ccPdnseM.s:559    .text.shiftright128:0000000000000000 shiftright128
+     /tmp/ccPdnseM.s:707    .rodata:0000000000000000 uint_1
+     /tmp/ccPdnseM.s:704    .rodata:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+memset

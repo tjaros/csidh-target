@@ -21,12 +21,12 @@ const fp fp_0 = {{0}};
 
 /* 2^64 mod p*/
 const fp fp_1 = {{
-    0x0000000000000199
+    0x199
 }};
 
 /* (2^64)^2 mod  p */
 const fp r_squared_mod_p = {{
-    0x0000000000000064
+    0x64
 }};
 
 /* -p^-1 mod 2**64 */

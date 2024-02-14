@@ -16,7 +16,6 @@ const public_key base = {0}; /* A = 0 */
 //TODO remove
 //int8_t error = 0;
 
-#ifdef DBG
 void uart_puts(char *s)
 {
     while (*s)
@@ -24,7 +23,6 @@ void uart_puts(char *s)
         putch(*(s++));
     }
 }
-#endif
 
 extern unsigned long long overflowcnt;
 extern unsigned long long startcnt;
@@ -288,7 +286,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 
 #ifdef F419
-    uint_c k[1] = {{{3 * 5 * 7}}};
+    uint_c k[1] = {{{4 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
 #else
     //factors k for different batches
@@ -328,7 +326,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #ifdef F419
     last_iso[0] = 2;
-#elif
+#else
     //index for skipping point evaluations
     last_iso[0] = 72;
     last_iso[1] = 73;
@@ -364,7 +362,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             m = 0;
 #ifdef F419
             last_iso[0] = 2;
-#elif
+#else
             last_iso[0] = 73;   //doesn't skip point evaluations anymore after merging batches
 #endif
             uint_set(&k[m], 4); //recompute factor k
@@ -400,18 +398,17 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #else
 
-//        if (memcmp(&A.x, &fp_0, sizeof(fp)))
-//        {
-//
-          elligator(&P, &Pd, &A.x);
-//        }
-//        else
-//        {
-//            fp_enc(&P.x, &p_order); // point of full order on E_a with a=0
-//            fp_sub3(&Pd.x, &fp_0, &P.x);
-//            P.z = fp_1;
-//            Pd.z = fp_1;
-//        }
+        if (memcmp(&A.x, &fp_0, sizeof(fp)))
+        {
+            elligator(&P, &Pd, &A.x);
+        }
+        else
+        {
+            fp_enc(&P.x, &p_order); // point of full order on E_a with a=0
+            fp_sub3(&Pd.x, &fp_0, &P.x);
+            P.z  = fp_1;
+            Pd.z = fp_1;
+        }
 #ifdef DBG
     sprintf(str, 
     "[DBG] Sampled the point P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
@@ -428,6 +425,17 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
         xMUL(&Pd, &A, &Pd, &k[m]);
 
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Multiplied P, Q by factor k=%lu, P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+    (long unsigned int)k[m].c[0],
+    (long unsigned int)P.x.c[0],
+    (long unsigned int)P.z.c[0],
+    (long unsigned int)Pd.x.c[0],
+    (long unsigned int)Pd.z.c[0]
+    );
+    uart_puts(str);
+#endif
 #ifndef CM
         ps = 1; //initialized in elligator
 #endif
@@ -491,6 +499,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 error |= (ps ^ s);
 #endif
 
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Conditional swap of P and Pd %d\n",
+     ss
+    );
+    uart_puts(str);
+#endif
                 fp_cswap(&P.x, &Pd.x, ss);
 
                 fp_cswap(&P.z, &Pd.z, ss);

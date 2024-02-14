@@ -1,0 +1,256 @@
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"parametrization.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "parametrization.c"
+  18              		.global	four_sqrt_p
+  19              		.global	p_minus_1_halves
+  20              		.global	p_minus_2
+  21              		.global	inv_min_p_mod_r
+  22              		.global	r_squared_mod_p
+  23              		.global	fp_1
+  24              		.global	fp_0
+  25              		.global	p_plus_one
+  26              		.global	p
+  27              		.global	pbits
+  28              		.global	primes
+  29              		.section	.rodata
+  30              		.align	3
+  33              	four_sqrt_p:
+  34 0000 3F0BA2E1 		.word	-509473985
+  35 0004 715E8917 		.word	394878577
+  36 0008 566A63F8 		.word	-127702442
+  37 000c 95CDD038 		.word	953208213
+  38 0010 CD8296E5 		.word	-443120947
+  39 0014 41952B14 		.word	338400577
+  40 0018 92651DD9 		.word	-652384878
+  41 001c 99136F85 		.word	-2056318055
+  42 0020 02000000 		.word	2
+  43 0024 00000000 		.word	0
+  44 0028 00000000 		.space	24
+  44      00000000 
+  44      00000000 
+  44      00000000 
+  44      00000000 
+  47              	p_minus_1_halves:
+  48 0040 3D64E399 		.word	-1713150915
+  49 0044 82DCC08D 		.word	-1916740478
+  50 0048 1A54D62B 		.word	735466522
+  51 004c FA0D39E1 		.word	-516354566
+  52 0050 92A7850F 		.word	260417426
+  53 0054 6698B3A8 		.word	-1464625050
+  54 0058 83AAF9B3 		.word	-1275483517
+  55 005c 6263D5D3 		.word	-740990110
+  56 0060 E6649149 		.word	1234265318
+  57 0064 63FE7D2D 		.word	763231843
+  58 0068 2146E476 		.word	1994671649
+  59 006c 1D84165A 		.word	1511425053
+  60 0070 25261FAF 		.word	-1356913115
+  61 0074 685845FE 		.word	-29009816
+  62 0078 DFC407BA 		.word	-1173895969
+  63 007c 4747DA32 		.word	853165895
+  66              	p_minus_2:
+  67 0080 79C8C633 		.word	868665465
+  68 0084 05B9811B 		.word	461486341
+  69 0088 35A8AC57 		.word	1470933045
+  70 008c F41B72C2 		.word	-1032709132
+  71 0090 254F0B1F 		.word	520834853
+  72 0094 CC306751 		.word	1365717196
+  73 0098 0755F367 		.word	1744000263
+  74 009c C5C6AAA7 		.word	-1481980219
+  75 00a0 CDC92293 		.word	-1826436659
+  76 00a4 C6FCFB5A 		.word	1526463686
+  77 00a8 428CC8ED 		.word	-305623998
+  78 00ac 3A082DB4 		.word	-1272117190
+  79 00b0 4A4C3E5E 		.word	1581141066
+  80 00b4 D1B08AFC 		.word	-58019631
+  81 00b8 BF890F74 		.word	1947175359
+  82 00bc 8F8EB465 		.word	1706331791
+  85              	inv_min_p_mod_r:
+  86 00c0 4D292E63 		.word	1663969613
+  87 00c4 1F30C166 		.word	1723936799
+  90              	r_squared_mod_p:
+  91 00c8 2417FC2F 		.word	805050148
+  92 00cc 575B9036 		.word	915430231
+  93 00d0 7DF2F125 		.word	636613245
+  94 00d4 456F0867 		.word	1728606021
+  95 00d8 CA7023D2 		.word	-769429302
+  96 00dc BF3FAF4F 		.word	1336885183
+  97 00e0 B184C5BC 		.word	-1127906127
+  98 00e4 14A22E19 		.word	422486548
+  99 00e8 D0E35D2F 		.word	794682320
+ 100 00ec EE03AE5D 		.word	1571685358
+ 101 00f0 71B37617 		.word	393655153
+ 102 00f4 7348921E 		.word	512903283
+ 103 00f8 2DF5E420 		.word	551875885
+ 104 00fc 6E165FAD 		.word	-1386277266
+ 105 0100 7E91F3A6 		.word	-1493986946
+ 106 0104 AE59D74E 		.word	1322736046
+ 109              	fp_1:
+ 110 0108 0A6F7298 		.word	-1737330934
+ 111 010c F58DFCC8 		.word	-922972683
+ 112 0110 95AFA650 		.word	1353101205
+ 113 0114 17C81B7B 		.word	2065418263
+ 114 0118 B461E9C1 		.word	-1041669708
+ 115 011c 679E315D 		.word	1563532903
+ 116 0120 F1551930 		.word	806966769
+ 117 0124 7572AAB0 		.word	-1331006859
+ 118 0128 646CBAD9 		.word	-642093980
+ 119 012c 7206084A 		.word	1242039922
+ 120 0130 7BE76E24 		.word	611247995
+ 121 0134 8AEFA597 		.word	-1750732918
+ 122 0138 6A678343 		.word	1132685162
+ 123 013c 5D9EEA06 		.word	116039261
+ 124 0140 80ECE017 		.word	400616576
+ 125 0144 E1E29634 		.word	882303713
+ 128              	fp_0:
+ 129 0148 00000000 		.space	64
+ 129      00000000 
+ 129      00000000 
+ 129      00000000 
+ 129      00000000 
+ 132              	p_plus_one:
+ 133 0188 7CC8C633 		.word	868665468
+ 134 018c 05B9811B 		.word	461486341
+ 135 0190 35A8AC57 		.word	1470933045
+ 136 0194 F41B72C2 		.word	-1032709132
+ 137 0198 254F0B1F 		.word	520834853
+ 138 019c CC306751 		.word	1365717196
+ 139 01a0 0755F367 		.word	1744000263
+ 140 01a4 C5C6AAA7 		.word	-1481980219
+ 141 01a8 CDC92293 		.word	-1826436659
+ 142 01ac C6FCFB5A 		.word	1526463686
+ 143 01b0 428CC8ED 		.word	-305623998
+ 144 01b4 3A082DB4 		.word	-1272117190
+ 145 01b8 4A4C3E5E 		.word	1581141066
+ 146 01bc D1B08AFC 		.word	-58019631
+ 147 01c0 BF890F74 		.word	1947175359
+ 148 01c4 8F8EB465 		.word	1706331791
+ 151              	p:
+ 152 01c8 7BC8C633 		.word	868665467
+ 153 01cc 05B9811B 		.word	461486341
+ 154 01d0 35A8AC57 		.word	1470933045
+ 155 01d4 F41B72C2 		.word	-1032709132
+ 156 01d8 254F0B1F 		.word	520834853
+ 157 01dc CC306751 		.word	1365717196
+ 158 01e0 0755F367 		.word	1744000263
+ 159 01e4 C5C6AAA7 		.word	-1481980219
+ 160 01e8 CDC92293 		.word	-1826436659
+ 161 01ec C6FCFB5A 		.word	1526463686
+ 162 01f0 428CC8ED 		.word	-305623998
+ 163 01f4 3A082DB4 		.word	-1272117190
+ 164 01f8 4A4C3E5E 		.word	1581141066
+ 165 01fc D1B08AFC 		.word	-58019631
+ 166 0200 BF890F74 		.word	1947175359
+ 167 0204 8F8EB465 		.word	1706331791
+ 170              	pbits:
+ 171 0208 FF010000 		.word	511
+ 172 020c 00000000 		.word	0
+ 175              	primes:
+ 176 0210 03000000 		.word	3
+ 177 0214 05000000 		.word	5
+ 178 0218 07000000 		.word	7
+ 179 021c 0B000000 		.word	11
+ 180 0220 0D000000 		.word	13
+ 181 0224 11000000 		.word	17
+ 182 0228 13000000 		.word	19
+ 183 022c 17000000 		.word	23
+ 184 0230 1D000000 		.word	29
+ 185 0234 1F000000 		.word	31
+ 186 0238 25000000 		.word	37
+ 187 023c 29000000 		.word	41
+ 188 0240 2B000000 		.word	43
+ 189 0244 2F000000 		.word	47
+ 190 0248 35000000 		.word	53
+ 191 024c 3B000000 		.word	59
+ 192 0250 3D000000 		.word	61
+ 193 0254 43000000 		.word	67
+ 194 0258 47000000 		.word	71
+ 195 025c 49000000 		.word	73
+ 196 0260 4F000000 		.word	79
+ 197 0264 53000000 		.word	83
+ 198 0268 59000000 		.word	89
+ 199 026c 61000000 		.word	97
+ 200 0270 65000000 		.word	101
+ 201 0274 67000000 		.word	103
+ 202 0278 6B000000 		.word	107
+ 203 027c 6D000000 		.word	109
+ 204 0280 71000000 		.word	113
+ 205 0284 7F000000 		.word	127
+ 206 0288 83000000 		.word	131
+ 207 028c 89000000 		.word	137
+ 208 0290 8B000000 		.word	139
+ 209 0294 95000000 		.word	149
+ 210 0298 97000000 		.word	151
+ 211 029c 9D000000 		.word	157
+ 212 02a0 A3000000 		.word	163
+ 213 02a4 A7000000 		.word	167
+ 214 02a8 AD000000 		.word	173
+ 215 02ac B3000000 		.word	179
+ 216 02b0 B5000000 		.word	181
+ 217 02b4 BF000000 		.word	191
+ 218 02b8 C1000000 		.word	193
+ 219 02bc C5000000 		.word	197
+ 220 02c0 C7000000 		.word	199
+ 221 02c4 D3000000 		.word	211
+ 222 02c8 DF000000 		.word	223
+ 223 02cc E3000000 		.word	227
+ 224 02d0 E5000000 		.word	229
+ 225 02d4 E9000000 		.word	233
+ 226 02d8 EF000000 		.word	239
+ 227 02dc F1000000 		.word	241
+ 228 02e0 FB000000 		.word	251
+ 229 02e4 01010000 		.word	257
+ 230 02e8 07010000 		.word	263
+ 231 02ec 0D010000 		.word	269
+ 232 02f0 0F010000 		.word	271
+ 233 02f4 15010000 		.word	277
+ 234 02f8 19010000 		.word	281
+ 235 02fc 1B010000 		.word	283
+ 236 0300 25010000 		.word	293
+ 237 0304 33010000 		.word	307
+ 238 0308 37010000 		.word	311
+ 239 030c 39010000 		.word	313
+ 240 0310 3D010000 		.word	317
+ 241 0314 4B010000 		.word	331
+ 242 0318 51010000 		.word	337
+ 243 031c 5B010000 		.word	347
+ 244 0320 5D010000 		.word	349
+ 245 0324 61010000 		.word	353
+ 246 0328 67010000 		.word	359
+ 247 032c 6F010000 		.word	367
+ 248 0330 75010000 		.word	373
+ 249 0334 4B020000 		.word	587
+ 250              		.text
+ 251              	.Letext0:
+ 252              		.file 2 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 253              		.file 3 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 254              		.file 4 "parametrization.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 parametrization.c
+     /tmp/ccglPHKQ.s:33     .rodata:0000000000000000 four_sqrt_p
+     /tmp/ccglPHKQ.s:47     .rodata:0000000000000040 p_minus_1_halves
+     /tmp/ccglPHKQ.s:66     .rodata:0000000000000080 p_minus_2
+     /tmp/ccglPHKQ.s:85     .rodata:00000000000000c0 inv_min_p_mod_r
+     /tmp/ccglPHKQ.s:90     .rodata:00000000000000c8 r_squared_mod_p
+     /tmp/ccglPHKQ.s:109    .rodata:0000000000000108 fp_1
+     /tmp/ccglPHKQ.s:128    .rodata:0000000000000148 fp_0
+     /tmp/ccglPHKQ.s:132    .rodata:0000000000000188 p_plus_one
+     /tmp/ccglPHKQ.s:151    .rodata:00000000000001c8 p
+     /tmp/ccglPHKQ.s:170    .rodata:0000000000000208 pbits
+     /tmp/ccglPHKQ.s:175    .rodata:0000000000000210 primes
+     /tmp/ccglPHKQ.s:30     .rodata:0000000000000000 $d
+
+NO UNDEFINED SYMBOLS

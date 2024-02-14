@@ -92,7 +92,11 @@ void xMUL(proj *Q, proj const *A, proj const *P, uint_c const *k)
     fp_add3(&A24.z, &A24.x, &A24.x);
     fp_add2(&A24.x, &A->x);
 
+#ifdef F419
+    unsigned long i = 64;
+#else
     unsigned long i = 512;
+#endif
     while (--i && !uint_bit(k, i))
         ;
 

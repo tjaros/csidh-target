@@ -1,0 +1,2512 @@
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 4
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"mont.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "mont.c"
+  18              		.section	.text.xDBLADD,"ax",%progbits
+  19              		.align	1
+  20              		.global	xDBLADD
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	xDBLADD:
+  26              	.LVL0:
+  27              	.LFB0:
+   1:mont.c        **** 
+   2:mont.c        **** #include <assert.h>
+   3:mont.c        **** #include <stdlib.h>
+   4:mont.c        **** #include "hal.h"
+   5:mont.c        **** #include "parametrization.h"
+   6:mont.c        **** #include "uint.h"
+   7:mont.c        **** #include "fp.h"
+   8:mont.c        **** #include "mont.h"
+   9:mont.c        **** #include "csidh.h"
+  10:mont.c        **** 
+  11:mont.c        **** void xDBLADD(proj *R, proj *S, proj const *P, proj const *Q, proj const *PQ, proj const *A24)
+  12:mont.c        **** {
+  28              		.loc 1 12 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 8, pretend = 0, frame = 192
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  13:mont.c        ****     fp tmp0, tmp1, tmp2; //requires precomputation of A24=(A+2C:4C)
+  32              		.loc 1 13 5 view .LVU1
+  14:mont.c        ****     fp_add3(&tmp0, &P->x, &P->z);
+  33              		.loc 1 14 5 view .LVU2
+  12:mont.c        ****     fp tmp0, tmp1, tmp2; //requires precomputation of A24=(A+2C:4C)
+  34              		.loc 1 12 1 is_stmt 0 view .LVU3
+  35 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 32
+  38              		.cfi_offset 4, -32
+  39              		.cfi_offset 5, -28
+  40              		.cfi_offset 6, -24
+  41              		.cfi_offset 7, -20
+  42              		.cfi_offset 8, -16
+  43              		.cfi_offset 9, -12
+  44              		.cfi_offset 10, -8
+  45              		.cfi_offset 14, -4
+  46 0004 1746     		mov	r7, r2
+  47 0006 B0B0     		sub	sp, sp, #192
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 224
+  50              		.loc 1 14 27 view .LVU4
+  51 0008 02F1400A 		add	r10, r2, #64
+  12:mont.c        ****     fp tmp0, tmp1, tmp2; //requires precomputation of A24=(A+2C:4C)
+  52              		.loc 1 12 1 view .LVU5
+  53 000c 0C46     		mov	r4, r1
+  54 000e 0646     		mov	r6, r0
+  55              		.loc 1 14 5 view .LVU6
+  56 0010 5246     		mov	r2, r10
+  57              	.LVL1:
+  58              		.loc 1 14 5 view .LVU7
+  59 0012 3946     		mov	r1, r7
+  60              	.LVL2:
+  61              		.loc 1 14 5 view .LVU8
+  62 0014 6846     		mov	r0, sp
+  63              	.LVL3:
+  12:mont.c        ****     fp tmp0, tmp1, tmp2; //requires precomputation of A24=(A+2C:4C)
+  64              		.loc 1 12 1 view .LVU9
+  65 0016 1D46     		mov	r5, r3
+  66 0018 DDE93889 		ldrd	r8, r9, [sp, #224]
+  67              		.loc 1 14 5 view .LVU10
+  68 001c FFF7FEFF 		bl	fp_add3
+  69              	.LVL4:
+  15:mont.c        ****     fp_sub3(&tmp1, &P->x, &P->z);
+  70              		.loc 1 15 5 is_stmt 1 view .LVU11
+  71 0020 5246     		mov	r2, r10
+  72 0022 3946     		mov	r1, r7
+  73 0024 10A8     		add	r0, sp, #64
+  74 0026 FFF7FEFF 		bl	fp_sub3
+  75              	.LVL5:
+  16:mont.c        ****     fp_sq2(&R->x, &tmp0);
+  76              		.loc 1 16 5 view .LVU12
+  17:mont.c        ****     fp_sub3(&tmp2, &Q->x, &Q->z);
+  77              		.loc 1 17 27 is_stmt 0 view .LVU13
+  78 002a 05F14007 		add	r7, r5, #64
+  79              	.LVL6:
+  16:mont.c        ****     fp_sq2(&R->x, &tmp0);
+  80              		.loc 1 16 5 view .LVU14
+  81 002e 6946     		mov	r1, sp
+  82 0030 3046     		mov	r0, r6
+  83 0032 FFF7FEFF 		bl	fp_sq2
+  84              	.LVL7:
+  85              		.loc 1 17 5 is_stmt 1 view .LVU15
+  86 0036 3A46     		mov	r2, r7
+  87 0038 2946     		mov	r1, r5
+  88 003a 20A8     		add	r0, sp, #128
+  89 003c FFF7FEFF 		bl	fp_sub3
+  90              	.LVL8:
+  18:mont.c        ****     fp_add3(&S->x, &Q->x, &Q->z);
+  91              		.loc 1 18 5 view .LVU16
+  92 0040 3A46     		mov	r2, r7
+  93 0042 2946     		mov	r1, r5
+  94 0044 2046     		mov	r0, r4
+  19:mont.c        ****     fp_mul2(&tmp0, &tmp2);
+  20:mont.c        **** 
+  21:mont.c        ****     fp_sq2(&R->z, &tmp1);
+  95              		.loc 1 21 12 is_stmt 0 view .LVU17
+  96 0046 06F14005 		add	r5, r6, #64
+  97              	.LVL9:
+  18:mont.c        ****     fp_add3(&S->x, &Q->x, &Q->z);
+  98              		.loc 1 18 5 view .LVU18
+  99 004a FFF7FEFF 		bl	fp_add3
+ 100              	.LVL10:
+  19:mont.c        ****     fp_mul2(&tmp0, &tmp2);
+ 101              		.loc 1 19 5 is_stmt 1 view .LVU19
+ 102 004e 20A9     		add	r1, sp, #128
+ 103 0050 6846     		mov	r0, sp
+ 104 0052 FFF7FEFF 		bl	fp_mul2
+ 105              	.LVL11:
+ 106              		.loc 1 21 5 view .LVU20
+ 107 0056 10A9     		add	r1, sp, #64
+ 108 0058 2846     		mov	r0, r5
+ 109 005a FFF7FEFF 		bl	fp_sq2
+ 110              	.LVL12:
+  22:mont.c        ****     fp_mul2(&tmp1, &S->x);
+ 111              		.loc 1 22 5 view .LVU21
+ 112 005e 2146     		mov	r1, r4
+ 113 0060 10A8     		add	r0, sp, #64
+ 114 0062 FFF7FEFF 		bl	fp_mul2
+ 115              	.LVL13:
+  23:mont.c        ****     fp_sub3(&tmp2, &R->x, &R->z);
+ 116              		.loc 1 23 5 view .LVU22
+ 117 0066 2A46     		mov	r2, r5
+ 118 0068 3146     		mov	r1, r6
+ 119 006a 20A8     		add	r0, sp, #128
+ 120 006c FFF7FEFF 		bl	fp_sub3
+ 121              	.LVL14:
+  24:mont.c        **** 
+  25:mont.c        ****     fp_mul2(&R->z, &A24->z);
+ 122              		.loc 1 25 5 view .LVU23
+ 123 0070 09F14001 		add	r1, r9, #64
+ 124 0074 2846     		mov	r0, r5
+ 125 0076 FFF7FEFF 		bl	fp_mul2
+ 126              	.LVL15:
+  26:mont.c        **** 
+  27:mont.c        ****     fp_mul2(&R->x, &R->z);
+ 127              		.loc 1 27 5 view .LVU24
+ 128 007a 2946     		mov	r1, r5
+ 129 007c 3046     		mov	r0, r6
+ 130 007e FFF7FEFF 		bl	fp_mul2
+ 131              	.LVL16:
+  28:mont.c        ****     // it somehow stops here
+  29:mont.c        ****     fp_mul3(&S->x, &A24->x, &tmp2);
+ 132              		.loc 1 29 5 view .LVU25
+  30:mont.c        **** 
+  31:mont.c        ****     fp_sub3(&S->z, &tmp0, &tmp1);
+ 133              		.loc 1 31 13 is_stmt 0 view .LVU26
+ 134 0082 04F14006 		add	r6, r4, #64
+ 135              	.LVL17:
+  29:mont.c        **** 
+ 136              		.loc 1 29 5 view .LVU27
+ 137 0086 20AA     		add	r2, sp, #128
+ 138 0088 4946     		mov	r1, r9
+ 139 008a 2046     		mov	r0, r4
+ 140 008c FFF7FEFF 		bl	fp_mul3
+ 141              	.LVL18:
+ 142              		.loc 1 31 5 is_stmt 1 view .LVU28
+ 143 0090 10AA     		add	r2, sp, #64
+ 144 0092 6946     		mov	r1, sp
+ 145 0094 3046     		mov	r0, r6
+ 146 0096 FFF7FEFF 		bl	fp_sub3
+ 147              	.LVL19:
+  32:mont.c        ****     fp_add2(&R->z, &S->x);
+ 148              		.loc 1 32 5 view .LVU29
+ 149 009a 2146     		mov	r1, r4
+ 150 009c 2846     		mov	r0, r5
+ 151 009e FFF7FEFF 		bl	fp_add2
+ 152              	.LVL20:
+  33:mont.c        ****     fp_add3(&S->x, &tmp0, &tmp1);
+ 153              		.loc 1 33 5 view .LVU30
+ 154 00a2 10AA     		add	r2, sp, #64
+ 155 00a4 6946     		mov	r1, sp
+ 156 00a6 2046     		mov	r0, r4
+ 157 00a8 FFF7FEFF 		bl	fp_add3
+ 158              	.LVL21:
+  34:mont.c        ****     fp_mul2(&R->z, &tmp2);
+ 159              		.loc 1 34 5 view .LVU31
+ 160 00ac 20A9     		add	r1, sp, #128
+ 161 00ae 2846     		mov	r0, r5
+ 162 00b0 FFF7FEFF 		bl	fp_mul2
+ 163              	.LVL22:
+  35:mont.c        **** 
+  36:mont.c        ****     fp_sq1(&S->z);
+ 164              		.loc 1 36 5 view .LVU32
+ 165 00b4 3046     		mov	r0, r6
+ 166 00b6 FFF7FEFF 		bl	fp_sq1
+ 167              	.LVL23:
+  37:mont.c        ****     fp_sq1(&S->x);
+ 168              		.loc 1 37 5 view .LVU33
+ 169 00ba 2046     		mov	r0, r4
+ 170 00bc FFF7FEFF 		bl	fp_sq1
+ 171              	.LVL24:
+  38:mont.c        ****     fp_mul2(&S->z, &PQ->x);
+ 172              		.loc 1 38 5 view .LVU34
+ 173 00c0 4146     		mov	r1, r8
+ 174 00c2 3046     		mov	r0, r6
+ 175 00c4 FFF7FEFF 		bl	fp_mul2
+ 176              	.LVL25:
+  39:mont.c        ****     fp_mul2(&S->x, &PQ->z);
+ 177              		.loc 1 39 5 view .LVU35
+ 178 00c8 08F14001 		add	r1, r8, #64
+ 179 00cc 2046     		mov	r0, r4
+ 180 00ce FFF7FEFF 		bl	fp_mul2
+ 181              	.LVL26:
+  40:mont.c        **** }
+ 182              		.loc 1 40 1 is_stmt 0 view .LVU36
+ 183 00d2 30B0     		add	sp, sp, #192
+ 184              	.LCFI2:
+ 185              		.cfi_def_cfa_offset 32
+ 186              		@ sp needed
+ 187 00d4 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 188              		.loc 1 40 1 view .LVU37
+ 189              		.cfi_endproc
+ 190              	.LFE0:
+ 192              		.section	.text.xDBL,"ax",%progbits
+ 193              		.align	1
+ 194              		.global	xDBL
+ 195              		.syntax unified
+ 196              		.thumb
+ 197              		.thumb_func
+ 199              	xDBL:
+ 200              	.LVL27:
+ 201              	.LFB1:
+  41:mont.c        **** 
+  42:mont.c        **** void xDBL(proj *Q, proj const *A, proj const *P)
+  43:mont.c        **** {
+ 202              		.loc 1 43 1 is_stmt 1 view -0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 192
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+  44:mont.c        ****     fp a, b, c;
+ 206              		.loc 1 44 5 view .LVU39
+  45:mont.c        ****     fp_add3(&a, &P->x, &P->z);
+ 207              		.loc 1 45 5 view .LVU40
+  43:mont.c        ****     fp a, b, c;
+ 208              		.loc 1 43 1 is_stmt 0 view .LVU41
+ 209 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 210              	.LCFI3:
+ 211              		.cfi_def_cfa_offset 20
+ 212              		.cfi_offset 4, -20
+ 213              		.cfi_offset 5, -16
+ 214              		.cfi_offset 6, -12
+ 215              		.cfi_offset 7, -8
+ 216              		.cfi_offset 14, -4
+ 217 0002 1446     		mov	r4, r2
+ 218 0004 B1B0     		sub	sp, sp, #196
+ 219              	.LCFI4:
+ 220              		.cfi_def_cfa_offset 216
+ 221              		.loc 1 45 24 view .LVU42
+ 222 0006 02F14007 		add	r7, r2, #64
+  43:mont.c        ****     fp a, b, c;
+ 223              		.loc 1 43 1 view .LVU43
+ 224 000a 0546     		mov	r5, r0
+ 225 000c 0E46     		mov	r6, r1
+ 226              		.loc 1 45 5 view .LVU44
+ 227 000e 3A46     		mov	r2, r7
+ 228              	.LVL28:
+ 229              		.loc 1 45 5 view .LVU45
+ 230 0010 2146     		mov	r1, r4
+ 231              	.LVL29:
+ 232              		.loc 1 45 5 view .LVU46
+ 233 0012 6846     		mov	r0, sp
+ 234              	.LVL30:
+ 235              		.loc 1 45 5 view .LVU47
+ 236 0014 FFF7FEFF 		bl	fp_add3
+ 237              	.LVL31:
+  46:mont.c        ****     fp_sq1(&a);
+ 238              		.loc 1 46 5 is_stmt 1 view .LVU48
+ 239 0018 6846     		mov	r0, sp
+ 240 001a FFF7FEFF 		bl	fp_sq1
+ 241              	.LVL32:
+  47:mont.c        ****     fp_sub3(&b, &P->x, &P->z);
+ 242              		.loc 1 47 5 view .LVU49
+ 243 001e 3A46     		mov	r2, r7
+ 244 0020 2146     		mov	r1, r4
+ 245 0022 10A8     		add	r0, sp, #64
+ 246 0024 FFF7FEFF 		bl	fp_sub3
+ 247              	.LVL33:
+  48:mont.c        ****     fp_sq1(&b);
+ 248              		.loc 1 48 5 view .LVU50
+ 249 0028 10A8     		add	r0, sp, #64
+ 250 002a FFF7FEFF 		bl	fp_sq1
+ 251              	.LVL34:
+  49:mont.c        ****     fp_sub3(&c, &a, &b);
+ 252              		.loc 1 49 5 view .LVU51
+ 253 002e 10AA     		add	r2, sp, #64
+ 254 0030 6946     		mov	r1, sp
+ 255 0032 20A8     		add	r0, sp, #128
+ 256 0034 FFF7FEFF 		bl	fp_sub3
+ 257              	.LVL35:
+  50:mont.c        ****     fp_add2(&b, &b);
+ 258              		.loc 1 50 5 view .LVU52
+ 259 0038 10A9     		add	r1, sp, #64
+ 260 003a 0846     		mov	r0, r1
+ 261 003c FFF7FEFF 		bl	fp_add2
+ 262              	.LVL36:
+  51:mont.c        ****     fp_add2(&b, &b); /* multiplication by 4 */
+ 263              		.loc 1 51 5 view .LVU53
+ 264 0040 10A9     		add	r1, sp, #64
+  52:mont.c        ****     fp_mul2(&b, &A->z);
+ 265              		.loc 1 52 17 is_stmt 0 view .LVU54
+ 266 0042 06F14004 		add	r4, r6, #64
+ 267              	.LVL37:
+  51:mont.c        ****     fp_add2(&b, &b); /* multiplication by 4 */
+ 268              		.loc 1 51 5 view .LVU55
+ 269 0046 0846     		mov	r0, r1
+ 270 0048 FFF7FEFF 		bl	fp_add2
+ 271              	.LVL38:
+ 272              		.loc 1 52 5 is_stmt 1 view .LVU56
+ 273 004c 2146     		mov	r1, r4
+ 274 004e 10A8     		add	r0, sp, #64
+ 275 0050 FFF7FEFF 		bl	fp_mul2
+ 276              	.LVL39:
+  53:mont.c        ****     fp_mul3(&Q->x, &a, &b);
+ 277              		.loc 1 53 5 view .LVU57
+ 278 0054 10AA     		add	r2, sp, #64
+ 279 0056 6946     		mov	r1, sp
+ 280 0058 2846     		mov	r0, r5
+ 281 005a FFF7FEFF 		bl	fp_mul3
+ 282              	.LVL40:
+  54:mont.c        ****     fp_add3(&a, &A->z, &A->z); /* multiplication by 2 */
+ 283              		.loc 1 54 5 view .LVU58
+ 284 005e 2246     		mov	r2, r4
+ 285 0060 2146     		mov	r1, r4
+ 286 0062 6846     		mov	r0, sp
+ 287 0064 FFF7FEFF 		bl	fp_add3
+ 288              	.LVL41:
+  55:mont.c        ****     fp_add2(&a, &A->x);
+ 289              		.loc 1 55 5 view .LVU59
+ 290 0068 3146     		mov	r1, r6
+ 291 006a 6846     		mov	r0, sp
+ 292 006c FFF7FEFF 		bl	fp_add2
+ 293              	.LVL42:
+  56:mont.c        ****     fp_mul2(&a, &c);
+ 294              		.loc 1 56 5 view .LVU60
+ 295 0070 20A9     		add	r1, sp, #128
+ 296 0072 6846     		mov	r0, sp
+ 297 0074 FFF7FEFF 		bl	fp_mul2
+ 298              	.LVL43:
+  57:mont.c        ****     fp_add2(&a, &b);
+ 299              		.loc 1 57 5 view .LVU61
+ 300 0078 10A9     		add	r1, sp, #64
+ 301 007a 6846     		mov	r0, sp
+ 302 007c FFF7FEFF 		bl	fp_add2
+ 303              	.LVL44:
+  58:mont.c        ****     fp_mul3(&Q->z, &a, &c);
+ 304              		.loc 1 58 5 view .LVU62
+ 305 0080 20AA     		add	r2, sp, #128
+ 306 0082 6946     		mov	r1, sp
+ 307 0084 05F14000 		add	r0, r5, #64
+ 308 0088 FFF7FEFF 		bl	fp_mul3
+ 309              	.LVL45:
+  59:mont.c        **** }
+ 310              		.loc 1 59 1 is_stmt 0 view .LVU63
+ 311 008c 31B0     		add	sp, sp, #196
+ 312              	.LCFI5:
+ 313              		.cfi_def_cfa_offset 20
+ 314              		@ sp needed
+ 315 008e F0BD     		pop	{r4, r5, r6, r7, pc}
+ 316              		.loc 1 59 1 view .LVU64
+ 317              		.cfi_endproc
+ 318              	.LFE1:
+ 320              		.section	.text.xADD,"ax",%progbits
+ 321              		.align	1
+ 322              		.global	xADD
+ 323              		.syntax unified
+ 324              		.thumb
+ 325              		.thumb_func
+ 327              	xADD:
+ 328              	.LVL46:
+ 329              	.LFB2:
+  60:mont.c        **** 
+  61:mont.c        **** void xADD(proj *S, proj const *P, proj const *Q, proj const *PQ)
+  62:mont.c        **** {
+ 330              		.loc 1 62 1 is_stmt 1 view -0
+ 331              		.cfi_startproc
+ 332              		@ args = 0, pretend = 0, frame = 256
+ 333              		@ frame_needed = 0, uses_anonymous_args = 0
+  63:mont.c        ****     fp a, b, c, d;
+ 334              		.loc 1 63 5 view .LVU66
+  64:mont.c        ****     fp_add3(&a, &P->x, &P->z);
+ 335              		.loc 1 64 5 view .LVU67
+  62:mont.c        ****     fp a, b, c, d;
+ 336              		.loc 1 62 1 is_stmt 0 view .LVU68
+ 337 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 338              	.LCFI6:
+ 339              		.cfi_def_cfa_offset 24
+ 340              		.cfi_offset 4, -24
+ 341              		.cfi_offset 5, -20
+ 342              		.cfi_offset 6, -16
+ 343              		.cfi_offset 7, -12
+ 344              		.cfi_offset 8, -8
+ 345              		.cfi_offset 14, -4
+ 346              		.loc 1 64 24 view .LVU69
+ 347 0004 01F14008 		add	r8, r1, #64
+  62:mont.c        ****     fp a, b, c, d;
+ 348              		.loc 1 62 1 view .LVU70
+ 349 0008 C0B0     		sub	sp, sp, #256
+ 350              	.LCFI7:
+ 351              		.cfi_def_cfa_offset 280
+  62:mont.c        ****     fp a, b, c, d;
+ 352              		.loc 1 62 1 view .LVU71
+ 353 000a 1446     		mov	r4, r2
+ 354 000c 0546     		mov	r5, r0
+ 355 000e 0F46     		mov	r7, r1
+ 356              		.loc 1 64 5 view .LVU72
+ 357 0010 4246     		mov	r2, r8
+ 358              	.LVL47:
+ 359              		.loc 1 64 5 view .LVU73
+ 360 0012 6846     		mov	r0, sp
+ 361              	.LVL48:
+  62:mont.c        ****     fp a, b, c, d;
+ 362              		.loc 1 62 1 view .LVU74
+ 363 0014 1E46     		mov	r6, r3
+ 364              		.loc 1 64 5 view .LVU75
+ 365 0016 FFF7FEFF 		bl	fp_add3
+ 366              	.LVL49:
+  65:mont.c        ****     fp_sub3(&b, &P->x, &P->z);
+ 367              		.loc 1 65 5 is_stmt 1 view .LVU76
+ 368 001a 4246     		mov	r2, r8
+ 369 001c 3946     		mov	r1, r7
+ 370 001e 10A8     		add	r0, sp, #64
+  66:mont.c        ****     fp_add3(&c, &Q->x, &Q->z);
+ 371              		.loc 1 66 24 is_stmt 0 view .LVU77
+ 372 0020 04F14007 		add	r7, r4, #64
+ 373              	.LVL50:
+  65:mont.c        ****     fp_sub3(&b, &P->x, &P->z);
+ 374              		.loc 1 65 5 view .LVU78
+ 375 0024 FFF7FEFF 		bl	fp_sub3
+ 376              	.LVL51:
+ 377              		.loc 1 66 5 is_stmt 1 view .LVU79
+ 378 0028 3A46     		mov	r2, r7
+ 379 002a 2146     		mov	r1, r4
+ 380 002c 20A8     		add	r0, sp, #128
+ 381 002e FFF7FEFF 		bl	fp_add3
+ 382              	.LVL52:
+  67:mont.c        ****     fp_sub3(&d, &Q->x, &Q->z);
+ 383              		.loc 1 67 5 view .LVU80
+ 384 0032 3A46     		mov	r2, r7
+ 385 0034 2146     		mov	r1, r4
+ 386 0036 30A8     		add	r0, sp, #192
+ 387 0038 FFF7FEFF 		bl	fp_sub3
+ 388              	.LVL53:
+  68:mont.c        ****     fp_mul2(&a, &d);
+ 389              		.loc 1 68 5 view .LVU81
+ 390 003c 30A9     		add	r1, sp, #192
+ 391 003e 6846     		mov	r0, sp
+ 392 0040 FFF7FEFF 		bl	fp_mul2
+ 393              	.LVL54:
+  69:mont.c        ****     fp_mul2(&b, &c);
+ 394              		.loc 1 69 5 view .LVU82
+ 395 0044 20A9     		add	r1, sp, #128
+ 396 0046 10A8     		add	r0, sp, #64
+ 397 0048 FFF7FEFF 		bl	fp_mul2
+ 398              	.LVL55:
+  70:mont.c        ****     fp_add3(&c, &a, &b);
+ 399              		.loc 1 70 5 view .LVU83
+ 400 004c 10AA     		add	r2, sp, #64
+ 401 004e 6946     		mov	r1, sp
+ 402 0050 20A8     		add	r0, sp, #128
+ 403 0052 FFF7FEFF 		bl	fp_add3
+ 404              	.LVL56:
+  71:mont.c        ****     fp_sub3(&d, &a, &b);
+ 405              		.loc 1 71 5 view .LVU84
+ 406 0056 10AA     		add	r2, sp, #64
+ 407 0058 6946     		mov	r1, sp
+ 408 005a 30A8     		add	r0, sp, #192
+ 409 005c FFF7FEFF 		bl	fp_sub3
+ 410              	.LVL57:
+  72:mont.c        ****     fp_sq1(&c);
+ 411              		.loc 1 72 5 view .LVU85
+ 412 0060 20A8     		add	r0, sp, #128
+ 413 0062 FFF7FEFF 		bl	fp_sq1
+ 414              	.LVL58:
+  73:mont.c        ****     fp_sq1(&d);
+ 415              		.loc 1 73 5 view .LVU86
+ 416 0066 30A8     		add	r0, sp, #192
+ 417 0068 FFF7FEFF 		bl	fp_sq1
+ 418              	.LVL59:
+  74:mont.c        ****     fp_mul3(&S->x, &PQ->z, &c);
+ 419              		.loc 1 74 5 view .LVU87
+ 420 006c 20AA     		add	r2, sp, #128
+ 421 006e 06F14001 		add	r1, r6, #64
+ 422 0072 2846     		mov	r0, r5
+ 423 0074 FFF7FEFF 		bl	fp_mul3
+ 424              	.LVL60:
+  75:mont.c        ****     fp_mul3(&S->z, &PQ->x, &d);
+ 425              		.loc 1 75 5 view .LVU88
+ 426 0078 30AA     		add	r2, sp, #192
+ 427 007a 3146     		mov	r1, r6
+ 428 007c 05F14000 		add	r0, r5, #64
+ 429 0080 FFF7FEFF 		bl	fp_mul3
+ 430              	.LVL61:
+  76:mont.c        **** }
+ 431              		.loc 1 76 1 is_stmt 0 view .LVU89
+ 432 0084 40B0     		add	sp, sp, #256
+ 433              	.LCFI8:
+ 434              		.cfi_def_cfa_offset 24
+ 435              		@ sp needed
+ 436 0086 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 437              		.loc 1 76 1 view .LVU90
+ 438              		.cfi_endproc
+ 439              	.LFE2:
+ 441              		.section	.text.xMUL,"ax",%progbits
+ 442              		.align	1
+ 443              		.global	xMUL
+ 444              		.syntax unified
+ 445              		.thumb
+ 446              		.thumb_func
+ 448              	xMUL:
+ 449              	.LVL62:
+ 450              	.LFB3:
+  77:mont.c        **** 
+  78:mont.c        **** /* Montgomery ladder. */
+  79:mont.c        **** /* P must not be the unique point of order 2. */
+  80:mont.c        **** /* not constant-time! */
+  81:mont.c        **** /* factors are independent from the secret -> no constant-time ladder */
+  82:mont.c        **** void xMUL(proj *Q, proj const *A, proj const *P, uint_c const *k)
+  83:mont.c        **** {
+ 451              		.loc 1 83 1 is_stmt 1 view -0
+ 452              		.cfi_startproc
+ 453              		@ args = 0, pretend = 0, frame = 512
+ 454              		@ frame_needed = 0, uses_anonymous_args = 0
+  84:mont.c        ****     proj R = *P;
+ 455              		.loc 1 84 5 view .LVU92
+  83:mont.c        ****     proj R = *P;
+ 456              		.loc 1 83 1 is_stmt 0 view .LVU93
+ 457 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 458              	.LCFI9:
+ 459              		.cfi_def_cfa_offset 28
+ 460              		.cfi_offset 4, -28
+ 461              		.cfi_offset 5, -24
+ 462              		.cfi_offset 6, -20
+ 463              		.cfi_offset 7, -16
+ 464              		.cfi_offset 8, -12
+ 465              		.cfi_offset 9, -8
+ 466              		.cfi_offset 14, -4
+ 467 0004 1446     		mov	r4, r2
+ 468 0006 ADF5037D 		sub	sp, sp, #524
+ 469              	.LCFI10:
+ 470              		.cfi_def_cfa_offset 552
+  83:mont.c        ****     proj R = *P;
+ 471              		.loc 1 83 1 view .LVU94
+ 472 000a 0746     		mov	r7, r0
+ 473 000c 8946     		mov	r9, r1
+ 474              		.loc 1 84 10 view .LVU95
+ 475 000e 8022     		movs	r2, #128
+ 476              	.LVL63:
+ 477              		.loc 1 84 10 view .LVU96
+ 478 0010 2146     		mov	r1, r4
+ 479              	.LVL64:
+  85:mont.c        ****     proj A24;
+  86:mont.c        ****     const proj Pcopy = *P; /* in case Q = P */
+  87:mont.c        **** 
+  88:mont.c        ****     Q->x = fp_1;
+ 480              		.loc 1 88 10 view .LVU97
+ 481 0012 454D     		ldr	r5, .L13
+  84:mont.c        ****     proj A24;
+ 482              		.loc 1 84 10 view .LVU98
+ 483 0014 02A8     		add	r0, sp, #8
+ 484              	.LVL65:
+  86:mont.c        **** 
+ 485              		.loc 1 86 16 view .LVU99
+ 486 0016 42AE     		add	r6, sp, #264
+  83:mont.c        ****     proj R = *P;
+ 487              		.loc 1 83 1 view .LVU100
+ 488 0018 9846     		mov	r8, r3
+  84:mont.c        ****     proj A24;
+ 489              		.loc 1 84 10 view .LVU101
+ 490 001a FFF7FEFF 		bl	memcpy
+ 491              	.LVL66:
+  85:mont.c        ****     const proj Pcopy = *P; /* in case Q = P */
+ 492              		.loc 1 85 5 is_stmt 1 view .LVU102
+  86:mont.c        **** 
+ 493              		.loc 1 86 5 view .LVU103
+  86:mont.c        **** 
+ 494              		.loc 1 86 16 is_stmt 0 view .LVU104
+ 495 001e 2146     		mov	r1, r4
+ 496 0020 8022     		movs	r2, #128
+ 497 0022 3046     		mov	r0, r6
+ 498 0024 FFF7FEFF 		bl	memcpy
+ 499              	.LVL67:
+ 500              		.loc 1 88 5 is_stmt 1 view .LVU105
+ 501              		.loc 1 88 10 is_stmt 0 view .LVU106
+ 502 0028 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 503 002a 3C46     		mov	r4, r7
+ 504              	.LVL68:
+ 505              		.loc 1 88 10 view .LVU107
+ 506 002c 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 507 002e 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 508 0030 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 509 0032 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 510 0034 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 511 0036 95E80F00 		ldm	r5, {r0, r1, r2, r3}
+  89:mont.c        ****     Q->z = fp_0;
+ 512              		.loc 1 89 10 view .LVU108
+ 513 003a 3C4D     		ldr	r5, .L13+4
+  88:mont.c        ****     Q->z = fp_0;
+ 514              		.loc 1 88 10 view .LVU109
+ 515 003c 84E80F00 		stm	r4, {r0, r1, r2, r3}
+ 516              		.loc 1 89 5 is_stmt 1 view .LVU110
+ 517              		.loc 1 89 10 is_stmt 0 view .LVU111
+ 518 0040 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 519 0042 07F14004 		add	r4, r7, #64
+ 520 0046 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 521 0048 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 522 004a 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 523 004c 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 524 004e 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 525 0050 95E80F00 		ldm	r5, {r0, r1, r2, r3}
+ 526 0054 84E80F00 		stm	r4, {r0, r1, r2, r3}
+  90:mont.c        **** 
+  91:mont.c        ****     fp_add3(&A24.x, &A->z, &A->z); //precomputation of A24=(A+2C:4C)
+ 527              		.loc 1 91 5 is_stmt 1 view .LVU112
+ 528              		.loc 1 91 21 is_stmt 0 view .LVU113
+ 529 0058 09F14002 		add	r2, r9, #64
+ 530              		.loc 1 91 5 view .LVU114
+ 531 005c 1146     		mov	r1, r2
+ 532 005e 22A8     		add	r0, sp, #136
+ 533 0060 FFF7FEFF 		bl	fp_add3
+ 534              	.LVL69:
+  92:mont.c        ****     fp_add3(&A24.z, &A24.x, &A24.x);
+ 535              		.loc 1 92 5 is_stmt 1 view .LVU115
+ 536 0064 22AA     		add	r2, sp, #136
+ 537 0066 1146     		mov	r1, r2
+ 538 0068 32A8     		add	r0, sp, #200
+ 539 006a FFF7FEFF 		bl	fp_add3
+ 540              	.LVL70:
+  93:mont.c        ****     fp_add2(&A24.x, &A->x);
+ 541              		.loc 1 93 5 view .LVU116
+ 542 006e 4946     		mov	r1, r9
+ 543 0070 22A8     		add	r0, sp, #136
+ 544 0072 FFF7FEFF 		bl	fp_add2
+ 545              	.LVL71:
+  94:mont.c        **** 
+  95:mont.c        **** #ifdef F419
+  96:mont.c        ****     unsigned long i = 64;
+  97:mont.c        **** #else
+  98:mont.c        ****     unsigned long i = 512;
+ 546              		.loc 1 98 5 view .LVU117
+  99:mont.c        **** #endif
+ 100:mont.c        ****     while (--i && !uint_bit(k, i))
+ 547              		.loc 1 100 5 view .LVU118
+ 548              		.loc 1 100 11 is_stmt 0 view .LVU119
+ 549 0076 40F2FF14 		movw	r4, #511
+ 550 007a 0025     		movs	r5, #0
+ 551              	.LVL72:
+ 552              	.L6:
+ 553              		.loc 1 100 16 is_stmt 1 discriminator 2 view .LVU120
+ 554              		.loc 1 100 16 is_stmt 0 discriminator 2 view .LVU121
+ 555 007c 54EA0503 		orrs	r3, r4, r5
+ 556 0080 27D0     		beq	.L10
+ 557              		.loc 1 100 20 discriminator 1 view .LVU122
+ 558 0082 2B46     		mov	r3, r5
+ 559 0084 2246     		mov	r2, r4
+ 560 0086 4046     		mov	r0, r8
+ 561 0088 FFF7FEFF 		bl	uint_bit
+ 562              	.LVL73:
+ 563              		.loc 1 100 16 discriminator 1 view .LVU123
+ 564 008c 631E     		subs	r3, r4, #1
+ 565 008e 45F1FF35 		adc	r5, r5, #-1
+ 566 0092 E0B1     		cbz	r0, .L11
+ 567              	.LVL74:
+ 568              	.L5:
+ 569              		.loc 1 100 16 discriminator 1 view .LVU124
+ 570 0094 0025     		movs	r5, #0
+ 571              	.LVL75:
+ 572              	.L9:
+ 101:mont.c        ****         ;
+ 102:mont.c        **** 
+ 103:mont.c        ****     do
+ 573              		.loc 1 103 5 is_stmt 1 view .LVU125
+ 574              	.LBB2:
+ 104:mont.c        ****     {
+ 105:mont.c        ****         bool bit = uint_bit(k, i);
+ 575              		.loc 1 105 9 view .LVU126
+ 576              		.loc 1 105 20 is_stmt 0 view .LVU127
+ 577 0096 2246     		mov	r2, r4
+ 578 0098 2B46     		mov	r3, r5
+ 579 009a 4046     		mov	r0, r8
+ 580 009c FFF7FEFF 		bl	uint_bit
+ 581              	.LVL76:
+ 106:mont.c        **** 
+ 107:mont.c        ****         if (bit)
+ 582              		.loc 1 107 9 is_stmt 1 view .LVU128
+ 583              		.loc 1 107 12 is_stmt 0 view .LVU129
+ 584 00a0 C8B9     		cbnz	r0, .L7
+ 108:mont.c        ****         {
+ 109:mont.c        ****             proj T = *Q;
+ 110:mont.c        ****             *Q = R;
+ 111:mont.c        ****             R = T;
+ 112:mont.c        ****         } /* not constant-time */
+ 113:mont.c        ****         xDBLADD(Q, &R, Q, &R, &Pcopy, &A24);
+ 585              		.loc 1 113 9 is_stmt 1 view .LVU130
+ 586 00a2 22AB     		add	r3, sp, #136
+ 587 00a4 CDE90063 		strd	r6, r3, [sp]
+ 588 00a8 02AB     		add	r3, sp, #8
+ 589 00aa 3A46     		mov	r2, r7
+ 590 00ac 1946     		mov	r1, r3
+ 591 00ae 3846     		mov	r0, r7
+ 592              	.LVL77:
+ 593              		.loc 1 113 9 is_stmt 0 view .LVU131
+ 594 00b0 FFF7FEFF 		bl	xDBLADD
+ 595              	.LVL78:
+ 114:mont.c        ****         if (bit)
+ 596              		.loc 1 114 9 is_stmt 1 view .LVU132
+ 597              	.L8:
+ 598              		.loc 1 114 9 is_stmt 0 view .LVU133
+ 599              	.LBE2:
+ 115:mont.c        ****         {
+ 116:mont.c        ****             proj T = *Q;
+ 117:mont.c        ****             *Q = R;
+ 118:mont.c        ****             R = T;
+ 119:mont.c        ****         } /* not constant-time */
+ 120:mont.c        ****     } while (i--);
+ 600              		.loc 1 120 14 is_stmt 1 view .LVU134
+ 601              		.loc 1 120 14 is_stmt 0 view .LVU135
+ 602 00b4 013C     		subs	r4, r4, #1
+ 603              	.LVL79:
+ 604              		.loc 1 120 14 view .LVU136
+ 605 00b6 65F10005 		sbc	r5, r5, #0
+ 606 00ba B5F1FF3F 		cmp	r5, #-1
+ 607 00be 08BF     		it	eq
+ 608 00c0 B4F1FF3F 		cmpeq	r4, #-1
+ 609 00c4 E7D1     		bne	.L9
+ 121:mont.c        **** }
+ 610              		.loc 1 121 1 view .LVU137
+ 611 00c6 0DF5037D 		add	sp, sp, #524
+ 612              	.LCFI11:
+ 613              		.cfi_remember_state
+ 614              		.cfi_def_cfa_offset 28
+ 615              		@ sp needed
+ 616 00ca BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 617              	.LVL80:
+ 618              	.L11:
+ 619              	.LCFI12:
+ 620              		.cfi_restore_state
+ 621              		.loc 1 121 1 view .LVU138
+ 622 00ce 1C46     		mov	r4, r3
+ 623              	.LVL81:
+ 624              		.loc 1 121 1 view .LVU139
+ 625 00d0 D4E7     		b	.L6
+ 626              	.LVL82:
+ 627              	.L10:
+ 100:mont.c        ****         ;
+ 628              		.loc 1 100 16 view .LVU140
+ 629 00d2 0024     		movs	r4, #0
+ 630              	.LVL83:
+ 100:mont.c        ****         ;
+ 631              		.loc 1 100 16 view .LVU141
+ 632 00d4 DEE7     		b	.L5
+ 633              	.LVL84:
+ 634              	.L7:
+ 635              	.LBB5:
+ 636              	.LBB3:
+ 109:mont.c        ****             *Q = R;
+ 637              		.loc 1 109 13 is_stmt 1 view .LVU142
+ 109:mont.c        ****             *Q = R;
+ 638              		.loc 1 109 18 is_stmt 0 view .LVU143
+ 639 00d6 3946     		mov	r1, r7
+ 640 00d8 8022     		movs	r2, #128
+ 641 00da 62A8     		add	r0, sp, #392
+ 642              	.LVL85:
+ 109:mont.c        ****             *Q = R;
+ 643              		.loc 1 109 18 view .LVU144
+ 644 00dc FFF7FEFF 		bl	memcpy
+ 645              	.LVL86:
+ 110:mont.c        ****             R = T;
+ 646              		.loc 1 110 13 is_stmt 1 view .LVU145
+ 110:mont.c        ****             R = T;
+ 647              		.loc 1 110 16 is_stmt 0 view .LVU146
+ 648 00e0 02A9     		add	r1, sp, #8
+ 649 00e2 8022     		movs	r2, #128
+ 650 00e4 3846     		mov	r0, r7
+ 651 00e6 FFF7FEFF 		bl	memcpy
+ 652              	.LVL87:
+ 111:mont.c        ****         } /* not constant-time */
+ 653              		.loc 1 111 13 is_stmt 1 view .LVU147
+ 111:mont.c        ****         } /* not constant-time */
+ 654              		.loc 1 111 15 is_stmt 0 view .LVU148
+ 655 00ea 62A9     		add	r1, sp, #392
+ 656 00ec 8022     		movs	r2, #128
+ 657 00ee 02A8     		add	r0, sp, #8
+ 658 00f0 FFF7FEFF 		bl	memcpy
+ 659              	.LVL88:
+ 660              	.LBE3:
+ 113:mont.c        ****         if (bit)
+ 661              		.loc 1 113 9 is_stmt 1 view .LVU149
+ 662 00f4 22AB     		add	r3, sp, #136
+ 663 00f6 CDE90063 		strd	r6, r3, [sp]
+ 664 00fa 02AB     		add	r3, sp, #8
+ 665 00fc 1946     		mov	r1, r3
+ 666 00fe 3A46     		mov	r2, r7
+ 667 0100 3846     		mov	r0, r7
+ 668 0102 FFF7FEFF 		bl	xDBLADD
+ 669              	.LVL89:
+ 114:mont.c        ****         {
+ 670              		.loc 1 114 9 view .LVU150
+ 671              	.LBB4:
+ 116:mont.c        ****             *Q = R;
+ 672              		.loc 1 116 13 view .LVU151
+ 116:mont.c        ****             *Q = R;
+ 673              		.loc 1 116 18 is_stmt 0 view .LVU152
+ 674 0106 3946     		mov	r1, r7
+ 675 0108 8022     		movs	r2, #128
+ 676 010a 62A8     		add	r0, sp, #392
+ 677 010c FFF7FEFF 		bl	memcpy
+ 678              	.LVL90:
+ 117:mont.c        ****             R = T;
+ 679              		.loc 1 117 13 is_stmt 1 view .LVU153
+ 117:mont.c        ****             R = T;
+ 680              		.loc 1 117 16 is_stmt 0 view .LVU154
+ 681 0110 02A9     		add	r1, sp, #8
+ 682 0112 8022     		movs	r2, #128
+ 683 0114 3846     		mov	r0, r7
+ 684 0116 FFF7FEFF 		bl	memcpy
+ 685              	.LVL91:
+ 118:mont.c        ****         } /* not constant-time */
+ 686              		.loc 1 118 13 is_stmt 1 view .LVU155
+ 118:mont.c        ****         } /* not constant-time */
+ 687              		.loc 1 118 15 is_stmt 0 view .LVU156
+ 688 011a 8022     		movs	r2, #128
+ 689 011c 62A9     		add	r1, sp, #392
+ 690 011e 02A8     		add	r0, sp, #8
+ 691 0120 FFF7FEFF 		bl	memcpy
+ 692              	.LVL92:
+ 693 0124 C6E7     		b	.L8
+ 694              	.L14:
+ 695 0126 00BF     		.align	2
+ 696              	.L13:
+ 697 0128 00000000 		.word	fp_1
+ 698 012c 00000000 		.word	fp_0
+ 699              	.LBE4:
+ 700              	.LBE5:
+ 701              		.cfi_endproc
+ 702              	.LFE3:
+ 704              		.section	.text.exp_by_squaring_,"ax",%progbits
+ 705              		.align	1
+ 706              		.global	exp_by_squaring_
+ 707              		.syntax unified
+ 708              		.thumb
+ 709              		.thumb_func
+ 711              	exp_by_squaring_:
+ 712              	.LVL93:
+ 713              	.LFB4:
+ 122:mont.c        **** 
+ 123:mont.c        **** //simultaneous square-and-multiply, computes x^exp and y^exp
+ 124:mont.c        **** void exp_by_squaring_(fp *x, fp *y, uint64_t exp)
+ 125:mont.c        **** {
+ 714              		.loc 1 125 1 is_stmt 1 view -0
+ 715              		.cfi_startproc
+ 716              		@ args = 0, pretend = 0, frame = 128
+ 717              		@ frame_needed = 0, uses_anonymous_args = 0
+ 126:mont.c        ****     fp result1, result2;
+ 718              		.loc 1 126 5 view .LVU158
+ 127:mont.c        ****     fp_set(&result1, 1);
+ 719              		.loc 1 127 5 view .LVU159
+ 125:mont.c        ****     fp result1, result2;
+ 720              		.loc 1 125 1 is_stmt 0 view .LVU160
+ 721 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 722              	.LCFI13:
+ 723              		.cfi_def_cfa_offset 20
+ 724              		.cfi_offset 4, -20
+ 725              		.cfi_offset 5, -16
+ 726              		.cfi_offset 6, -12
+ 727              		.cfi_offset 7, -8
+ 728              		.cfi_offset 14, -4
+ 729 0002 A1B0     		sub	sp, sp, #132
+ 730              	.LCFI14:
+ 731              		.cfi_def_cfa_offset 152
+ 125:mont.c        ****     fp result1, result2;
+ 732              		.loc 1 125 1 view .LVU161
+ 733 0004 0646     		mov	r6, r0
+ 734 0006 1446     		mov	r4, r2
+ 735              		.loc 1 127 5 view .LVU162
+ 736 0008 6846     		mov	r0, sp
+ 737              	.LVL94:
+ 738              		.loc 1 127 5 view .LVU163
+ 739 000a 0122     		movs	r2, #1
+ 740              	.LVL95:
+ 125:mont.c        ****     fp result1, result2;
+ 741              		.loc 1 125 1 view .LVU164
+ 742 000c 1F46     		mov	r7, r3
+ 743              		.loc 1 127 5 view .LVU165
+ 744 000e 0023     		movs	r3, #0
+ 125:mont.c        ****     fp result1, result2;
+ 745              		.loc 1 125 1 view .LVU166
+ 746 0010 0D46     		mov	r5, r1
+ 747              		.loc 1 127 5 view .LVU167
+ 748 0012 FFF7FEFF 		bl	fp_set
+ 749              	.LVL96:
+ 128:mont.c        ****     fp_set(&result2, 1);
+ 750              		.loc 1 128 5 is_stmt 1 view .LVU168
+ 751 0016 0122     		movs	r2, #1
+ 752 0018 0023     		movs	r3, #0
+ 753 001a 10A8     		add	r0, sp, #64
+ 754 001c FFF7FEFF 		bl	fp_set
+ 755              	.LVL97:
+ 129:mont.c        **** 
+ 130:mont.c        ****     while (exp)
+ 756              		.loc 1 130 5 view .LVU169
+ 757              	.L16:
+ 758              		.loc 1 130 12 view .LVU170
+ 759 0020 54EA0703 		orrs	r3, r4, r7
+ 760 0024 13D1     		bne	.L18
+ 131:mont.c        ****     {
+ 132:mont.c        **** 
+ 133:mont.c        ****         if (exp & 1)
+ 134:mont.c        ****         {
+ 135:mont.c        **** 
+ 136:mont.c        ****             fp_mul2(&result1, x);
+ 137:mont.c        ****             fp_mul2(&result2, y);
+ 138:mont.c        ****         }
+ 139:mont.c        **** 
+ 140:mont.c        ****         fp_sq1(x);
+ 141:mont.c        ****         fp_sq1(y);
+ 142:mont.c        **** 
+ 143:mont.c        ****         exp >>= 1;
+ 144:mont.c        ****     }
+ 145:mont.c        **** 
+ 146:mont.c        ****     fp_set(x, 0);
+ 761              		.loc 1 146 5 view .LVU171
+ 762 0026 0022     		movs	r2, #0
+ 763 0028 0023     		movs	r3, #0
+ 764 002a 3046     		mov	r0, r6
+ 765 002c FFF7FEFF 		bl	fp_set
+ 766              	.LVL98:
+ 147:mont.c        ****     fp_add2(x, &result1);
+ 767              		.loc 1 147 5 view .LVU172
+ 768 0030 6946     		mov	r1, sp
+ 769 0032 3046     		mov	r0, r6
+ 770 0034 FFF7FEFF 		bl	fp_add2
+ 771              	.LVL99:
+ 148:mont.c        ****     fp_set(y, 0);
+ 772              		.loc 1 148 5 view .LVU173
+ 773 0038 0022     		movs	r2, #0
+ 774 003a 0023     		movs	r3, #0
+ 775 003c 2846     		mov	r0, r5
+ 776 003e FFF7FEFF 		bl	fp_set
+ 777              	.LVL100:
+ 149:mont.c        ****     fp_add2(y, &result2);
+ 778              		.loc 1 149 5 view .LVU174
+ 779 0042 10A9     		add	r1, sp, #64
+ 780 0044 2846     		mov	r0, r5
+ 781 0046 FFF7FEFF 		bl	fp_add2
+ 782              	.LVL101:
+ 150:mont.c        **** }
+ 783              		.loc 1 150 1 is_stmt 0 view .LVU175
+ 784 004a 21B0     		add	sp, sp, #132
+ 785              	.LCFI15:
+ 786              		.cfi_remember_state
+ 787              		.cfi_def_cfa_offset 20
+ 788              		@ sp needed
+ 789 004c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 790              	.LVL102:
+ 791              	.L18:
+ 792              	.LCFI16:
+ 793              		.cfi_restore_state
+ 133:mont.c        ****         {
+ 794              		.loc 1 133 9 is_stmt 1 view .LVU176
+ 133:mont.c        ****         {
+ 795              		.loc 1 133 12 is_stmt 0 view .LVU177
+ 796 004e E307     		lsls	r3, r4, #31
+ 797 0050 07D5     		bpl	.L17
+ 136:mont.c        ****             fp_mul2(&result2, y);
+ 798              		.loc 1 136 13 is_stmt 1 view .LVU178
+ 799 0052 3146     		mov	r1, r6
+ 800 0054 6846     		mov	r0, sp
+ 801 0056 FFF7FEFF 		bl	fp_mul2
+ 802              	.LVL103:
+ 137:mont.c        ****         }
+ 803              		.loc 1 137 13 view .LVU179
+ 804 005a 2946     		mov	r1, r5
+ 805 005c 10A8     		add	r0, sp, #64
+ 806 005e FFF7FEFF 		bl	fp_mul2
+ 807              	.LVL104:
+ 808              	.L17:
+ 140:mont.c        ****         fp_sq1(y);
+ 809              		.loc 1 140 9 view .LVU180
+ 810 0062 3046     		mov	r0, r6
+ 811 0064 FFF7FEFF 		bl	fp_sq1
+ 812              	.LVL105:
+ 141:mont.c        **** 
+ 813              		.loc 1 141 9 view .LVU181
+ 143:mont.c        ****     }
+ 814              		.loc 1 143 13 is_stmt 0 view .LVU182
+ 815 0068 6408     		lsrs	r4, r4, #1
+ 816              	.LVL106:
+ 141:mont.c        **** 
+ 817              		.loc 1 141 9 view .LVU183
+ 818 006a 2846     		mov	r0, r5
+ 143:mont.c        ****     }
+ 819              		.loc 1 143 13 view .LVU184
+ 820 006c 44EAC774 		orr	r4, r4, r7, lsl #31
+ 141:mont.c        **** 
+ 821              		.loc 1 141 9 view .LVU185
+ 822 0070 FFF7FEFF 		bl	fp_sq1
+ 823              	.LVL107:
+ 143:mont.c        ****     }
+ 824              		.loc 1 143 9 is_stmt 1 view .LVU186
+ 143:mont.c        ****     }
+ 825              		.loc 1 143 13 is_stmt 0 view .LVU187
+ 826 0074 7F08     		lsrs	r7, r7, #1
+ 143:mont.c        ****     }
+ 827              		.loc 1 143 13 view .LVU188
+ 828 0076 D3E7     		b	.L16
+ 829              		.cfi_endproc
+ 830              	.LFE4:
+ 832              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 833              	.LC0:
+ 834 0000 6B203E3D 		.ascii	"k >= 3\000"
+ 834      203300
+ 835              	.LC1:
+ 836 0007 6D6F6E74 		.ascii	"mont.c\000"
+ 836      2E6300
+ 837              	.LC2:
+ 838 000e 6B202520 		.ascii	"k % 2 == 1\000"
+ 838      32203D3D 
+ 838      203100
+ 839              		.global	__aeabi_uldivmod
+ 840              		.global	__aeabi_ldivmod
+ 841              		.section	.text.xISOG,"ax",%progbits
+ 842              		.align	1
+ 843              		.global	xISOG
+ 844              		.syntax unified
+ 845              		.thumb
+ 846              		.thumb_func
+ 848              	xISOG:
+ 849              	.LVL108:
+ 850              	.LFB5:
+ 151:mont.c        **** 
+ 152:mont.c        **** /* computes the isogeny or dummy isogeny with kernel point K of order k */
+ 153:mont.c        **** /* returns the new curve coefficient A and the image of P for real isogenies*/
+ 154:mont.c        **** /* returns the old curve coefficient A and [k]P for dummy isogenies */
+ 155:mont.c        **** bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
+ 156:mont.c        **** {
+ 851              		.loc 1 156 1 is_stmt 1 view -0
+ 852              		.cfi_startproc
+ 853              		@ args = 12, pretend = 0, frame = 2024
+ 854              		@ frame_needed = 0, uses_anonymous_args = 0
+ 855              		.loc 1 156 1 is_stmt 0 view .LVU190
+ 856 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 857              	.LCFI17:
+ 858              		.cfi_def_cfa_offset 36
+ 859              		.cfi_offset 4, -36
+ 860              		.cfi_offset 5, -32
+ 861              		.cfi_offset 6, -28
+ 862              		.cfi_offset 7, -24
+ 863              		.cfi_offset 8, -20
+ 864              		.cfi_offset 9, -16
+ 865              		.cfi_offset 10, -12
+ 866              		.cfi_offset 11, -8
+ 867              		.cfi_offset 14, -4
+ 868 0004 ADF2EC7D 		subw	sp, sp, #2028
+ 869              	.LCFI18:
+ 870              		.cfi_def_cfa_offset 2064
+ 871              		.loc 1 156 1 view .LVU191
+ 872 0008 1C46     		mov	r4, r3
+ 873 000a DDF810B8 		ldr	fp, [sp, #2064]
+ 874 000e DDF81438 		ldr	r3, [sp, #2068]
+ 875              	.LVL109:
+ 876              		.loc 1 156 1 view .LVU192
+ 877 0012 0293     		str	r3, [sp, #8]
+ 157:mont.c        ****     assert(k >= 3);
+ 878              		.loc 1 157 5 view .LVU193
+ 879 0014 BBF1030F 		cmp	fp, #3
+ 880 0018 73F10003 		sbcs	r3, r3, #0
+ 156:mont.c        ****     assert(k >= 3);
+ 881              		.loc 1 156 1 view .LVU194
+ 882 001c CDE90012 		strd	r1, r2, [sp]
+ 883 0020 0546     		mov	r5, r0
+ 884              		.loc 1 157 5 is_stmt 1 view .LVU195
+ 885 0022 05D2     		bcs	.L20
+ 886              		.loc 1 157 5 is_stmt 0 discriminator 1 view .LVU196
+ 887 0024 B64B     		ldr	r3, .L27
+ 888 0026 B74A     		ldr	r2, .L27+4
+ 889              	.LVL110:
+ 890              		.loc 1 157 5 discriminator 1 view .LVU197
+ 891 0028 9D21     		movs	r1, #157
+ 892              	.LVL111:
+ 893              	.L26:
+ 158:mont.c        ****     assert(k % 2 == 1);
+ 894              		.loc 1 158 5 discriminator 1 view .LVU198
+ 895 002a B748     		ldr	r0, .L27+8
+ 896              	.LVL112:
+ 897              		.loc 1 158 5 discriminator 1 view .LVU199
+ 898 002c FFF7FEFF 		bl	__assert_func
+ 899              	.LVL113:
+ 900              	.L20:
+ 901              		.loc 1 158 5 is_stmt 1 view .LVU200
+ 902 0030 1BF0010A 		ands	r10, fp, #1
+ 903 0034 4FF00007 		mov	r7, #0
+ 904 0038 03D1     		bne	.L21
+ 905              		.loc 1 158 5 is_stmt 0 discriminator 1 view .LVU201
+ 906 003a B44B     		ldr	r3, .L27+12
+ 907 003c B14A     		ldr	r2, .L27+4
+ 908              	.LVL114:
+ 909              		.loc 1 158 5 discriminator 1 view .LVU202
+ 910 003e 9E21     		movs	r1, #158
+ 911              	.LVL115:
+ 912              		.loc 1 158 5 discriminator 1 view .LVU203
+ 913 0040 F3E7     		b	.L26
+ 914              	.LVL116:
+ 915              	.L21:
+ 159:mont.c        **** 
+ 160:mont.c        ****     fp tmp0, tmp1, tmp2, tmp3, tmp4, Psum, Pdif, Pdsum, Pddif;
+ 916              		.loc 1 160 5 is_stmt 1 view .LVU204
+ 161:mont.c        ****     proj Q, Qd, Aed, prod;
+ 917              		.loc 1 161 5 view .LVU205
+ 162:mont.c        ****     proj Acopy = *A;
+ 918              		.loc 1 162 5 view .LVU206
+ 919              		.loc 1 162 10 is_stmt 0 view .LVU207
+ 920 0042 0146     		mov	r1, r0
+ 921              	.LVL117:
+ 922              		.loc 1 162 10 view .LVU208
+ 923 0044 8022     		movs	r2, #128
+ 924              	.LVL118:
+ 925              		.loc 1 162 10 view .LVU209
+ 926 0046 0DF58D60 		add	r0, sp, #1128
+ 927              	.LVL119:
+ 928              		.loc 1 162 10 view .LVU210
+ 929 004a FFF7FEFF 		bl	memcpy
+ 930              	.LVL120:
+ 163:mont.c        ****     proj Pdcopy = *Pd;
+ 931              		.loc 1 163 5 is_stmt 1 view .LVU211
+ 932              		.loc 1 163 10 is_stmt 0 view .LVU212
+ 933 004e 0199     		ldr	r1, [sp, #4]
+ 934 0050 8022     		movs	r2, #128
+ 935 0052 0DF59D60 		add	r0, sp, #1256
+ 936 0056 FFF7FEFF 		bl	memcpy
+ 937              	.LVL121:
+ 164:mont.c        **** 
+ 165:mont.c        **** #ifdef CM
+ 166:mont.c        ****     uint_c order;
+ 167:mont.c        **** 
+ 168:mont.c        ****     uint_set(&order, k);
+ 169:mont.c        ****     bool error = 0;
+ 170:mont.c        **** 
+ 171:mont.c        ****     // check order of kernel point
+ 172:mont.c        ****     xMUL(&Q, A, K, &order);
+ 173:mont.c        ****     error |= fp_cmp_ct(&Q.z, &fp_0);
+ 174:mont.c        **** #endif
+ 175:mont.c        **** 
+ 176:mont.c        **** //compute twisted Edwards curve coefficients
+ 177:mont.c        **** #ifdef CM
+ 178:mont.c        ****     fp_cadd2(&Aed.z, &A->z, &A->z, !mask); // t0 = cadd(b*C, b*C)
+ 179:mont.c        ****     fp_cadd(&Psum, &P->x, &P->z, !mask);
+ 180:mont.c        **** #else
+ 181:mont.c        ****     fp_add3(&Aed.z, &A->z, &A->z); //compute twisted Edwards curve coefficients
+ 938              		.loc 1 181 5 is_stmt 1 view .LVU213
+ 939              		.loc 1 181 21 is_stmt 0 view .LVU214
+ 940 005a 05F14003 		add	r3, r5, #64
+ 941              		.loc 1 181 5 view .LVU215
+ 942 005e 1A46     		mov	r2, r3
+ 943 0060 1946     		mov	r1, r3
+ 944 0062 EAA8     		add	r0, sp, #936
+ 945              		.loc 1 181 21 view .LVU216
+ 946 0064 0693     		str	r3, [sp, #24]
+ 947              		.loc 1 181 5 view .LVU217
+ 948 0066 FFF7FEFF 		bl	fp_add3
+ 949              	.LVL122:
+ 182:mont.c        ****     fp_add3(&Psum, &P->x, &P->z);  //precomputations
+ 950              		.loc 1 182 5 is_stmt 1 view .LVU218
+ 951              		.loc 1 182 27 is_stmt 0 view .LVU219
+ 952 006a 009B     		ldr	r3, [sp]
+ 953              		.loc 1 182 5 view .LVU220
+ 954 006c 0099     		ldr	r1, [sp]
+ 955              		.loc 1 182 27 view .LVU221
+ 956 006e 4033     		adds	r3, r3, #64
+ 957              		.loc 1 182 5 view .LVU222
+ 958 0070 1A46     		mov	r2, r3
+ 959 0072 5AA8     		add	r0, sp, #360
+ 960              		.loc 1 182 27 view .LVU223
+ 961 0074 0393     		str	r3, [sp, #12]
+ 962              		.loc 1 182 5 view .LVU224
+ 963 0076 FFF7FEFF 		bl	fp_add3
+ 964              	.LVL123:
+ 183:mont.c        **** #endif
+ 184:mont.c        **** 
+ 185:mont.c        ****     fp_add3(&Aed.x, &A->x, &Aed.z); // t0 = A + t0
+ 965              		.loc 1 185 5 is_stmt 1 view .LVU225
+ 966 007a EAAA     		add	r2, sp, #936
+ 967 007c 2946     		mov	r1, r5
+ 968 007e DAA8     		add	r0, sp, #872
+ 969 0080 FFF7FEFF 		bl	fp_add3
+ 970              	.LVL124:
+ 186:mont.c        ****     fp_sub3(&Aed.z, &A->x, &Aed.z); // t1 = A - t0
+ 971              		.loc 1 186 5 view .LVU226
+ 972 0084 EAAA     		add	r2, sp, #936
+ 973 0086 1046     		mov	r0, r2
+ 974 0088 2946     		mov	r1, r5
+ 975 008a FFF7FEFF 		bl	fp_sub3
+ 976              	.LVL125:
+ 187:mont.c        **** 
+ 188:mont.c        **** #ifdef CM
+ 189:mont.c        ****     fp_csub(&Pdif, &P->x, &P->z, !mask);
+ 190:mont.c        ****     fp_cadd(&Pdsum, &Pd->x, &Pd->z, !mask);
+ 191:mont.c        ****     fp_csub(&Pddif, &Pd->x, &Pd->z, !mask);
+ 192:mont.c        **** 
+ 193:mont.c        ****     fp_csub(&prod.x, &K->x, &K->z, !mask);
+ 194:mont.c        ****     fp_cadd(&prod.z, &K->x, &K->z, !mask);
+ 195:mont.c        **** #else
+ 196:mont.c        ****     fp_sub3(&Pdif, &P->x, &P->z);
+ 977              		.loc 1 196 5 view .LVU227
+ 978 008e 039A     		ldr	r2, [sp, #12]
+ 979 0090 0099     		ldr	r1, [sp]
+ 980 0092 6AA8     		add	r0, sp, #424
+ 981 0094 FFF7FEFF 		bl	fp_sub3
+ 982              	.LVL126:
+ 197:mont.c        ****     fp_add3(&Pdsum, &Pd->x, &Pd->z); //precomputations
+ 983              		.loc 1 197 5 view .LVU228
+ 984              		.loc 1 197 29 is_stmt 0 view .LVU229
+ 985 0098 019B     		ldr	r3, [sp, #4]
+ 986              		.loc 1 197 5 view .LVU230
+ 987 009a 0199     		ldr	r1, [sp, #4]
+ 988              		.loc 1 197 29 view .LVU231
+ 989 009c 4033     		adds	r3, r3, #64
+ 990              		.loc 1 197 5 view .LVU232
+ 991 009e 1A46     		mov	r2, r3
+ 992 00a0 7AA8     		add	r0, sp, #488
+ 993              		.loc 1 197 29 view .LVU233
+ 994 00a2 0493     		str	r3, [sp, #16]
+ 198:mont.c        ****     fp_sub3(&Pddif, &Pd->x, &Pd->z);
+ 199:mont.c        **** 
+ 200:mont.c        ****     fp_sub3(&prod.x, &K->x, &K->z);
+ 995              		.loc 1 200 29 view .LVU234
+ 996 00a4 04F14008 		add	r8, r4, #64
+ 197:mont.c        ****     fp_add3(&Pdsum, &Pd->x, &Pd->z); //precomputations
+ 997              		.loc 1 197 5 view .LVU235
+ 998 00a8 FFF7FEFF 		bl	fp_add3
+ 999              	.LVL127:
+ 198:mont.c        ****     fp_sub3(&Pddif, &Pd->x, &Pd->z);
+ 1000              		.loc 1 198 5 is_stmt 1 view .LVU236
+ 1001 00ac 049A     		ldr	r2, [sp, #16]
+ 1002 00ae 0199     		ldr	r1, [sp, #4]
+ 1003 00b0 8AA8     		add	r0, sp, #552
+ 1004 00b2 FFF7FEFF 		bl	fp_sub3
+ 1005              	.LVL128:
+ 1006              		.loc 1 200 5 view .LVU237
+ 1007 00b6 4246     		mov	r2, r8
+ 1008 00b8 2146     		mov	r1, r4
+ 1009 00ba FAA8     		add	r0, sp, #1000
+ 1010 00bc FFF7FEFF 		bl	fp_sub3
+ 1011              	.LVL129:
+ 201:mont.c        ****     fp_add3(&prod.z, &K->x, &K->z);
+ 1012              		.loc 1 201 5 view .LVU238
+ 1013 00c0 4246     		mov	r2, r8
+ 1014 00c2 2146     		mov	r1, r4
+ 1015 00c4 0DF58560 		add	r0, sp, #1064
+ 1016 00c8 FFF7FEFF 		bl	fp_add3
+ 1017              	.LVL130:
+ 202:mont.c        **** #endif
+ 203:mont.c        **** 
+ 204:mont.c        ****     fp_mul3(&tmp1, &prod.x, &Psum);
+ 1018              		.loc 1 204 5 view .LVU239
+ 1019 00cc 5AAA     		add	r2, sp, #360
+ 1020 00ce FAA9     		add	r1, sp, #1000
+ 1021 00d0 1AA8     		add	r0, sp, #104
+ 1022 00d2 FFF7FEFF 		bl	fp_mul3
+ 1023              	.LVL131:
+ 205:mont.c        ****     fp_mul3(&tmp0, &prod.z, &Pdif);
+ 1024              		.loc 1 205 5 view .LVU240
+ 1025 00d6 6AAA     		add	r2, sp, #424
+ 1026 00d8 0DF58561 		add	r1, sp, #1064
+ 1027 00dc 0AA8     		add	r0, sp, #40
+ 1028 00de FFF7FEFF 		bl	fp_mul3
+ 1029              	.LVL132:
+ 206:mont.c        **** 
+ 207:mont.c        **** #ifdef CM
+ 208:mont.c        ****     fp_cadd(&Q.x, &tmp0, &tmp1, !mask);
+ 209:mont.c        ****     fp_csub(&Q.z, &tmp0, &tmp1, !mask);
+ 210:mont.c        **** #else
+ 211:mont.c        ****     fp_add3(&Q.x, &tmp0, &tmp1);
+ 1030              		.loc 1 211 5 view .LVU241
+ 1031 00e2 1AAA     		add	r2, sp, #104
+ 1032 00e4 0AA9     		add	r1, sp, #40
+ 1033 00e6 9AA8     		add	r0, sp, #616
+ 1034 00e8 FFF7FEFF 		bl	fp_add3
+ 1035              	.LVL133:
+ 212:mont.c        ****     fp_sub3(&Q.z, &tmp0, &tmp1);
+ 1036              		.loc 1 212 5 view .LVU242
+ 1037 00ec 1AAA     		add	r2, sp, #104
+ 1038 00ee 0AA9     		add	r1, sp, #40
+ 1039 00f0 AAA8     		add	r0, sp, #680
+ 1040 00f2 FFF7FEFF 		bl	fp_sub3
+ 1041              	.LVL134:
+ 213:mont.c        **** #endif
+ 214:mont.c        **** 
+ 215:mont.c        ****     fp_mul3(&tmp1, &prod.x, &Pdsum); // for P'
+ 1042              		.loc 1 215 5 view .LVU243
+ 1043 00f6 7AAA     		add	r2, sp, #488
+ 1044 00f8 FAA9     		add	r1, sp, #1000
+ 1045 00fa 1AA8     		add	r0, sp, #104
+ 1046 00fc FFF7FEFF 		bl	fp_mul3
+ 1047              	.LVL135:
+ 216:mont.c        ****     fp_mul3(&tmp0, &prod.z, &Pddif);
+ 1048              		.loc 1 216 5 view .LVU244
+ 1049 0100 8AAA     		add	r2, sp, #552
+ 1050 0102 0DF58561 		add	r1, sp, #1064
+ 1051 0106 0AA8     		add	r0, sp, #40
+ 1052 0108 FFF7FEFF 		bl	fp_mul3
+ 1053              	.LVL136:
+ 217:mont.c        **** 
+ 218:mont.c        **** #ifdef CM
+ 219:mont.c        ****     fp_cadd(&Qd.x, &tmp1, &tmp0, !mask);
+ 220:mont.c        ****     fp_csub(&Qd.z, &tmp0, &tmp1, !mask);
+ 221:mont.c        **** #else
+ 222:mont.c        ****     fp_add3(&Qd.x, &tmp0, &tmp1);
+ 1054              		.loc 1 222 5 view .LVU245
+ 1055 010c 1AAA     		add	r2, sp, #104
+ 1056 010e 0AA9     		add	r1, sp, #40
+ 1057 0110 BAA8     		add	r0, sp, #744
+ 1058 0112 FFF7FEFF 		bl	fp_add3
+ 1059              	.LVL137:
+ 223:mont.c        ****     fp_sub3(&Qd.z, &tmp0, &tmp1);
+ 1060              		.loc 1 223 5 view .LVU246
+ 1061 0116 1AAA     		add	r2, sp, #104
+ 1062 0118 0AA9     		add	r1, sp, #40
+ 1063 011a CAA8     		add	r0, sp, #808
+ 1064 011c FFF7FEFF 		bl	fp_sub3
+ 1065              	.LVL138:
+ 224:mont.c        **** #endif
+ 225:mont.c        **** 
+ 226:mont.c        ****     // CONSTANT TIME :
+ 227:mont.c        ****     proj *R = K;
+ 1066              		.loc 1 227 5 view .LVU247
+ 228:mont.c        ****     proj *S = P;
+ 1067              		.loc 1 228 5 view .LVU248
+ 229:mont.c        **** 
+ 230:mont.c        ****     // CONSTANT TIME :
+ 231:mont.c        ****     fp_cswap(&R->x, &S->x, mask);
+ 1068              		.loc 1 231 5 view .LVU249
+ 1069 0120 DDF81868 		ldr	r6, [sp, #2072]
+ 1070 0124 0099     		ldr	r1, [sp]
+ 1071 0126 003E     		subs	r6, r6, #0
+ 1072 0128 18BF     		it	ne
+ 1073 012a 0126     		movne	r6, #1
+ 1074 012c 3246     		mov	r2, r6
+ 1075 012e 2046     		mov	r0, r4
+ 1076 0130 FFF7FEFF 		bl	fp_cswap
+ 1077              	.LVL139:
+ 232:mont.c        ****     fp_cswap(&R->z, &S->z, mask);
+ 1078              		.loc 1 232 5 view .LVU250
+ 1079 0134 4046     		mov	r0, r8
+ 1080 0136 0399     		ldr	r1, [sp, #12]
+ 1081 0138 3246     		mov	r2, r6
+ 1082 013a FFF7FEFF 		bl	fp_cswap
+ 1083              	.LVL140:
+ 233:mont.c        **** 
+ 234:mont.c        ****     proj M[3] = {*R}; //K for real iso, P for dum iso
+ 1084              		.loc 1 234 5 view .LVU251
+ 1085              		.loc 1 234 10 is_stmt 0 view .LVU252
+ 1086 013e 4FF4C072 		mov	r2, #384
+ 1087 0142 3946     		mov	r1, r7
+ 1088 0144 0DF5CD60 		add	r0, sp, #1640
+ 1089 0148 FFF7FEFF 		bl	memset
+ 1090              	.LVL141:
+ 1091 014c 8022     		movs	r2, #128
+ 1092 014e 2146     		mov	r1, r4
+ 1093 0150 0DF5CD60 		add	r0, sp, #1640
+ 1094 0154 FFF7FEFF 		bl	memcpy
+ 1095              	.LVL142:
+ 235:mont.c        ****     xDBL(&M[1], A, R);
+ 1096              		.loc 1 235 5 is_stmt 1 view .LVU253
+ 1097 0158 2246     		mov	r2, r4
+ 1098 015a 2946     		mov	r1, r5
+ 1099 015c 0DF5DD60 		add	r0, sp, #1768
+ 1100 0160 FFF7FEFF 		bl	xDBL
+ 1101              	.LVL143:
+ 236:mont.c        **** 
+ 237:mont.c        ****     for (uint64_t i = 1; i < k / 2; ++i)
+ 1102              		.loc 1 237 5 view .LVU254
+ 1103              	.LBB6:
+ 1104              		.loc 1 237 10 view .LVU255
+ 1105              		.loc 1 237 32 is_stmt 0 view .LVU256
+ 1106 0164 029B     		ldr	r3, [sp, #8]
+ 1107 0166 4FEA5B08 		lsr	r8, fp, #1
+ 1108 016a 48EAC378 		orr	r8, r8, r3, lsl #31
+ 1109 016e 5B08     		lsrs	r3, r3, #1
+ 1110 0170 0993     		str	r3, [sp, #36]
+ 1111              	.LVL144:
+ 1112              	.L22:
+ 1113              		.loc 1 237 28 is_stmt 1 discriminator 1 view .LVU257
+ 1114 0172 099B     		ldr	r3, [sp, #36]
+ 1115 0174 BB42     		cmp	r3, r7
+ 1116 0176 08BF     		it	eq
+ 1117 0178 D045     		cmpeq	r8, r10
+ 1118 017a 40F0C980 		bne	.L24
+ 1119              	.LBE6:
+ 238:mont.c        ****     {
+ 239:mont.c        **** 
+ 240:mont.c        ****         if (i >= 2)
+ 241:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], R, &M[(i - 2) % 3]);
+ 242:mont.c        **** 
+ 243:mont.c        **** 
+ 244:mont.c        **** #ifdef CM
+ 245:mont.c        ****         fp_csub(&tmp1, &M[i % 3].x, &M[i % 3].z, !mask); // t1 = csub(Xi, b*Zi)
+ 246:mont.c        ****         fp_cadd(&tmp0, &M[i % 3].x, &M[i % 3].z, !mask); // t0 = cadd(Xi, b*Zi)
+ 247:mont.c        **** #else
+ 248:mont.c        ****         fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); //for curve params
+ 249:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 250:mont.c        **** #endif
+ 251:mont.c        **** 
+ 252:mont.c        ****         fp_mul2(&prod.x, &tmp1);      // PI- = PI- * t1
+ 253:mont.c        ****         fp_mul2(&prod.z, &tmp0);      // PI+ = PI+ * t0
+ 254:mont.c        ****         fp_mul3(&tmp3, &tmp1, &Psum); // for P
+ 255:mont.c        ****         fp_mul3(&tmp4, &tmp0, &Pdif);
+ 256:mont.c        **** 
+ 257:mont.c        **** #ifdef CM
+ 258:mont.c        ****         fp_cadd(&tmp2, &tmp4, &tmp3, !mask);
+ 259:mont.c        **** #else
+ 260:mont.c        ****         fp_add3(&tmp2, &tmp3, &tmp4);
+ 261:mont.c        **** #endif
+ 262:mont.c        **** 
+ 263:mont.c        ****         fp_mul2(&Q.x, &tmp2);
+ 264:mont.c        **** 
+ 265:mont.c        **** #ifdef CM
+ 266:mont.c        ****         fp_csub(&tmp2, &tmp3, &tmp4, !mask);
+ 267:mont.c        **** #else
+ 268:mont.c        ****         fp_sub3(&tmp2, &tmp3, &tmp4);
+ 269:mont.c        **** #endif
+ 270:mont.c        **** 
+ 271:mont.c        ****         fp_mul2(&Q.z, &tmp2);
+ 272:mont.c        ****         fp_mul3(&tmp3, &tmp1, &Pdsum); // for P'
+ 273:mont.c        ****         fp_mul3(&tmp4, &tmp0, &Pddif);
+ 274:mont.c        **** 
+ 275:mont.c        **** #ifdef CM
+ 276:mont.c        ****         fp_cadd(&tmp2, &tmp4, &tmp3, !mask);
+ 277:mont.c        **** #else
+ 278:mont.c        ****         fp_add3(&tmp2, &tmp3, &tmp4);
+ 279:mont.c        **** #endif
+ 280:mont.c        **** 
+ 281:mont.c        ****         fp_mul2(&Qd.x, &tmp2);
+ 282:mont.c        **** 
+ 283:mont.c        **** #ifdef CM
+ 284:mont.c        ****         fp_csub(&tmp2, &tmp3, &tmp4, !mask);
+ 285:mont.c        **** #else
+ 286:mont.c        ****         fp_sub3(&tmp2, &tmp3, &tmp4);
+ 287:mont.c        **** #endif
+ 288:mont.c        **** 
+ 289:mont.c        ****         fp_mul2(&Qd.z, &tmp2);
+ 290:mont.c        ****     }
+ 291:mont.c        **** 
+ 292:mont.c        ****     if (k > 3)
+ 1120              		.loc 1 292 5 view .LVU258
+ 293:mont.c        ****         xADD(&M[((k - 1) / 2) % 3], &M[(((k - 1) / 2) - 1) % 3], R, &M[(((k - 1) / 2) - 2) % 3]);
+ 1121              		.loc 1 293 21 is_stmt 0 view .LVU259
+ 1122 017e 029B     		ldr	r3, [sp, #8]
+ 1123 0180 1BF1FF37 		adds	r7, fp, #-1
+ 1124              	.LVL145:
+ 1125              		.loc 1 293 21 view .LVU260
+ 1126 0184 43F1FF38 		adc	r8, r3, #-1
+ 1127              		.loc 1 293 26 view .LVU261
+ 1128 0188 7F08     		lsrs	r7, r7, #1
+ 1129 018a 47EAC877 		orr	r7, r7, r8, lsl #31
+ 1130 018e 4FEA5808 		lsr	r8, r8, #1
+ 1131              		.loc 1 293 31 view .LVU262
+ 1132 0192 0322     		movs	r2, #3
+ 1133 0194 0023     		movs	r3, #0
+ 1134 0196 3846     		mov	r0, r7
+ 1135 0198 4146     		mov	r1, r8
+ 1136 019a FFF7FEFF 		bl	__aeabi_uldivmod
+ 1137              	.LVL146:
+ 1138              		.loc 1 293 55 view .LVU263
+ 1139 019e 781E     		subs	r0, r7, #1
+ 1140              		.loc 1 293 9 view .LVU264
+ 1141 01a0 0DF5CD63 		add	r3, sp, #1640
+ 1142 01a4 03EBC219 		add	r9, r3, r2, lsl #7
+ 1143              		.loc 1 293 60 view .LVU265
+ 1144 01a8 68F10001 		sbc	r1, r8, #0
+ 1145 01ac 0322     		movs	r2, #3
+ 1146 01ae 0023     		movs	r3, #0
+ 1147 01b0 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1148              	.LVL147:
+ 1149              		.loc 1 293 37 view .LVU266
+ 1150 01b4 0DF5CD63 		add	r3, sp, #1640
+ 1151 01b8 03EBC21A 		add	r10, r3, r2, lsl #7
+ 292:mont.c        ****         xADD(&M[((k - 1) / 2) % 3], &M[(((k - 1) / 2) - 1) % 3], R, &M[(((k - 1) / 2) - 2) % 3]);
+ 1152              		.loc 1 292 8 view .LVU267
+ 1153 01bc 029A     		ldr	r2, [sp, #8]
+ 1154 01be ABF10303 		sub	r3, fp, #3
+ 1155 01c2 1343     		orrs	r3, r3, r2
+ 1156 01c4 11D0     		beq	.L25
+ 1157              		.loc 1 293 9 is_stmt 1 view .LVU268
+ 1158              		.loc 1 293 87 is_stmt 0 view .LVU269
+ 1159 01c6 B81E     		subs	r0, r7, #2
+ 1160              		.loc 1 293 92 view .LVU270
+ 1161 01c8 4FF00302 		mov	r2, #3
+ 1162 01cc 4FF00003 		mov	r3, #0
+ 1163 01d0 68F10001 		sbc	r1, r8, #0
+ 1164 01d4 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1165              	.LVL148:
+ 1166              		.loc 1 293 9 view .LVU271
+ 1167 01d8 0DF5CD63 		add	r3, sp, #1640
+ 1168 01dc 03EBC213 		add	r3, r3, r2, lsl #7
+ 1169 01e0 5146     		mov	r1, r10
+ 1170 01e2 2246     		mov	r2, r4
+ 1171 01e4 4846     		mov	r0, r9
+ 1172 01e6 FFF7FEFF 		bl	xADD
+ 1173              	.LVL149:
+ 1174              	.L25:
+ 294:mont.c        ****     proj Pdummy = *R, Pcopy = *R;
+ 1175              		.loc 1 294 5 is_stmt 1 view .LVU272
+ 1176              		.loc 1 294 10 is_stmt 0 view .LVU273
+ 1177 01ea 2146     		mov	r1, r4
+ 1178 01ec 8022     		movs	r2, #128
+ 1179 01ee 0DF5AD60 		add	r0, sp, #1384
+ 1180 01f2 FFF7FEFF 		bl	memcpy
+ 1181              	.LVL150:
+ 1182              		.loc 1 294 23 view .LVU274
+ 1183 01f6 2146     		mov	r1, r4
+ 1184 01f8 8022     		movs	r2, #128
+ 1185 01fa 0DF5BD60 		add	r0, sp, #1512
+ 1186 01fe FFF7FEFF 		bl	memcpy
+ 1187              	.LVL151:
+ 295:mont.c        **** 
+ 296:mont.c        ****     xADD(&Pdummy, &M[((k - 1) / 2) % 3], &M[(((k - 1) / 2) - 1) % 3], &Pcopy);
+ 1188              		.loc 1 296 5 is_stmt 1 view .LVU275
+ 1189 0202 0DF5BD63 		add	r3, sp, #1512
+ 1190 0206 5246     		mov	r2, r10
+ 1191 0208 4946     		mov	r1, r9
+ 1192 020a 0DF5AD60 		add	r0, sp, #1384
+ 1193 020e FFF7FEFF 		bl	xADD
+ 1194              	.LVL152:
+ 297:mont.c        **** 
+ 298:mont.c        **** #ifdef CM
+ 299:mont.c        ****     // check Pdummy = 0 for real isogenies
+ 300:mont.c        ****     error |= fp_cmp_ct(&Pdummy.z, &fp_0) && (!mask);
+ 301:mont.c        **** 
+ 302:mont.c        ****     // point evaluation
+ 303:mont.c        ****     fp_cset(&tmp0, &fp_1, mask);
+ 304:mont.c        ****     fp_cadd(&P->x, &tmp0, &P->x, !mask);
+ 305:mont.c        ****     fp_cadd(&P->z, &tmp0, &P->z, !mask);
+ 306:mont.c        **** 
+ 307:mont.c        ****     fp_cadd(&Pd->x, &tmp0, &Pd->x, !mask);
+ 308:mont.c        ****     fp_cadd(&Pd->z, &tmp0, &Pd->z, !mask);
+ 309:mont.c        **** #endif
+ 310:mont.c        **** 
+ 311:mont.c        ****     // point evaluation
+ 312:mont.c        ****     fp_sq1(&Q.x);
+ 1195              		.loc 1 312 5 view .LVU276
+ 1196 0212 9AA8     		add	r0, sp, #616
+ 1197 0214 FFF7FEFF 		bl	fp_sq1
+ 1198              	.LVL153:
+ 313:mont.c        ****     fp_sq1(&Q.z);
+ 1199              		.loc 1 313 5 view .LVU277
+ 1200 0218 AAA8     		add	r0, sp, #680
+ 1201 021a FFF7FEFF 		bl	fp_sq1
+ 1202              	.LVL154:
+ 314:mont.c        ****     fp_mul2(&P->x, &Q.x);
+ 1203              		.loc 1 314 5 view .LVU278
+ 1204 021e 0098     		ldr	r0, [sp]
+ 1205 0220 9AA9     		add	r1, sp, #616
+ 1206 0222 FFF7FEFF 		bl	fp_mul2
+ 1207              	.LVL155:
+ 315:mont.c        ****     fp_mul2(&P->z, &Q.z);
+ 1208              		.loc 1 315 5 view .LVU279
+ 1209 0226 AAA9     		add	r1, sp, #680
+ 1210 0228 0398     		ldr	r0, [sp, #12]
+ 1211 022a FFF7FEFF 		bl	fp_mul2
+ 1212              	.LVL156:
+ 316:mont.c        ****     fp_sq1(&Qd.x);
+ 1213              		.loc 1 316 5 view .LVU280
+ 1214 022e BAA8     		add	r0, sp, #744
+ 1215 0230 FFF7FEFF 		bl	fp_sq1
+ 1216              	.LVL157:
+ 317:mont.c        ****     fp_sq1(&Qd.z);
+ 1217              		.loc 1 317 5 view .LVU281
+ 1218 0234 CAA8     		add	r0, sp, #808
+ 1219 0236 FFF7FEFF 		bl	fp_sq1
+ 1220              	.LVL158:
+ 318:mont.c        ****     fp_mul2(&Pd->x, &Qd.x);
+ 1221              		.loc 1 318 5 view .LVU282
+ 1222 023a 0198     		ldr	r0, [sp, #4]
+ 1223 023c BAA9     		add	r1, sp, #744
+ 1224 023e FFF7FEFF 		bl	fp_mul2
+ 1225              	.LVL159:
+ 319:mont.c        ****     fp_mul2(&Pd->z, &Qd.z);
+ 1226              		.loc 1 319 5 view .LVU283
+ 1227 0242 0498     		ldr	r0, [sp, #16]
+ 1228 0244 CAA9     		add	r1, sp, #808
+ 1229 0246 FFF7FEFF 		bl	fp_mul2
+ 1230              	.LVL160:
+ 320:mont.c        **** 
+ 321:mont.c        ****     //compute Aed.x^k, Aed.z^k
+ 322:mont.c        ****     exp_by_squaring_(&Aed.x, &Aed.z, k);
+ 1231              		.loc 1 322 5 view .LVU284
+ 1232 024a 029B     		ldr	r3, [sp, #8]
+ 1233 024c 5A46     		mov	r2, fp
+ 1234 024e EAA9     		add	r1, sp, #936
+ 1235 0250 DAA8     		add	r0, sp, #872
+ 1236 0252 FFF7FEFF 		bl	exp_by_squaring_
+ 1237              	.LVL161:
+ 323:mont.c        **** 
+ 324:mont.c        ****     //compute prod.x^8, prod.z^8
+ 325:mont.c        ****     fp_sq1(&prod.x);
+ 1238              		.loc 1 325 5 view .LVU285
+ 1239 0256 FAA8     		add	r0, sp, #1000
+ 1240 0258 FFF7FEFF 		bl	fp_sq1
+ 1241              	.LVL162:
+ 326:mont.c        ****     fp_sq1(&prod.x);
+ 1242              		.loc 1 326 5 view .LVU286
+ 1243 025c FAA8     		add	r0, sp, #1000
+ 1244 025e FFF7FEFF 		bl	fp_sq1
+ 1245              	.LVL163:
+ 327:mont.c        ****     fp_sq1(&prod.x);
+ 1246              		.loc 1 327 5 view .LVU287
+ 1247 0262 FAA8     		add	r0, sp, #1000
+ 1248 0264 FFF7FEFF 		bl	fp_sq1
+ 1249              	.LVL164:
+ 328:mont.c        ****     fp_sq1(&prod.z);
+ 1250              		.loc 1 328 5 view .LVU288
+ 1251 0268 0DF58560 		add	r0, sp, #1064
+ 1252 026c FFF7FEFF 		bl	fp_sq1
+ 1253              	.LVL165:
+ 329:mont.c        ****     fp_sq1(&prod.z);
+ 1254              		.loc 1 329 5 view .LVU289
+ 1255 0270 0DF58560 		add	r0, sp, #1064
+ 1256 0274 FFF7FEFF 		bl	fp_sq1
+ 1257              	.LVL166:
+ 330:mont.c        ****     fp_sq1(&prod.z);
+ 1258              		.loc 1 330 5 view .LVU290
+ 1259 0278 0DF58560 		add	r0, sp, #1064
+ 1260 027c FFF7FEFF 		bl	fp_sq1
+ 1261              	.LVL167:
+ 331:mont.c        **** 
+ 332:mont.c        ****     //compute image curve parameters
+ 333:mont.c        ****     fp_mul2(&Aed.z, &prod.x);
+ 1262              		.loc 1 333 5 view .LVU291
+ 1263 0280 FAA9     		add	r1, sp, #1000
+ 1264 0282 EAA8     		add	r0, sp, #936
+ 1265 0284 FFF7FEFF 		bl	fp_mul2
+ 1266              	.LVL168:
+ 334:mont.c        ****     fp_mul2(&Aed.x, &prod.z);
+ 1267              		.loc 1 334 5 view .LVU292
+ 1268 0288 0DF58561 		add	r1, sp, #1064
+ 1269 028c DAA8     		add	r0, sp, #872
+ 1270 028e FFF7FEFF 		bl	fp_mul2
+ 1271              	.LVL169:
+ 335:mont.c        **** 
+ 336:mont.c        ****     //compute Montgomery params
+ 337:mont.c        **** #ifdef CM
+ 338:mont.c        **** 
+ 339:mont.c        ****     fp_cadd(&tmp3, &Aed.z, &Aed.x, !mask); // A' = cadd(t1, b*t0)
+ 340:mont.c        ****     fp_cadd(&A->x, &tmp3, &tmp3, !mask);   // A' = cadd(A', b*A')
+ 341:mont.c        ****     fp_csub(&A->z, &Aed.x, &Aed.z, !mask); // C' = cadd(t0, b*t1)
+ 342:mont.c        **** 
+ 343:mont.c        ****     // check A = C, P->x = P->z, and Pd->x = Pd->z for dummy isogenies
+ 344:mont.c        ****     error |= fp_cmp_ct(&A->x, &A->z) && mask;
+ 345:mont.c        ****     error |= fp_cmp_ct(&P->x, &P->z) && mask;
+ 346:mont.c        ****     error |= fp_cmp_ct(&Pd->x, &Pd->z) && mask;
+ 347:mont.c        **** 
+ 348:mont.c        **** #else
+ 349:mont.c        ****     fp_add3(&A->x, &Aed.x, &Aed.z);
+ 1272              		.loc 1 349 5 view .LVU293
+ 1273 0292 EAAA     		add	r2, sp, #936
+ 1274 0294 DAA9     		add	r1, sp, #872
+ 1275 0296 2846     		mov	r0, r5
+ 1276 0298 FFF7FEFF 		bl	fp_add3
+ 1277              	.LVL170:
+ 350:mont.c        ****     fp_sub3(&A->z, &Aed.x, &Aed.z);
+ 1278              		.loc 1 350 5 view .LVU294
+ 1279 029c EAAA     		add	r2, sp, #936
+ 1280 029e 0698     		ldr	r0, [sp, #24]
+ 1281 02a0 DAA9     		add	r1, sp, #872
+ 1282 02a2 FFF7FEFF 		bl	fp_sub3
+ 1283              	.LVL171:
+ 351:mont.c        ****     fp_add2(&A->x, &A->x);
+ 1284              		.loc 1 351 5 view .LVU295
+ 1285 02a6 2946     		mov	r1, r5
+ 1286 02a8 2846     		mov	r0, r5
+ 1287 02aa FFF7FEFF 		bl	fp_add2
+ 1288              	.LVL172:
+ 352:mont.c        **** #endif
+ 353:mont.c        **** 
+ 354:mont.c        ****     // CONSTANT TIME : swap back
+ 355:mont.c        ****     fp_cswap(&A->x, &Acopy.x, mask);
+ 1289              		.loc 1 355 5 view .LVU296
+ 1290 02ae 3246     		mov	r2, r6
+ 1291 02b0 0DF58D61 		add	r1, sp, #1128
+ 1292 02b4 2846     		mov	r0, r5
+ 1293 02b6 FFF7FEFF 		bl	fp_cswap
+ 1294              	.LVL173:
+ 356:mont.c        ****     fp_cswap(&A->z, &Acopy.z, mask);
+ 1295              		.loc 1 356 5 view .LVU297
+ 1296 02ba 0698     		ldr	r0, [sp, #24]
+ 1297 02bc 3246     		mov	r2, r6
+ 1298 02be 0DF59561 		add	r1, sp, #1192
+ 1299 02c2 FFF7FEFF 		bl	fp_cswap
+ 1300              	.LVL174:
+ 357:mont.c        **** 
+ 358:mont.c        ****     // CONSTANT TIME :
+ 359:mont.c        ****     fp_cswap(&P->x, &Pdummy.x, mask);
+ 1301              		.loc 1 359 5 view .LVU298
+ 1302 02c6 0098     		ldr	r0, [sp]
+ 1303 02c8 3246     		mov	r2, r6
+ 1304 02ca 0DF5AD61 		add	r1, sp, #1384
+ 1305 02ce FFF7FEFF 		bl	fp_cswap
+ 1306              	.LVL175:
+ 360:mont.c        ****     fp_cswap(&P->z, &Pdummy.z, mask);
+ 1307              		.loc 1 360 5 view .LVU299
+ 1308 02d2 0398     		ldr	r0, [sp, #12]
+ 1309 02d4 3246     		mov	r2, r6
+ 1310 02d6 0DF5B561 		add	r1, sp, #1448
+ 1311 02da FFF7FEFF 		bl	fp_cswap
+ 1312              	.LVL176:
+ 361:mont.c        ****     fp_cswap(&Pd->x, &Pdcopy.x, mask);
+ 1313              		.loc 1 361 5 view .LVU300
+ 1314 02de 0198     		ldr	r0, [sp, #4]
+ 1315 02e0 3246     		mov	r2, r6
+ 1316 02e2 0DF59D61 		add	r1, sp, #1256
+ 1317 02e6 FFF7FEFF 		bl	fp_cswap
+ 1318              	.LVL177:
+ 362:mont.c        ****     fp_cswap(&Pd->z, &Pdcopy.z, mask);
+ 1319              		.loc 1 362 5 view .LVU301
+ 1320 02ea 0498     		ldr	r0, [sp, #16]
+ 1321 02ec 3246     		mov	r2, r6
+ 1322 02ee 0DF5A561 		add	r1, sp, #1320
+ 1323 02f2 FFF7FEFF 		bl	fp_cswap
+ 1324              	.LVL178:
+ 363:mont.c        **** 
+ 364:mont.c        **** #ifdef CM
+ 365:mont.c        ****     return error;
+ 366:mont.c        **** #else
+ 367:mont.c        ****     return 0;
+ 1325              		.loc 1 367 5 view .LVU302
+ 368:mont.c        **** #endif
+ 369:mont.c        **** 
+ 370:mont.c        **** }
+ 1326              		.loc 1 370 1 is_stmt 0 view .LVU303
+ 1327 02f6 0020     		movs	r0, #0
+ 1328 02f8 0DF2EC7D 		addw	sp, sp, #2028
+ 1329              	.LCFI19:
+ 1330              		.cfi_remember_state
+ 1331              		.cfi_def_cfa_offset 36
+ 1332              	.LVL179:
+ 1333              		.loc 1 370 1 view .LVU304
+ 1334              		@ sp needed
+ 1335 02fc BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1336              	.LVL180:
+ 1337              	.L28:
+ 1338              		.loc 1 370 1 view .LVU305
+ 1339              		.align	2
+ 1340              	.L27:
+ 1341 0300 00000000 		.word	.LC0
+ 1342 0304 00000000 		.word	.LANCHOR0
+ 1343 0308 07000000 		.word	.LC1
+ 1344 030c 0E000000 		.word	.LC2
+ 1345              	.LVL181:
+ 1346              	.L24:
+ 1347              	.LCFI20:
+ 1348              		.cfi_restore_state
+ 1349              	.LBB7:
+ 240:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], R, &M[(i - 2) % 3]);
+ 1350              		.loc 1 240 9 is_stmt 1 view .LVU306
+ 241:mont.c        **** 
+ 1351              		.loc 1 241 23 is_stmt 0 view .LVU307
+ 1352 0310 0322     		movs	r2, #3
+ 1353 0312 0023     		movs	r3, #0
+ 1354 0314 5046     		mov	r0, r10
+ 1355 0316 3946     		mov	r1, r7
+ 1356 0318 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1357              	.LVL182:
+ 1358 031c D301     		lsls	r3, r2, #7
+ 1359 031e 0793     		str	r3, [sp, #28]
+ 241:mont.c        **** 
+ 1360              		.loc 1 241 13 view .LVU308
+ 1361 0320 0DF5CD63 		add	r3, sp, #1640
+ 1362 0324 03EBC213 		add	r3, r3, r2, lsl #7
+ 240:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], R, &M[(i - 2) % 3]);
+ 1363              		.loc 1 240 12 view .LVU309
+ 1364 0328 0AF1FF39 		add	r9, r10, #-1
+ 241:mont.c        **** 
+ 1365              		.loc 1 241 13 view .LVU310
+ 1366 032c 0593     		str	r3, [sp, #20]
+ 240:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], R, &M[(i - 2) % 3]);
+ 1367              		.loc 1 240 12 view .LVU311
+ 1368 032e 59EA0703 		orrs	r3, r9, r7
+ 1369 0332 21D0     		beq	.L23
+ 241:mont.c        **** 
+ 1370              		.loc 1 241 13 is_stmt 1 view .LVU312
+ 241:mont.c        **** 
+ 1371              		.loc 1 241 55 is_stmt 0 view .LVU313
+ 1372 0334 BAF10200 		subs	r0, r10, #2
+ 241:mont.c        **** 
+ 1373              		.loc 1 241 60 view .LVU314
+ 1374 0338 67F10001 		sbc	r1, r7, #0
+ 1375 033c 0322     		movs	r2, #3
+ 1376 033e 0023     		movs	r3, #0
+ 1377 0340 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1378              	.LVL183:
+ 241:mont.c        **** 
+ 1379              		.loc 1 241 49 view .LVU315
+ 1380 0344 0DF5CD63 		add	r3, sp, #1640
+ 1381 0348 03EBC213 		add	r3, r3, r2, lsl #7
+ 1382 034c 0893     		str	r3, [sp, #32]
+ 241:mont.c        **** 
+ 1383              		.loc 1 241 35 view .LVU316
+ 1384 034e 1AF1FF33 		adds	r3, r10, #-1
+ 241:mont.c        **** 
+ 1385              		.loc 1 241 40 view .LVU317
+ 1386 0352 4FF00302 		mov	r2, #3
+ 1387 0356 4FF00003 		mov	r3, #0
+ 1388 035a 4846     		mov	r0, r9
+ 1389 035c 67F10001 		sbc	r1, r7, #0
+ 1390 0360 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1391              	.LVL184:
+ 241:mont.c        **** 
+ 1392              		.loc 1 241 13 view .LVU318
+ 1393 0364 0DF5CD60 		add	r0, sp, #1640
+ 241:mont.c        **** 
+ 1394              		.loc 1 241 40 view .LVU319
+ 1395 0368 1146     		mov	r1, r2
+ 241:mont.c        **** 
+ 1396              		.loc 1 241 13 view .LVU320
+ 1397 036a 00EBC111 		add	r1, r0, r1, lsl #7
+ 1398 036e 089B     		ldr	r3, [sp, #32]
+ 1399 0370 0598     		ldr	r0, [sp, #20]
+ 1400 0372 2246     		mov	r2, r4
+ 1401 0374 FFF7FEFF 		bl	xADD
+ 1402              	.LVL185:
+ 1403              	.L23:
+ 248:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1404              		.loc 1 248 9 is_stmt 1 discriminator 2 view .LVU321
+ 248:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1405              		.loc 1 248 37 is_stmt 0 discriminator 2 view .LVU322
+ 1406 0378 079B     		ldr	r3, [sp, #28]
+ 248:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1407              		.loc 1 248 9 discriminator 2 view .LVU323
+ 1408 037a 0599     		ldr	r1, [sp, #20]
+ 248:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1409              		.loc 1 248 37 discriminator 2 view .LVU324
+ 1410 037c 03F14009 		add	r9, r3, #64
+ 1411 0380 0DF5CD63 		add	r3, sp, #1640
+ 1412 0384 9944     		add	r9, r9, r3
+ 248:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1413              		.loc 1 248 9 discriminator 2 view .LVU325
+ 1414 0386 4A46     		mov	r2, r9
+ 1415 0388 1AA8     		add	r0, sp, #104
+ 1416 038a FFF7FEFF 		bl	fp_sub3
+ 1417              	.LVL186:
+ 249:mont.c        **** #endif
+ 1418              		.loc 1 249 9 is_stmt 1 discriminator 2 view .LVU326
+ 1419 038e 4A46     		mov	r2, r9
+ 1420 0390 0599     		ldr	r1, [sp, #20]
+ 1421 0392 0AA8     		add	r0, sp, #40
+ 1422 0394 FFF7FEFF 		bl	fp_add3
+ 1423              	.LVL187:
+ 252:mont.c        ****         fp_mul2(&prod.z, &tmp0);      // PI+ = PI+ * t0
+ 1424              		.loc 1 252 9 discriminator 2 view .LVU327
+ 1425 0398 1AA9     		add	r1, sp, #104
+ 1426 039a FAA8     		add	r0, sp, #1000
+ 1427 039c FFF7FEFF 		bl	fp_mul2
+ 1428              	.LVL188:
+ 253:mont.c        ****         fp_mul3(&tmp3, &tmp1, &Psum); // for P
+ 1429              		.loc 1 253 9 discriminator 2 view .LVU328
+ 1430 03a0 0AA9     		add	r1, sp, #40
+ 1431 03a2 0DF58560 		add	r0, sp, #1064
+ 1432 03a6 FFF7FEFF 		bl	fp_mul2
+ 1433              	.LVL189:
+ 254:mont.c        ****         fp_mul3(&tmp4, &tmp0, &Pdif);
+ 1434              		.loc 1 254 9 discriminator 2 view .LVU329
+ 1435 03aa 5AAA     		add	r2, sp, #360
+ 1436 03ac 1AA9     		add	r1, sp, #104
+ 1437 03ae 3AA8     		add	r0, sp, #232
+ 1438 03b0 FFF7FEFF 		bl	fp_mul3
+ 1439              	.LVL190:
+ 255:mont.c        **** 
+ 1440              		.loc 1 255 9 discriminator 2 view .LVU330
+ 1441 03b4 6AAA     		add	r2, sp, #424
+ 1442 03b6 0AA9     		add	r1, sp, #40
+ 1443 03b8 4AA8     		add	r0, sp, #296
+ 1444 03ba FFF7FEFF 		bl	fp_mul3
+ 1445              	.LVL191:
+ 260:mont.c        **** #endif
+ 1446              		.loc 1 260 9 discriminator 2 view .LVU331
+ 1447 03be 4AAA     		add	r2, sp, #296
+ 1448 03c0 3AA9     		add	r1, sp, #232
+ 1449 03c2 2AA8     		add	r0, sp, #168
+ 1450 03c4 FFF7FEFF 		bl	fp_add3
+ 1451              	.LVL192:
+ 263:mont.c        **** 
+ 1452              		.loc 1 263 9 discriminator 2 view .LVU332
+ 1453 03c8 2AA9     		add	r1, sp, #168
+ 1454 03ca 9AA8     		add	r0, sp, #616
+ 1455 03cc FFF7FEFF 		bl	fp_mul2
+ 1456              	.LVL193:
+ 268:mont.c        **** #endif
+ 1457              		.loc 1 268 9 discriminator 2 view .LVU333
+ 1458 03d0 4AAA     		add	r2, sp, #296
+ 1459 03d2 3AA9     		add	r1, sp, #232
+ 1460 03d4 2AA8     		add	r0, sp, #168
+ 1461 03d6 FFF7FEFF 		bl	fp_sub3
+ 1462              	.LVL194:
+ 271:mont.c        ****         fp_mul3(&tmp3, &tmp1, &Pdsum); // for P'
+ 1463              		.loc 1 271 9 discriminator 2 view .LVU334
+ 1464 03da 2AA9     		add	r1, sp, #168
+ 1465 03dc AAA8     		add	r0, sp, #680
+ 1466 03de FFF7FEFF 		bl	fp_mul2
+ 1467              	.LVL195:
+ 272:mont.c        ****         fp_mul3(&tmp4, &tmp0, &Pddif);
+ 1468              		.loc 1 272 9 discriminator 2 view .LVU335
+ 1469 03e2 7AAA     		add	r2, sp, #488
+ 1470 03e4 1AA9     		add	r1, sp, #104
+ 1471 03e6 3AA8     		add	r0, sp, #232
+ 1472 03e8 FFF7FEFF 		bl	fp_mul3
+ 1473              	.LVL196:
+ 273:mont.c        **** 
+ 1474              		.loc 1 273 9 discriminator 2 view .LVU336
+ 1475 03ec 8AAA     		add	r2, sp, #552
+ 1476 03ee 0AA9     		add	r1, sp, #40
+ 1477 03f0 4AA8     		add	r0, sp, #296
+ 1478 03f2 FFF7FEFF 		bl	fp_mul3
+ 1479              	.LVL197:
+ 278:mont.c        **** #endif
+ 1480              		.loc 1 278 9 discriminator 2 view .LVU337
+ 1481 03f6 4AAA     		add	r2, sp, #296
+ 1482 03f8 3AA9     		add	r1, sp, #232
+ 1483 03fa 2AA8     		add	r0, sp, #168
+ 1484 03fc FFF7FEFF 		bl	fp_add3
+ 1485              	.LVL198:
+ 281:mont.c        **** 
+ 1486              		.loc 1 281 9 discriminator 2 view .LVU338
+ 1487 0400 2AA9     		add	r1, sp, #168
+ 1488 0402 BAA8     		add	r0, sp, #744
+ 1489 0404 FFF7FEFF 		bl	fp_mul2
+ 1490              	.LVL199:
+ 286:mont.c        **** #endif
+ 1491              		.loc 1 286 9 discriminator 2 view .LVU339
+ 1492 0408 4AAA     		add	r2, sp, #296
+ 1493 040a 3AA9     		add	r1, sp, #232
+ 1494 040c 2AA8     		add	r0, sp, #168
+ 1495 040e FFF7FEFF 		bl	fp_sub3
+ 1496              	.LVL200:
+ 289:mont.c        ****     }
+ 1497              		.loc 1 289 9 discriminator 2 view .LVU340
+ 1498 0412 2AA9     		add	r1, sp, #168
+ 1499 0414 CAA8     		add	r0, sp, #808
+ 1500 0416 FFF7FEFF 		bl	fp_mul2
+ 1501              	.LVL201:
+ 237:mont.c        ****     {
+ 1502              		.loc 1 237 37 discriminator 2 view .LVU341
+ 1503 041a 1AF10103 		adds	r3, r10, #1
+ 1504 041e 9A46     		mov	r10, r3
+ 1505              	.LVL202:
+ 237:mont.c        ****     {
+ 1506              		.loc 1 237 37 is_stmt 0 discriminator 2 view .LVU342
+ 1507 0420 47F10007 		adc	r7, r7, #0
+ 1508              	.LVL203:
+ 237:mont.c        ****     {
+ 1509              		.loc 1 237 37 discriminator 2 view .LVU343
+ 1510 0424 A5E6     		b	.L22
+ 1511              	.LBE7:
+ 1512              		.cfi_endproc
+ 1513              	.LFE5:
+ 1515 0426 00BF     		.section	.text.lastxISOG,"ax",%progbits
+ 1516              		.align	1
+ 1517              		.global	lastxISOG
+ 1518              		.syntax unified
+ 1519              		.thumb
+ 1520              		.thumb_func
+ 1522              	lastxISOG:
+ 1523              	.LVL204:
+ 1524              	.LFB6:
+ 371:mont.c        **** 
+ 372:mont.c        **** /* computes the last real/dummy isogeny per batch with kernel point K of order k */
+ 373:mont.c        **** /* real isogeny: returns the new curve coefficient A, no point evaluation */
+ 374:mont.c        **** /* dummy isogeny: returns the old curve coefficient A, no point evaluation */
+ 375:mont.c        **** bool lastxISOG(proj *A, proj const *K, uint64_t k, int mask)
+ 376:mont.c        **** {
+ 1525              		.loc 1 376 1 is_stmt 1 view -0
+ 1526              		.cfi_startproc
+ 1527              		@ args = 4, pretend = 0, frame = 920
+ 1528              		@ frame_needed = 0, uses_anonymous_args = 0
+ 377:mont.c        ****     assert(k >= 3);
+ 1529              		.loc 1 377 5 view .LVU345
+ 376:mont.c        ****     assert(k >= 3);
+ 1530              		.loc 1 376 1 is_stmt 0 view .LVU346
+ 1531 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1532              	.LCFI21:
+ 1533              		.cfi_def_cfa_offset 36
+ 1534              		.cfi_offset 4, -36
+ 1535              		.cfi_offset 5, -32
+ 1536              		.cfi_offset 6, -28
+ 1537              		.cfi_offset 7, -24
+ 1538              		.cfi_offset 8, -20
+ 1539              		.cfi_offset 9, -16
+ 1540              		.cfi_offset 10, -12
+ 1541              		.cfi_offset 11, -8
+ 1542              		.cfi_offset 14, -4
+ 1543              		.loc 1 377 5 view .LVU347
+ 1544 0004 032A     		cmp	r2, #3
+ 376:mont.c        ****     assert(k >= 3);
+ 1545              		.loc 1 376 1 view .LVU348
+ 1546 0006 9946     		mov	r9, r3
+ 1547              		.loc 1 377 5 view .LVU349
+ 1548 0008 79F10003 		sbcs	r3, r9, #0
+ 376:mont.c        ****     assert(k >= 3);
+ 1549              		.loc 1 376 1 view .LVU350
+ 1550 000c ADF5677D 		sub	sp, sp, #924
+ 1551              	.LCFI22:
+ 1552              		.cfi_def_cfa_offset 960
+ 376:mont.c        ****     assert(k >= 3);
+ 1553              		.loc 1 376 1 view .LVU351
+ 1554 0010 0546     		mov	r5, r0
+ 1555 0012 0F46     		mov	r7, r1
+ 1556 0014 9046     		mov	r8, r2
+ 1557              		.loc 1 377 5 view .LVU352
+ 1558 0016 06D2     		bcs	.L30
+ 1559              		.loc 1 377 5 discriminator 1 view .LVU353
+ 1560 0018 6D4B     		ldr	r3, .L36
+ 1561 001a 6E4A     		ldr	r2, .L36+4
+ 1562              	.LVL205:
+ 1563              		.loc 1 377 5 discriminator 1 view .LVU354
+ 1564 001c 40F27911 		movw	r1, #377
+ 1565              	.LVL206:
+ 1566              	.L35:
+ 378:mont.c        ****     assert(k % 2 == 1);
+ 1567              		.loc 1 378 5 discriminator 1 view .LVU355
+ 1568 0020 6D48     		ldr	r0, .L36+8
+ 1569              	.LVL207:
+ 1570              		.loc 1 378 5 discriminator 1 view .LVU356
+ 1571 0022 FFF7FEFF 		bl	__assert_func
+ 1572              	.LVL208:
+ 1573              	.L30:
+ 1574              		.loc 1 378 5 is_stmt 1 view .LVU357
+ 1575 0026 12F00104 		ands	r4, r2, #1
+ 1576 002a 4FF00006 		mov	r6, #0
+ 1577 002e 04D1     		bne	.L31
+ 1578              		.loc 1 378 5 is_stmt 0 discriminator 1 view .LVU358
+ 1579 0030 6A4B     		ldr	r3, .L36+12
+ 1580 0032 684A     		ldr	r2, .L36+4
+ 1581              	.LVL209:
+ 1582              		.loc 1 378 5 discriminator 1 view .LVU359
+ 1583 0034 4FF4BD71 		mov	r1, #378
+ 1584              	.LVL210:
+ 1585              		.loc 1 378 5 discriminator 1 view .LVU360
+ 1586 0038 F2E7     		b	.L35
+ 1587              	.LVL211:
+ 1588              	.L31:
+ 379:mont.c        **** 
+ 380:mont.c        ****     fp tmp0, tmp1;
+ 1589              		.loc 1 380 5 is_stmt 1 view .LVU361
+ 381:mont.c        ****     proj Aed, prod;
+ 1590              		.loc 1 381 5 view .LVU362
+ 382:mont.c        ****     proj Acopy = *A;
+ 1591              		.loc 1 382 5 view .LVU363
+ 1592              		.loc 1 382 10 is_stmt 0 view .LVU364
+ 1593 003a 0146     		mov	r1, r0
+ 1594              	.LVL212:
+ 1595              		.loc 1 382 10 view .LVU365
+ 1596 003c 8022     		movs	r2, #128
+ 1597              	.LVL213:
+ 383:mont.c        **** 
+ 384:mont.c        **** #ifdef CM
+ 385:mont.c        ****     uint_c order;
+ 386:mont.c        **** 
+ 387:mont.c        ****     uint_set(&order, k);
+ 388:mont.c        ****     // check order of kernel point
+ 389:mont.c        ****     xMUL(&Aed, A, K, &order);
+ 390:mont.c        **** 
+ 391:mont.c        ****     bool error = fp_cmp_ct(&Aed.z, &fp_0);
+ 392:mont.c        ****     fp_cadd2(&Aed.z, &A->z, &A->z, !mask);
+ 393:mont.c        ****     fp_csub(&prod.x, &K->x, &K->z, !mask);
+ 394:mont.c        ****     fp_cadd(&prod.z, &K->x, &K->z, !mask);
+ 395:mont.c        **** #else
+ 396:mont.c        ****     fp_add3(&Aed.z, &A->z, &A->z); //compute twisted Edwards curve coefficients
+ 1598              		.loc 1 396 21 view .LVU366
+ 1599 003e 05F1400B 		add	fp, r5, #64
+ 382:mont.c        ****     proj Acopy = *A;
+ 1600              		.loc 1 382 10 view .LVU367
+ 1601 0042 66A8     		add	r0, sp, #408
+ 1602              	.LVL214:
+ 382:mont.c        ****     proj Acopy = *A;
+ 1603              		.loc 1 382 10 view .LVU368
+ 1604 0044 FFF7FEFF 		bl	memcpy
+ 1605              	.LVL215:
+ 1606              		.loc 1 396 5 is_stmt 1 view .LVU369
+ 397:mont.c        ****     fp_sub3(&prod.x, &K->x, &K->z);
+ 1607              		.loc 1 397 29 is_stmt 0 view .LVU370
+ 1608 0048 07F1400A 		add	r10, r7, #64
+ 396:mont.c        ****     fp_sub3(&prod.x, &K->x, &K->z);
+ 1609              		.loc 1 396 5 view .LVU371
+ 1610 004c 5A46     		mov	r2, fp
+ 1611 004e 5946     		mov	r1, fp
+ 1612 0050 36A8     		add	r0, sp, #216
+ 1613 0052 FFF7FEFF 		bl	fp_add3
+ 1614              	.LVL216:
+ 1615              		.loc 1 397 5 is_stmt 1 view .LVU372
+ 1616 0056 5246     		mov	r2, r10
+ 1617 0058 3946     		mov	r1, r7
+ 1618 005a 46A8     		add	r0, sp, #280
+ 1619 005c FFF7FEFF 		bl	fp_sub3
+ 1620              	.LVL217:
+ 398:mont.c        ****     fp_add3(&prod.z, &K->x, &K->z);
+ 1621              		.loc 1 398 5 view .LVU373
+ 1622 0060 5246     		mov	r2, r10
+ 1623 0062 3946     		mov	r1, r7
+ 1624 0064 56A8     		add	r0, sp, #344
+ 1625 0066 FFF7FEFF 		bl	fp_add3
+ 1626              	.LVL218:
+ 399:mont.c        **** #endif
+ 400:mont.c        **** 
+ 401:mont.c        ****     fp_add3(&Aed.x, &A->x, &Aed.z);
+ 1627              		.loc 1 401 5 view .LVU374
+ 1628 006a 36AA     		add	r2, sp, #216
+ 1629 006c 2946     		mov	r1, r5
+ 1630 006e 26A8     		add	r0, sp, #152
+ 1631 0070 FFF7FEFF 		bl	fp_add3
+ 1632              	.LVL219:
+ 402:mont.c        ****     fp_sub3(&Aed.z, &A->x, &Aed.z);
+ 1633              		.loc 1 402 5 view .LVU375
+ 1634 0074 36AA     		add	r2, sp, #216
+ 1635 0076 1046     		mov	r0, r2
+ 1636 0078 2946     		mov	r1, r5
+ 1637 007a FFF7FEFF 		bl	fp_sub3
+ 1638              	.LVL220:
+ 403:mont.c        **** 
+ 404:mont.c        ****     proj M[3] = {*K};
+ 1639              		.loc 1 404 5 view .LVU376
+ 1640              		.loc 1 404 10 is_stmt 0 view .LVU377
+ 1641 007e 4FF4C072 		mov	r2, #384
+ 1642 0082 3146     		mov	r1, r6
+ 1643 0084 86A8     		add	r0, sp, #536
+ 1644 0086 FFF7FEFF 		bl	memset
+ 1645              	.LVL221:
+ 1646 008a 8022     		movs	r2, #128
+ 1647 008c 3946     		mov	r1, r7
+ 1648 008e 86A8     		add	r0, sp, #536
+ 1649 0090 FFF7FEFF 		bl	memcpy
+ 1650              	.LVL222:
+ 405:mont.c        ****     xDBL(&M[1], A, K);
+ 1651              		.loc 1 405 5 is_stmt 1 view .LVU378
+ 1652 0094 3A46     		mov	r2, r7
+ 1653 0096 2946     		mov	r1, r5
+ 1654 0098 A6A8     		add	r0, sp, #664
+ 1655 009a FFF7FEFF 		bl	xDBL
+ 1656              	.LVL223:
+ 406:mont.c        **** 
+ 407:mont.c        ****     for (uint64_t i = 1; i < k / 2; ++i)
+ 1657              		.loc 1 407 5 view .LVU379
+ 1658              	.LBB8:
+ 1659              		.loc 1 407 10 view .LVU380
+ 1660              		.loc 1 407 32 is_stmt 0 view .LVU381
+ 1661 009e 4FEA5803 		lsr	r3, r8, #1
+ 1662 00a2 43EAC973 		orr	r3, r3, r9, lsl #31
+ 1663 00a6 0493     		str	r3, [sp, #16]
+ 1664 00a8 4FEA5903 		lsr	r3, r9, #1
+ 1665 00ac 0593     		str	r3, [sp, #20]
+ 1666              	.LVL224:
+ 1667              	.L32:
+ 1668              		.loc 1 407 28 is_stmt 1 discriminator 1 view .LVU382
+ 1669 00ae DDE90432 		ldrd	r3, r2, [sp, #16]
+ 1670 00b2 B242     		cmp	r2, r6
+ 1671 00b4 08BF     		it	eq
+ 1672 00b6 A342     		cmpeq	r3, r4
+ 1673 00b8 40D1     		bne	.L34
+ 1674              	.LBE8:
+ 408:mont.c        ****     {
+ 409:mont.c        **** 
+ 410:mont.c        ****         if (i >= 2)
+ 411:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], K, &M[(i - 2) % 3]);
+ 412:mont.c        **** 
+ 413:mont.c        **** #ifdef CM
+ 414:mont.c        ****         fp_csub(&tmp1, &M[i % 3].x, &M[i % 3].z, !mask);
+ 415:mont.c        ****         fp_cadd(&tmp0, &M[i % 3].x, &M[i % 3].z, !mask);
+ 416:mont.c        **** #else
+ 417:mont.c        ****         fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); //for curve params
+ 418:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 419:mont.c        **** #endif
+ 420:mont.c        ****         fp_mul2(&prod.x, &tmp1);
+ 421:mont.c        ****         fp_mul2(&prod.z, &tmp0);
+ 422:mont.c        ****     }
+ 423:mont.c        **** 
+ 424:mont.c        ****     //compute Aed.x^k, Aed.z^k
+ 425:mont.c        ****     exp_by_squaring_(&Aed.x, &Aed.z, k);
+ 1675              		.loc 1 425 5 view .LVU383
+ 1676 00ba 4B46     		mov	r3, r9
+ 1677 00bc 4246     		mov	r2, r8
+ 1678 00be 36A9     		add	r1, sp, #216
+ 1679 00c0 26A8     		add	r0, sp, #152
+ 1680 00c2 FFF7FEFF 		bl	exp_by_squaring_
+ 1681              	.LVL225:
+ 426:mont.c        **** 
+ 427:mont.c        ****     //compute prod.x^8, prod.z^8
+ 428:mont.c        ****     fp_sq1(&prod.x);
+ 1682              		.loc 1 428 5 view .LVU384
+ 1683 00c6 46A8     		add	r0, sp, #280
+ 1684 00c8 FFF7FEFF 		bl	fp_sq1
+ 1685              	.LVL226:
+ 429:mont.c        ****     fp_sq1(&prod.x);
+ 1686              		.loc 1 429 5 view .LVU385
+ 1687 00cc 46A8     		add	r0, sp, #280
+ 1688 00ce FFF7FEFF 		bl	fp_sq1
+ 1689              	.LVL227:
+ 430:mont.c        ****     fp_sq1(&prod.x);
+ 1690              		.loc 1 430 5 view .LVU386
+ 1691 00d2 46A8     		add	r0, sp, #280
+ 1692 00d4 FFF7FEFF 		bl	fp_sq1
+ 1693              	.LVL228:
+ 431:mont.c        ****     fp_sq1(&prod.z);
+ 1694              		.loc 1 431 5 view .LVU387
+ 1695 00d8 56A8     		add	r0, sp, #344
+ 1696 00da FFF7FEFF 		bl	fp_sq1
+ 1697              	.LVL229:
+ 432:mont.c        ****     fp_sq1(&prod.z);
+ 1698              		.loc 1 432 5 view .LVU388
+ 1699 00de 56A8     		add	r0, sp, #344
+ 1700 00e0 FFF7FEFF 		bl	fp_sq1
+ 1701              	.LVL230:
+ 433:mont.c        ****     fp_sq1(&prod.z);
+ 1702              		.loc 1 433 5 view .LVU389
+ 1703 00e4 56A8     		add	r0, sp, #344
+ 1704 00e6 FFF7FEFF 		bl	fp_sq1
+ 1705              	.LVL231:
+ 434:mont.c        **** 
+ 435:mont.c        ****     //compute image curve parameters
+ 436:mont.c        ****     fp_mul2(&Aed.z, &prod.x);
+ 1706              		.loc 1 436 5 view .LVU390
+ 1707 00ea 46A9     		add	r1, sp, #280
+ 1708 00ec 36A8     		add	r0, sp, #216
+ 1709 00ee FFF7FEFF 		bl	fp_mul2
+ 1710              	.LVL232:
+ 437:mont.c        ****     fp_mul2(&Aed.x, &prod.z);
+ 1711              		.loc 1 437 5 view .LVU391
+ 1712 00f2 56A9     		add	r1, sp, #344
+ 1713 00f4 26A8     		add	r0, sp, #152
+ 1714 00f6 FFF7FEFF 		bl	fp_mul2
+ 1715              	.LVL233:
+ 438:mont.c        **** 
+ 439:mont.c        ****     //compute Montgomery params
+ 440:mont.c        **** #ifdef CM
+ 441:mont.c        ****     fp_cadd(&tmp1, &Aed.z, &Aed.x, !mask); // A' = cadd(t1, b*t0)
+ 442:mont.c        ****     fp_cadd(&A->x, &tmp1, &tmp1, !mask);   // A' = cadd(A', b*A')
+ 443:mont.c        ****     fp_csub(&A->z, &Aed.x, &Aed.z, !mask); // C' = cadd(t0, b*t1)
+ 444:mont.c        **** 
+ 445:mont.c        ****     // check A' = C', P->x = P->z, and Pd->x = Pd->z for dummy isogenies
+ 446:mont.c        ****     error |= fp_cmp_ct(&A->x, &A->z) & mask;
+ 447:mont.c        **** #else
+ 448:mont.c        ****     fp_add3(&A->x, &Aed.x, &Aed.z);
+ 1716              		.loc 1 448 5 view .LVU392
+ 1717 00fa 36AA     		add	r2, sp, #216
+ 1718 00fc 26A9     		add	r1, sp, #152
+ 1719 00fe 2846     		mov	r0, r5
+ 1720 0100 FFF7FEFF 		bl	fp_add3
+ 1721              	.LVL234:
+ 449:mont.c        ****     fp_sub3(&A->z, &Aed.x, &Aed.z);
+ 1722              		.loc 1 449 5 view .LVU393
+ 1723 0104 36AA     		add	r2, sp, #216
+ 1724 0106 26A9     		add	r1, sp, #152
+ 1725 0108 5846     		mov	r0, fp
+ 1726 010a FFF7FEFF 		bl	fp_sub3
+ 1727              	.LVL235:
+ 450:mont.c        ****     fp_add2(&A->x, &A->x);
+ 1728              		.loc 1 450 5 view .LVU394
+ 1729 010e 2946     		mov	r1, r5
+ 1730 0110 2846     		mov	r0, r5
+ 1731 0112 FFF7FEFF 		bl	fp_add2
+ 1732              	.LVL236:
+ 451:mont.c        **** #endif
+ 452:mont.c        **** 
+ 453:mont.c        ****     // CONSTANT TIME : swap back
+ 454:mont.c        ****     fp_cswap(&A->x, &Acopy.x, mask);
+ 1733              		.loc 1 454 5 view .LVU395
+ 1734 0116 F09C     		ldr	r4, [sp, #960]
+ 1735              	.LVL237:
+ 1736              		.loc 1 454 5 is_stmt 0 view .LVU396
+ 1737 0118 003C     		subs	r4, r4, #0
+ 1738 011a 18BF     		it	ne
+ 1739 011c 0124     		movne	r4, #1
+ 1740 011e 2246     		mov	r2, r4
+ 1741 0120 66A9     		add	r1, sp, #408
+ 1742 0122 2846     		mov	r0, r5
+ 1743 0124 FFF7FEFF 		bl	fp_cswap
+ 1744              	.LVL238:
+ 455:mont.c        ****     fp_cswap(&A->z, &Acopy.z, mask);
+ 1745              		.loc 1 455 5 is_stmt 1 view .LVU397
+ 1746 0128 5846     		mov	r0, fp
+ 1747 012a 2246     		mov	r2, r4
+ 1748 012c 76A9     		add	r1, sp, #472
+ 1749 012e FFF7FEFF 		bl	fp_cswap
+ 1750              	.LVL239:
+ 456:mont.c        **** 
+ 457:mont.c        **** #ifdef CM
+ 458:mont.c        ****     return error;
+ 459:mont.c        **** #else
+ 460:mont.c        ****     return 0;
+ 1751              		.loc 1 460 5 view .LVU398
+ 461:mont.c        **** #endif
+ 462:mont.c        **** }
+ 1752              		.loc 1 462 1 is_stmt 0 view .LVU399
+ 1753 0132 0020     		movs	r0, #0
+ 1754 0134 0DF5677D 		add	sp, sp, #924
+ 1755              	.LCFI23:
+ 1756              		.cfi_remember_state
+ 1757              		.cfi_def_cfa_offset 36
+ 1758              		@ sp needed
+ 1759 0138 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1760              	.LVL240:
+ 1761              	.L34:
+ 1762              	.LCFI24:
+ 1763              		.cfi_restore_state
+ 1764              	.LBB9:
+ 410:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], K, &M[(i - 2) % 3]);
+ 1765              		.loc 1 410 9 is_stmt 1 view .LVU400
+ 411:mont.c        **** 
+ 1766              		.loc 1 411 23 is_stmt 0 view .LVU401
+ 1767 013c 0322     		movs	r2, #3
+ 1768 013e 0023     		movs	r3, #0
+ 1769 0140 2046     		mov	r0, r4
+ 1770 0142 3146     		mov	r1, r6
+ 1771 0144 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1772              	.LVL241:
+ 1773 0148 D301     		lsls	r3, r2, #7
+ 1774 014a 0293     		str	r3, [sp, #8]
+ 411:mont.c        **** 
+ 1775              		.loc 1 411 13 view .LVU402
+ 1776 014c 86AB     		add	r3, sp, #536
+ 1777 014e 03EBC213 		add	r3, r3, r2, lsl #7
+ 410:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], K, &M[(i - 2) % 3]);
+ 1778              		.loc 1 410 12 view .LVU403
+ 1779 0152 04F1FF3A 		add	r10, r4, #-1
+ 411:mont.c        **** 
+ 1780              		.loc 1 411 13 view .LVU404
+ 1781 0156 0193     		str	r3, [sp, #4]
+ 410:mont.c        ****             xADD(&M[i % 3], &M[(i - 1) % 3], K, &M[(i - 2) % 3]);
+ 1782              		.loc 1 410 12 view .LVU405
+ 1783 0158 5AEA0603 		orrs	r3, r10, r6
+ 1784 015c 1DD0     		beq	.L33
+ 411:mont.c        **** 
+ 1785              		.loc 1 411 13 is_stmt 1 view .LVU406
+ 411:mont.c        **** 
+ 1786              		.loc 1 411 55 is_stmt 0 view .LVU407
+ 1787 015e A01E     		subs	r0, r4, #2
+ 411:mont.c        **** 
+ 1788              		.loc 1 411 60 view .LVU408
+ 1789 0160 66F10001 		sbc	r1, r6, #0
+ 1790 0164 0322     		movs	r2, #3
+ 1791 0166 0023     		movs	r3, #0
+ 1792 0168 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1793              	.LVL242:
+ 411:mont.c        **** 
+ 1794              		.loc 1 411 49 view .LVU409
+ 1795 016c 86AB     		add	r3, sp, #536
+ 1796 016e 03EBC213 		add	r3, r3, r2, lsl #7
+ 1797 0172 0393     		str	r3, [sp, #12]
+ 411:mont.c        **** 
+ 1798              		.loc 1 411 35 view .LVU410
+ 1799 0174 631E     		subs	r3, r4, #1
+ 411:mont.c        **** 
+ 1800              		.loc 1 411 40 view .LVU411
+ 1801 0176 4FF00302 		mov	r2, #3
+ 1802 017a 4FF00003 		mov	r3, #0
+ 1803 017e 5046     		mov	r0, r10
+ 1804 0180 66F10001 		sbc	r1, r6, #0
+ 1805 0184 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1806              	.LVL243:
+ 411:mont.c        **** 
+ 1807              		.loc 1 411 13 view .LVU412
+ 1808 0188 86A8     		add	r0, sp, #536
+ 411:mont.c        **** 
+ 1809              		.loc 1 411 40 view .LVU413
+ 1810 018a 1146     		mov	r1, r2
+ 411:mont.c        **** 
+ 1811              		.loc 1 411 13 view .LVU414
+ 1812 018c 00EBC111 		add	r1, r0, r1, lsl #7
+ 1813 0190 039B     		ldr	r3, [sp, #12]
+ 1814 0192 0198     		ldr	r0, [sp, #4]
+ 1815 0194 3A46     		mov	r2, r7
+ 1816 0196 FFF7FEFF 		bl	xADD
+ 1817              	.LVL244:
+ 1818              	.L33:
+ 417:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1819              		.loc 1 417 9 is_stmt 1 discriminator 2 view .LVU415
+ 417:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1820              		.loc 1 417 37 is_stmt 0 discriminator 2 view .LVU416
+ 1821 019a 029B     		ldr	r3, [sp, #8]
+ 417:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1822              		.loc 1 417 9 discriminator 2 view .LVU417
+ 1823 019c 0199     		ldr	r1, [sp, #4]
+ 417:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1824              		.loc 1 417 37 discriminator 2 view .LVU418
+ 1825 019e 03F1400A 		add	r10, r3, #64
+ 1826 01a2 86AB     		add	r3, sp, #536
+ 1827 01a4 9A44     		add	r10, r10, r3
+ 417:mont.c        ****         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
+ 1828              		.loc 1 417 9 discriminator 2 view .LVU419
+ 1829 01a6 5246     		mov	r2, r10
+ 1830 01a8 16A8     		add	r0, sp, #88
+ 1831 01aa FFF7FEFF 		bl	fp_sub3
+ 1832              	.LVL245:
+ 418:mont.c        **** #endif
+ 1833              		.loc 1 418 9 is_stmt 1 discriminator 2 view .LVU420
+ 1834 01ae 5246     		mov	r2, r10
+ 1835 01b0 0199     		ldr	r1, [sp, #4]
+ 1836 01b2 06A8     		add	r0, sp, #24
+ 1837 01b4 FFF7FEFF 		bl	fp_add3
+ 1838              	.LVL246:
+ 420:mont.c        ****         fp_mul2(&prod.z, &tmp0);
+ 1839              		.loc 1 420 9 discriminator 2 view .LVU421
+ 1840 01b8 16A9     		add	r1, sp, #88
+ 1841 01ba 46A8     		add	r0, sp, #280
+ 1842 01bc FFF7FEFF 		bl	fp_mul2
+ 1843              	.LVL247:
+ 421:mont.c        ****     }
+ 1844              		.loc 1 421 9 discriminator 2 view .LVU422
+ 1845 01c0 06A9     		add	r1, sp, #24
+ 1846 01c2 56A8     		add	r0, sp, #344
+ 1847 01c4 FFF7FEFF 		bl	fp_mul2
+ 1848              	.LVL248:
+ 407:mont.c        ****     {
+ 1849              		.loc 1 407 37 discriminator 2 view .LVU423
+ 1850 01c8 0134     		adds	r4, r4, #1
+ 1851              	.LVL249:
+ 407:mont.c        ****     {
+ 1852              		.loc 1 407 37 is_stmt 0 discriminator 2 view .LVU424
+ 1853 01ca 46F10006 		adc	r6, r6, #0
+ 1854              	.LVL250:
+ 407:mont.c        ****     {
+ 1855              		.loc 1 407 37 discriminator 2 view .LVU425
+ 1856 01ce 6EE7     		b	.L32
+ 1857              	.L37:
+ 1858              		.align	2
+ 1859              	.L36:
+ 1860 01d0 00000000 		.word	.LC0
+ 1861 01d4 06000000 		.word	.LANCHOR0+6
+ 1862 01d8 07000000 		.word	.LC1
+ 1863 01dc 0E000000 		.word	.LC2
+ 1864              	.LBE9:
+ 1865              		.cfi_endproc
+ 1866              	.LFE6:
+ 1868              		.section	.rodata
+ 1869              		.set	.LANCHOR0,. + 0
+ 1872              	__func__.1:
+ 1873 0000 7849534F 		.ascii	"xISOG\000"
+ 1873      4700
+ 1876              	__func__.0:
+ 1877 0006 6C617374 		.ascii	"lastxISOG\000"
+ 1877      7849534F 
+ 1877      4700
+ 1878              		.text
+ 1879              	.Letext0:
+ 1880              		.file 2 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 1881              		.file 3 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 1882              		.file 4 "parametrization.h"
+ 1883              		.file 5 "fp.h"
+ 1884              		.file 6 "/nix/store/ys6f5rkagvk7j6mawa5fiakglv1568hl-gcc-arm-embedded-12.2.rel1/arm-none-eabi/incl
+ 1885              		.file 7 "uint.h"
+ 1886              		.file 8 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 mont.c
+     /tmp/cc8JrmPl.s:19     .text.xDBLADD:0000000000000000 $t
+     /tmp/cc8JrmPl.s:25     .text.xDBLADD:0000000000000000 xDBLADD
+     /tmp/cc8JrmPl.s:193    .text.xDBL:0000000000000000 $t
+     /tmp/cc8JrmPl.s:199    .text.xDBL:0000000000000000 xDBL
+     /tmp/cc8JrmPl.s:321    .text.xADD:0000000000000000 $t
+     /tmp/cc8JrmPl.s:327    .text.xADD:0000000000000000 xADD
+     /tmp/cc8JrmPl.s:442    .text.xMUL:0000000000000000 $t
+     /tmp/cc8JrmPl.s:448    .text.xMUL:0000000000000000 xMUL
+     /tmp/cc8JrmPl.s:697    .text.xMUL:0000000000000128 $d
+     /tmp/cc8JrmPl.s:705    .text.exp_by_squaring_:0000000000000000 $t
+     /tmp/cc8JrmPl.s:711    .text.exp_by_squaring_:0000000000000000 exp_by_squaring_
+     /tmp/cc8JrmPl.s:842    .text.xISOG:0000000000000000 $t
+     /tmp/cc8JrmPl.s:848    .text.xISOG:0000000000000000 xISOG
+     /tmp/cc8JrmPl.s:1341   .text.xISOG:0000000000000300 $d
+     /tmp/cc8JrmPl.s:1352   .text.xISOG:0000000000000310 $t
+     /tmp/cc8JrmPl.s:1516   .text.lastxISOG:0000000000000000 $t
+     /tmp/cc8JrmPl.s:1522   .text.lastxISOG:0000000000000000 lastxISOG
+     /tmp/cc8JrmPl.s:1860   .text.lastxISOG:00000000000001d0 $d
+     /tmp/cc8JrmPl.s:1872   .rodata:0000000000000000 __func__.1
+     /tmp/cc8JrmPl.s:1876   .rodata:0000000000000006 __func__.0
+
+UNDEFINED SYMBOLS
+fp_add3
+fp_sub3
+fp_sq2
+fp_mul2
+fp_mul3
+fp_add2
+fp_sq1
+memcpy
+uint_bit
+fp_1
+fp_0
+fp_set
+__aeabi_uldivmod
+__aeabi_ldivmod
+__assert_func
+fp_cswap
+memset
