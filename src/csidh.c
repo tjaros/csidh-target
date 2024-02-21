@@ -286,7 +286,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 
 #ifdef F419
-    uint_c k[1] = {{{4 * 3 * 5 * 7}}};
+    uint_c k[1] = {{{6 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
 #else
     //factors k for different batches
@@ -501,7 +501,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #ifdef DBG
     sprintf(str, 
-    "[DBG] Conditional swap of P and Pd %d\n",
+    "[DBG] Pre Conditional swap: P=(%lu, %lu) and Pd=(%lu, %lu) ss=%d \n",
+     (unsigned long int) P.x.c[0],
+     (unsigned long int) P.z.c[0],
+     (unsigned long int) Pd.x.c[0],
+     (unsigned long int) Pd.z.c[0],
      ss
     );
     uart_puts(str);
@@ -509,11 +513,51 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 fp_cswap(&P.x, &Pd.x, ss);
 
                 fp_cswap(&P.z, &Pd.z, ss);
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Pre multiplication of P=(%lu, %lu) by cofactor=%lu on A=(%lu, %lu) ss=%d\n",
+     (unsigned long int) P.x.c[0],
+     (unsigned long int) P.z.c[0],
+     (unsigned long int) cof.c[0],
+     (unsigned long int) A.x.c[0],
+     (unsigned long int) A.z.c[0],
+     ss
+    );
+    uart_puts(str);
+#endif
+
 
                 xMUL(&K, &A, &P, &cof);
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Result K=(%ld, %ld)\n",
+     (unsigned long int) K.x.c[0],
+     (unsigned long int) K.z.c[0]
+    );
+    uart_puts(str);
+#endif                
 
                 uint_set(&l, primes[i]);
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Pre multiplication of Pd=(%lu, %lu) by l=%lu on A=(%lu, %lu)\n",
+     (unsigned long int) Pd.x.c[0],
+     (unsigned long int) Pd.z.c[0],
+     (unsigned long int)l.c[0],
+     (unsigned long int) A.x.c[0],
+     (unsigned long int) A.z.c[0]
+    );
+    uart_puts(str);
+#endif
                 xMUL(&Pd, &A, &Pd, &l);
+#ifdef DBG
+    sprintf(str, 
+    "[DBG] Result Pd=(%ld, %ld)\n",
+     (unsigned long int) Pd.x.c[0],
+     (unsigned long int) Pd.z.c[0]
+    );
+    uart_puts(str);
+#endif    
 
 #ifdef CM
                 fp_add3(&lastA.x, &A.x, &fp_0);
@@ -597,9 +641,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                         xISOG(&A, &P, &Pd, &K, primes[i], bc);
 #ifdef DBG
     sprintf(str, 
-    "[DBG] Result xISOG A.x=%lu A.z=%lu\n",
+    "[DBG] Result xISOG A.x=%lu A.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
     (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0]
+    (long unsigned int)A.z.c[0],
+    (long unsigned int)P.x.c[0],
+    (long unsigned int)P.z.c[0],
+    (long unsigned int)Pd.x.c[0],
+    (long unsigned int)Pd.z.c[0]
     );
     uart_puts(str);
 #endif
@@ -645,8 +693,10 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     out->A = A.x;
 #ifdef DBG
     sprintf(str, 
-    "[DBG] END A.x=%lu\n",
-    (long unsigned int)A.x.c[0]
+    "[DBG] END A.x=%lu A.z=%lu\n",
+    (long unsigned int)A.x.c[0],
+    (long unsigned int)A.z.c[0]
+
     );
     uart_puts(str);
 #endif
