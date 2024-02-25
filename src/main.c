@@ -19,7 +19,7 @@ uint8_t num_batches = 1;
 uint8_t num_batches = 3;
 #endif
 int8_t max_exponent[NUM_PRIMES];
-unsigned int num_isogenies = 10;
+unsigned int num_isogenies;
 uint8_t my = 0;
 
 uint8_t set_public(uint8_t* data)
@@ -112,18 +112,25 @@ int main(void)
 {
     printf("Running CSIDH with %d limbs\n", LIMBS);
 
-    max_exponent[0] = 2;
-    max_exponent[1] = 0;
-    max_exponent[2] = 0;
-
-    num_isogenies = -1;
-    sk.e[0] = 1;
-    sk.e[1] = 0;
-    sk.e[2] = 0;
+    max_exponent[0] = 5;
+    max_exponent[1] = 5;
+    max_exponent[2] = 5;
+    num_isogenies = (unsigned int) 3;
+    sk.e[0] = -1;
+    sk.e[1] = -1;
+    sk.e[2] = -1;
 
     run_csidh();
 
     get_public();
 
+    num_isogenies = (unsigned int) 2;
+    sk.e[0] = 0;
+    sk.e[1] = 1;
+    sk.e[2] = 1;
+
+    run_csidh();
+
+    get_public();
  
 }

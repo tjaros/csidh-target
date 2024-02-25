@@ -350,8 +350,9 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     {
 #ifdef DBG
     sprintf(str, 
-    "[DBG][while isog_counter=%d] ****************************************\n",
-    isog_counter
+    "[DBG][while isog_counter=%d < num_isogenies=%d] ****************************************\n",
+    isog_counter,
+    num_isogenies
     );
     uart_puts(str);
 #endif

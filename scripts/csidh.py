@@ -46,7 +46,7 @@ class CSIDH:
         # implementation yet since I'm just starting to study the topic
         while any([e_i != 0 for e_i in e]):
             x = self.Fp.random_element()
-            s = 1 if self.Fp(x**3 + A*x**2 + x).is_square() else -1
+            s = 1 if self.Fp(x**3 + A * x**2 + x).is_square() else -1
             S = [i for i in range(len(e)) if e[i] != 0 and sign(e[i]) == s]
 
             if S == []:
@@ -59,7 +59,7 @@ class CSIDH:
             # isomomorphism. The computation just ends up in different
             # curve with different j-invariant
 
-            #if s == -1:
+            # if s == -1:
             #    E = E.quadratic_twist()
 
             P = E.random_element()
@@ -80,23 +80,22 @@ class CSIDH:
                 k = k // self.primes[i]
                 e[i] = e[i] - s
 
-            #if s == -1:
+            # if s == -1:
             #    E = E.quadratic_twist()
-                
 
         return E.montgomery_model().a2()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for _ in range(100):
         m = 5
-        a = [randint(-m, m+1) for _ in range(3)]
-        b = [randint(-m, m+1) for _ in range(3)]
-        csidh = CSIDH(4 * 3 * 5 * 7 - 1, [3,5,7], 5)
+        a = [randint(-m, m + 1) for _ in range(3)]
+        b = [randint(-m, m + 1) for _ in range(3)]
+        csidh = CSIDH(4 * 3 * 5 * 7 - 1, [3, 5, 7], 5)
         apub = csidh.get_public(a.copy())
         bpub = csidh.get_public(b.copy())
-        #print(f"{apub=} {bpub=}")
+        # print(f"{apub=} {bpub=}")
         AliceShared = csidh.group_action(bpub, a.copy())
         BobShared = csidh.group_action(apub, b.copy())
-        #print(f"{AliceShared=} {BobShared=}")
+        # print(f"{AliceShared=} {BobShared=}")
         assert AliceShared == BobShared
