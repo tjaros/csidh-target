@@ -115,7 +115,7 @@ int main(void)
     max_exponent[0] = 5;
     max_exponent[1] = 5;
     max_exponent[2] = 5;
-    num_isogenies = (unsigned int) 3;
+    num_isogenies = (unsigned int) 15;
     sk.e[0] = -1;
     sk.e[1] = -1;
     sk.e[2] = -1;
@@ -124,10 +124,19 @@ int main(void)
 
     get_public();
 
-    num_isogenies = (unsigned int) 2;
+    num_isogenies = (unsigned int) 15;
     sk.e[0] = 0;
     sk.e[1] = 1;
     sk.e[2] = 1;
+
+    run_csidh();
+
+    get_public();
+
+    num_isogenies = (unsigned int) 15;
+    sk.e[0] = 1;
+    sk.e[1] = 0;
+    sk.e[2] = 0;
 
     run_csidh();
 

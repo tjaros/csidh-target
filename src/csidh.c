@@ -283,8 +283,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     char str[1000];
 #endif
 
-
-
 #ifdef F419
     uint_c k[1] = {{{6 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
@@ -304,21 +302,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     proj P, Pd, K;
     uint_c cof, l;
     bool finished[NUM_PRIMES] = {0};
-#ifdef REDUCEDSK
-    memset(finished, 1, sizeof(finished));
-    finished[0] = 0;
-    finished[1] = 0;
-
-#endif
-
     int8_t e[NUM_PRIMES] = {0};
-
-#ifdef CM
-    bool error = 0;
-    (void)p_order;
-    uint_c lastOrder;
-    proj lastA = {in->A, fp_1};
-#endif
 
     int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
@@ -386,19 +370,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
         }
 
-#ifdef CM
-        #if defined(DETERMINISTIc)
-        fp u = {{0x9b9499cf4466e265, 0x1890b03f447fc2c2, 0x59200afefa8db817, 0x9d45d54e769e45a7, 0x97ef18c3efd52e4f, 0xf20393bd845656fe, 0xda07eea2333775f1, 0x1b808024fce7c39d}};
-        #else
-         fp u;
-         fp_random(&u);
-         while (compare(&u, &p_minus_1_halves) > 0)
-             fp_random(&u);
-        #endif
-        error |= new_elligator(&P, &Pd, &A, &u, &ps);
-
-#else
-
         if (memcmp(&A.x, &fp_0, sizeof(fp)))
         {
             elligator(&P, &Pd, &A.x);
@@ -420,7 +391,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif
-#endif
 
         xMUL(&P, &A, &P, &k[m]);
 
@@ -437,9 +407,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif
-#ifndef CM
-        ps = 1; //initialized in elligator
-#endif
+    ps = 1; //initialized in elligator
+
 
 #ifdef DBG
     sprintf(str, 
@@ -455,10 +424,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     i
     );
     uart_puts(str);
-#endif
-#ifdef CM
-            uint_set(&lastOrder, primes[i]);
-
 #endif
             if (finished[i] == true)
             { //depends only on randomness
@@ -484,21 +449,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 s = (uint8_t)ec >> 7;
                 ss = !isequal(s, ps);
 
-#ifdef CM
-                error |= (ec ^ e[i]);
-
-                error |= (bc ^ isequal(ec, 0));
-
-                error |= (s ^ ((uint8_t)ec >> 7));
-
-                error |= (ss ^ (s ^ ps));
-#endif
-
                 ps = s;
-
-#ifdef CM
-                error |= (ps ^ s);
-#endif
 
 #ifdef DBG
     sprintf(str, 
@@ -559,43 +510,10 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif    
-
-#ifdef CM
-                fp_add3(&lastA.x, &A.x, &fp_0);
-                fp_add3(&lastA.z, &A.z, &fp_0);
-#endif
-
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
                 { //depends only on randomness
-#ifdef TWIST_ATTACK_CM
-                    fp XZ, AC, XZ2, Z2, C2, C2XZ, ACXZ2, X2, C2X3Z, C2XZ3, check;
-
-                    // 1M
-                    fp_mul3(&XZ, &K.x, &K.z);           // XZ
-                    // 4S
-                    fp_sq2(&XZ2, &XZ);                  // XZ^2
-                    fp_sq2(&X2, &K.x);                  // X^2
-                    fp_sq2(&Z2, &K.z);                  // Z^2
-                    fp_sq2(&C2, &A.z);                  // C^2
-                    // 3M
-                    fp_mul3(&C2XZ, &C2, &XZ);           // C^2XZ
-                    fp_mul3(&AC, &A.x, &A.z);           // AC
-                    fp_mul3(&ACXZ2, &AC, &XZ2);         // ACXZ2
-                    // 2M
-                    fp_mul3(&C2X3Z, &C2XZ, &X2);        // C^2X^3Z
-                    fp_mul3(&C2XZ3, &C2XZ, &Z2);        // C^2XZ^3
-                    // 2a
-                    fp_add3(&check, &C2X3Z, &ACXZ2);    // C^2X^3Z + ACXZ2
-                    fp_add3(&check, &check, &C2XZ3);    // C^2X^3Z + ACXZ2 + C^2XZ^3
-                    // Legendre
-                    error |= (s) != (fp_issquare(&check));
-
-#endif
                     if (i == last_iso[m])
                     {
-#ifdef CM
-                        error |= lastxISOG(&A, &K, primes[i], bc); // doesn't compute the images of points
-#else
 #ifdef DBG
     sprintf(str, 
     "[DBG] Computing lastxISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu\n",
@@ -616,14 +534,10 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif
-#endif
                     }
                     else
                     {
 
-#ifdef CM
-                        error |= xISOG(&A, &P, &Pd, &K, primes[i], bc);
-#else
 #ifdef DBG
     sprintf(str, 
     "[DBG] Computing xISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
@@ -652,14 +566,10 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif
-#endif
 
                     }
 
                     e[i] = ec - (1 ^ bc) + (s << 1);
-#ifdef CM
-                    error |= (e[i] ^ (ec - (1 ^ bc) + (s << 1)));
-#endif
 
                     counter[i] = counter[i] - 1;
                     isog_counter = isog_counter + 1;
@@ -673,24 +583,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             }
         }
 
-#ifdef CM
-        // check P = 0 and Pd = 0 at the end of a batch run
-        xMUL(&P, &lastA, &P, &lastOrder);
-        error |= fp_cmp_ct(&P.z, &fp_0);
-        error |= fp_cmp_ct(&Pd.z, &fp_0);
-#endif
-
-#ifndef CM
         fp_inv(&A.z);
         fp_mul2(&A.x, &A.z);
         A.z = fp_1;
-#endif
         count = count + 1;
     }
-#ifdef CM
-    fp_inv(&A.z);
-    fp_mul2(&A.x, &A.z);
-#endif
     out->A = A.x;
 #ifdef DBG
     sprintf(str, 
@@ -701,35 +598,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     );
     uart_puts(str);
 #endif
-
-#ifdef CM
-    error |= (isog_counter ^ 404);
-    for (int8_t i = 0; i < num_primes; i++)
-        error |= (counter[i] ^ 0);
-    error |= validate_cheaper(out);
-    return error;
-#else
     return 0;
-#endif
-
 }
-
-#ifdef CM
-bool validate_cheaper(const public_key *in)
-{
-    const proj A = {in->A, fp_1};
-    #if defined(DETERMINISTIC)
-    proj P = {{{0x9b9499cf4466e265, 0x1890b03f447fc2c2, 0x59200afefa8db817, 0x9d45d54e769e45a7, 0x97ef18c3efd52e4f, 0xf20393bd845656fe, 0xda07eea2333775f1, 0x1b808024fce7c39d}}, {{0xc8fc8df598726f0a, 0x7b1bc81750a6af95, 0x5d319e67c1e961b4, 0xb0aa7275301955f1, 0x4a080672d9ba6c64, 0x97a5ef8a246ee77b, 0x06ea9e5d4383676a, 0x3496e2e117e0ec80,}}};
-    #else
-     proj P;
-     fp_random(&P.x);
-     P.z = fp_1;
-    #endif
-
-    xMUL(&P, &A, &P, &p_plus_one);
-    return fp_cmp_ct(&P.z, &fp_0);
-}
-#endif
 
 /* includes public-key validation. */
 bool csidh(public_key *out, public_key const *in, private_key const *priv,
@@ -743,9 +613,6 @@ bool csidh(public_key *out, public_key const *in, private_key const *priv,
 	}
     */
     error = action(out, in, priv, num_batches, max_exponent, num_isogenies, my);
-#ifdef CM
-    fpcmov(&out->A, &fp_0, error);
-#endif
 
     return error;
 }
