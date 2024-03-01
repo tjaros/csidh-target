@@ -112,34 +112,34 @@ int main(void)
 {
     printf("Running CSIDH with %d limbs\n", LIMBS);
 
-    max_exponent[0] = 5;
-    max_exponent[1] = 5;
-    max_exponent[2] = 5;
-    num_isogenies = (unsigned int) 15;
-    sk.e[0] = -1;
-    sk.e[1] = -1;
-    sk.e[2] = -1;
+    max_exponent[0] = 10;
+    max_exponent[1] = 10;
+    max_exponent[2] = 10;
+    num_isogenies = (unsigned int) 30;
+    sk.e[0] = 2;
+    sk.e[1] = 4;
+    sk.e[2] = 6;
 
     run_csidh();
 
     get_public();
 
-    num_isogenies = (unsigned int) 15;
-    sk.e[0] = 0;
-    sk.e[1] = 1;
-    sk.e[2] = 1;
+    num_isogenies = (unsigned int) 30;
+    sk.e[0] =  -2;
+    sk.e[1] =  -2;
+    sk.e[2] =  -2;
 
     run_csidh();
 
     get_public();
 
-    num_isogenies = (unsigned int) 15;
-    sk.e[0] = 1;
-    sk.e[1] = 0;
-    sk.e[2] = 0;
+
+    num_isogenies = (unsigned int) 30;
+    sk.e[0] =  0;
+    sk.e[1] = -2;
+    sk.e[2] = -4;
 
     run_csidh();
 
     get_public();
- 
 }
