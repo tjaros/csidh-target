@@ -42,8 +42,7 @@ SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 FUNC_SEL = TRACE
 
 CFLAGS += -D$(FUNC_SEL)
-CFLAGS += --specs=nosys.specs
-#CFLAGS += -DF419 
+CFLAGS += -DF419
 
 #Add simpleserial project to build
 include ./simpleserial/Makefile.simpleserial

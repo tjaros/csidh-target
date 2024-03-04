@@ -6,9 +6,9 @@
 
 #ifdef F419
 
-#define LIMBS 2
+#define LIMBS 1
 #define NUM_PRIMES 3
-#define MAX_EXPONENT 5
+#define MAX_EXPONENT 10
 
 #else
 

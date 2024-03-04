@@ -24,8 +24,8 @@ uint8_t num_batches = 1;
 #else
 uint8_t num_batches = 3;
 #endif
-int8_t max_exponent[NUM_PRIMES] = {1};
-unsigned int num_isogenies = 1;
+int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, MAX_EXPONENT, MAX_EXPONENT};
+unsigned int num_isogenies = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
 uint8_t my = 0;
 
 uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
@@ -67,50 +67,6 @@ uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
     return 0;
 }
 
-#ifdef DBG
-void test_ecc(void)
-{
-    // Here we just do some simple ec multiplication to check if we got correct results
-    proj P = {.x={{119}}, .z={{1}}};
-    proj A = {.x={{0}}, .z={{1}}};
-    proj Q = {{{0}}};
-    uint_c k = {{1}};
-
-    char str[1024];
-    sprintf(str, 
-    "[DBG] xMUL P=(%lu, %lu) A=%lu Q=(%lu, %lu) k=%lu\n",
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)Q.x.c[0],
-    (long unsigned int)Q.z.c[0],
-    (long unsigned int)k.c[0]
-    );
-
-    uart_puts(str);
-    xMUL(&Q, &A, &P, &k);
-
-    sprintf(str, 
-    "[DBG] xMUL P=(%lu, %lu) A=%lu Q=(%lu, %lu) k=%lu\n",
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)Q.x.c[0],
-    (long unsigned int)Q.z.c[0],
-    (long unsigned int)k.c[0]
-    );
-    uart_puts(str);
-
-}
-
-uint8_t tests(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
-{
-    test_ecc();
-    return 0;
-}
-
-#endif
-
 void api(void)
 {
     // Set/Get public
@@ -121,9 +77,6 @@ void api(void)
     simpleserial_addcmd('4', 0, get_secret);
     // csidh does not need arguments
     simpleserial_addcmd('5', 0, run_csidh);
-    #ifdef DBG
-    simpleserial_addcmd('6', 0, tests);
-    #endif
 
     while (1)
     {

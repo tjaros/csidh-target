@@ -42,6 +42,11 @@ const uint_c p_minus_1_halves = {{
     (419-1)/2
 }};
 
+/* floor(4 sqrt(p)) */
+const uint_c four_sqrt_p = {{
+    0x51
+}};
+
 #else
 
 const unsigned primes[NUM_PRIMES] = {
