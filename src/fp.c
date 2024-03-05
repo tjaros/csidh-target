@@ -2,15 +2,15 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "parametrization.h"
-#include "uint.h"
 #include "fp.h"
+#include "parametrization.h"
 #include "randombytes.h"
+#include "uint.h"
 
 #ifdef CM
 void fpcmov(fp *dst, const fp *src, uint8_t b)
 {
-    b = -b;
+    b          = -b;
     uint8_t *s = (uint8_t *)src;
     uint8_t *d = (uint8_t *)dst;
     for (size_t ii = 0; ii < sizeof(fp); ii++)
@@ -199,7 +199,7 @@ void fp_sq1(fp *x)
 static void fp_pow(fp *x, uint_c const *e)
 {
     fp y = *x;
-    *x = fp_1;
+    *x   = fp_1;
     for (size_t k = 0; k < LIMBS; ++k)
     {
         uint64_t t = e->c[k];

@@ -34,15 +34,15 @@ void fp_csub(fp *x, const fp *y, const fp *z, uint64_t m);
 #ifdef CM
 static inline int compare(const fp *x, const uint_c *y)
 {
-    const uint8_t *s1 = (const uint8_t *) x;
-    const uint8_t *s2 = (const uint8_t *) y;
+    const uint8_t *s1 = (const uint8_t *)x;
+    const uint8_t *s2 = (const uint8_t *)y;
 
-    for(int i = sizeof(fp) - 1; i >= 0; i--)
+    for (int i = sizeof(fp) - 1; i >= 0; i--)
     {
-		if (s1[i] != s2[i])
+        if (s1[i] != s2[i])
             return s1[i] > s2[i] ? 1 : -1;
-	}
-	return 0;
+    }
+    return 0;
 }
 #endif
 

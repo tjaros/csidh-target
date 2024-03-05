@@ -1,22 +1,19 @@
 #include "hal.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
-#include "fp.h"
 #include "csidh.h"
+#include "fp.h"
 #include "mont.h"
-#include "uint.h"
 #include "parametrization.h"
+#include "uint.h"
 
-#include "simpleserial.h"
 #include "hal.h"
+#include "simpleserial.h"
 
-
-
-
-public_key pk = {.A.c = {0}};
+public_key pk  = {.A.c = {0}};
 private_key sk = {.e = {0}};
 public_key result;
 #ifdef F419
@@ -25,45 +22,44 @@ uint8_t num_batches = 1;
 uint8_t num_batches = 3;
 #endif
 int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, MAX_EXPONENT, MAX_EXPONENT};
-unsigned int num_isogenies = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
-uint8_t my = 0;
+unsigned int num_isogenies      = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
+uint8_t my                      = 0;
 
-uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
     if (scmd == 0x01)
         pk = base;
     else
-        memcpy(pk.A.c, (void *) data, LIMBS * 8);
-    return 0;
-}
- 
-uint8_t get_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
-{
-    simpleserial_put('r', (uint8_t) sizeof(pk.A.c), (void *) pk.A.c);
+        memcpy(pk.A.c, (void *)data, LIMBS * 8);
     return 0;
 }
 
-uint8_t set_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t get_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
-    memcpy(sk.e, (void *) data, NUM_PRIMES);
+    simpleserial_put('r', (uint8_t)sizeof(pk.A.c), (void *)pk.A.c);
     return 0;
 }
 
-uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t set_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
-    simpleserial_put('r', (uint8_t) sizeof(sk.e), (void *) sk.e);
+    memcpy(sk.e, (void *)data, NUM_PRIMES);
+    return 0;
+}
+
+uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
+{
+    simpleserial_put('r', (uint8_t)sizeof(sk.e), (void *)sk.e);
     return 0;
 }
 
 // Runs a group action on current public key and the secret
-uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t* data)
+uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
     uint8_t error = csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
-    pk = result;
-
+    pk            = result;
 
     if (error != 0)
-        return 0x10+error;
+        return 0x10 + error;
     return 0;
 }
 
@@ -94,7 +90,6 @@ int main(void)
     putch('s');
     putch('e');
     putch('t');
-
 
     simpleserial_init();
     api();

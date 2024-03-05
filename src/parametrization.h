@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 #ifdef F419
 
 #define LIMBS 1
@@ -18,10 +17,18 @@
 
 #endif
 
-typedef struct uint_c { uint64_t c[LIMBS]; } uint_c;
-typedef struct fp { uint64_t c[LIMBS]; } fp;
-typedef struct proj { struct fp x, z; } proj;
-
+typedef struct uint_c
+{
+    uint64_t c[LIMBS];
+} uint_c;
+typedef struct fp
+{
+    uint64_t c[LIMBS];
+} fp;
+typedef struct proj
+{
+    struct fp x, z;
+} proj;
 
 extern const unsigned primes[NUM_PRIMES];
 
@@ -38,6 +45,5 @@ extern const fp fp_1;
 extern const fp r_squared_mod_p;
 
 extern const uint64_t inv_min_p_mod_r;
-
 
 #endif

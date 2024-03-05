@@ -1,12 +1,12 @@
 
-#include <assert.h>
-#include <stdlib.h>
+#include "mont.h"
+#include "csidh.h"
+#include "fp.h"
 #include "hal.h"
 #include "parametrization.h"
 #include "uint.h"
-#include "fp.h"
-#include "mont.h"
-#include "csidh.h"
+#include <assert.h>
+#include <stdlib.h>
 
 void xDBLADD(proj *R, proj *S, proj const *P, proj const *Q, proj const *PQ, proj const *A24)
 {
@@ -107,15 +107,15 @@ void xMUL(proj *Q, proj const *A, proj const *P, uint_c const *k)
         if (bit)
         {
             proj T = *Q;
-            *Q = R;
-            R = T;
+            *Q     = R;
+            R      = T;
         } /* not constant-time */
         xDBLADD(Q, &R, Q, &R, &Pcopy, &A24);
         if (bit)
         {
             proj T = *Q;
-            *Q = R;
-            R = T;
+            *Q     = R;
+            R      = T;
         } /* not constant-time */
     } while (i--);
 }
@@ -159,7 +159,7 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
 
     fp tmp0, tmp1, tmp2, tmp3, tmp4, Psum, Pdif, Pdsum, Pddif;
     proj Q, Qd, Aed, prod;
-    proj Acopy = *A;
+    proj Acopy  = *A;
     proj Pdcopy = *Pd;
 
 #ifdef CM
@@ -239,7 +239,6 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
 
         if (i >= 2)
             xADD(&M[i % 3], &M[(i - 1) % 3], R, &M[(i - 2) % 3]);
-
 
 #ifdef CM
         fp_csub(&tmp1, &M[i % 3].x, &M[i % 3].z, !mask); // t1 = csub(Xi, b*Zi)
@@ -366,7 +365,6 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
 #else
     return 0;
 #endif
-
 }
 
 /* computes the last real/dummy isogeny per batch with kernel point K of order k */

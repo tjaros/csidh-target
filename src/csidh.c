@@ -1,15 +1,15 @@
 
-#include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "hal.h"
-#include "uint.h"
-#include "fp.h"
-#include "mont.h"
 #include "csidh.h"
-#include "randombytes.h"
+#include "fp.h"
+#include "hal.h"
+#include "mont.h"
 #include "parametrization.h"
+#include "randombytes.h"
+#include "uint.h"
 
 const public_key base = {0}; /* A = 0 */
 
@@ -48,12 +48,12 @@ int32_t lookup(size_t pos, int8_t const *priv)
 uint32_t isequal(uint32_t a, uint32_t b)
 {
     //size_t i;
-    uint32_t r = 0;
+    uint32_t r        = 0;
     unsigned char *ta = (unsigned char *)&a;
     unsigned char *tb = (unsigned char *)&b;
-    r = (ta[0] ^ tb[0]) | (ta[1] ^ tb[1]) | (ta[2] ^ tb[2]) | (ta[3] ^ tb[3]);
-    r = (-r);
-    r = r >> 31;
+    r                 = (ta[0] ^ tb[0]) | (ta[1] ^ tb[1]) | (ta[2] ^ tb[2]) | (ta[3] ^ tb[3]);
+    r                 = (-r);
+    r                 = r >> 31;
     return (int)(1 - r);
 }
 
@@ -217,7 +217,7 @@ void elligator(proj *P, proj *Pd, const fp *A)
 static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t *ps)
 {
     bool error = 0;
-    bool b = false, s1, s2;
+    bool b     = false, s1, s2;
     fp a, tmp0, tmp1, tmp2, u2m1, xz;
     //fp_set(&a, 0);
     // A->x = A and A->z = C
@@ -285,13 +285,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
 
 #ifdef F419
-    uint_c k[1] = {{{4 * 3 * 5 * 7}}};
+    uint_c k[1]    = {{{4 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
 #else
     //factors k for different batches
     uint_c k[3] = {{{0x1b5933af628d005c, 0x9d4af02b1d7b7f56, 0x8977a8435092262a, 0xb86302ff54a37ca2, 0xd6e09db2af04d095, 0x5c73f, 0x0, 0x0}},
-                 {{0xd97b8b6bc6f6be1c, 0x315872c44ea6e448, 0x1aae7c54fd380c86, 0x237ec4cf2da454a2, 0x3733f9e3d9fea1b4, 0x1fdc0e, 0x0, 0x0}},
-                 {{0x629ea97b02169a84, 0xc4b9616a12d48d22, 0x492a10278ad7b45a, 0xc44ac4dce55b87f8, 0x9e12876886632d6e, 0xe0c0c5, 0x0, 0x0}}};
+                   {{0xd97b8b6bc6f6be1c, 0x315872c44ea6e448, 0x1aae7c54fd380c86, 0x237ec4cf2da454a2, 0x3733f9e3d9fea1b4, 0x1fdc0e, 0x0, 0x0}},
+                   {{0x629ea97b02169a84, 0xc4b9616a12d48d22, 0x492a10278ad7b45a, 0xc44ac4dce55b87f8, 0x9e12876886632d6e, 0xe0c0c5, 0x0, 0x0}}};
 
     uint_c p_order = {{0x24403b2c196b9323, 0x8a8759a31723c208, 0xb4a93a543937992b, 0xcdd1f791dc7eb773, 0xff470bd36fd7823b, 0xfbcf1fc39d553409, 0x9478a78dd697be5c, 0x0ed9b5fb0f251816}};
 #endif
@@ -302,10 +302,9 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     uint8_t last_iso[3], b, ss;
     proj P, Pd, K;
     uint_c cof, l;
-    bool finished[NUM_PRIMES] = {0};
-    int8_t e[NUM_PRIMES] = {0};
-    int8_t t[NUM_PRIMES] = {0};
-
+    bool finished[NUM_PRIMES]  = {0};
+    int8_t e[NUM_PRIMES]       = {0};
+    int8_t t[NUM_PRIMES]       = {0};
     int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
     unsigned int isog_counter = 0;
@@ -325,18 +324,17 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     // t array of signs of private key
     memcpy(t, priv->e, sizeof(priv->e));
     for (uint8_t i = 0; i < NUM_PRIMES; i++)
-        t[i] = (uint8_t) t[i] >> 7;
+        t[i] = (uint8_t)t[i] >> 7;
 
     // counter, is a copy of max exponent array
     memcpy(counter, max_exponent, sizeof(counter));
 
     proj A = {in->A, fp_1};
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Entered the while isog_counter=%d < num_isogenies=%d loop\n",
-    isog_counter,
-    num_isogenies
-    );
+    sprintf(str,
+            "[DBG] Entered the while isog_counter=%d < num_isogenies=%d loop\n",
+            isog_counter,
+            num_isogenies);
     uart_puts(str);
 #endif
 
@@ -345,12 +343,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     while (isog_counter < num_isogenies)
     {
 #ifdef DBG
-    sprintf(str, 
-    "[DBG][while isog_counter=%d < num_isogenies=%d] ****************************************\n",
-    isog_counter,
-    num_isogenies
-    );
-    uart_puts(str);
+        sprintf(str,
+                "[DBG][while isog_counter=%d < num_isogenies=%d] ****************************************\n",
+                isog_counter,
+                num_isogenies);
+        uart_puts(str);
 #endif
 
         m = (m + 1) % num_batches;
@@ -358,12 +355,12 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         // Compute factor k
         // If num batches = 1, then its executed only at the beginning
         if (count == my * num_batches)
-        {  //merge the batches after my rounds
+        { //merge the batches after my rounds
             m = 0;
 #ifdef F419
             last_iso[0] = 2;
 #else
-            last_iso[0] = 73;   //doesn't skip point evaluations anymore after merging batches
+            last_iso[0] = 73; //doesn't skip point evaluations anymore after merging batches
 #endif
             uint_set(&k[m], 4); //recompute factor k
             num_batches = 1;
@@ -377,11 +374,10 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 }
             }
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Recomputed the factor k=%lu\n",
-    (long unsigned int)k[0].c[0]
-    );
-    uart_puts(str);
+            sprintf(str,
+                    "[DBG] Recomputed the factor k=%lu\n",
+                    (long unsigned int)k[0].c[0]);
+            uart_puts(str);
 #endif
         }
 
@@ -398,14 +394,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             Pd.z = fp_1;
         }
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Sampled the point P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)Pd.x.c[0],
-    (long unsigned int)Pd.z.c[0]
-    );
-    uart_puts(str);
+        sprintf(str,
+                "[DBG] Sampled the point P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+                (long unsigned int)P.x.c[0],
+                (long unsigned int)P.z.c[0],
+                (long unsigned int)Pd.x.c[0],
+                (long unsigned int)Pd.z.c[0]);
+        uart_puts(str);
 #endif
 
         xMUL(&P, &A, &P, &k[m]);
@@ -413,43 +408,40 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         xMUL(&Pd, &A, &Pd, &k[m]);
 
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Multiplied P, Q by factor k=%lu, P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
-    (long unsigned int)k[m].c[0],
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)Pd.x.c[0],
-    (long unsigned int)Pd.z.c[0]
-    );
-    uart_puts(str);
+        sprintf(str,
+                "[DBG] Multiplied P, Q by factor k=%lu, P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+                (long unsigned int)k[m].c[0],
+                (long unsigned int)P.x.c[0],
+                (long unsigned int)P.z.c[0],
+                (long unsigned int)Pd.x.c[0],
+                (long unsigned int)Pd.z.c[0]);
+        uart_puts(str);
 #endif
         // No idea what's this for.
         ps = 1; //initialized in elligator
 
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Entered the for loop\n"
-    );
-    uart_puts(str);
+        sprintf(str,
+                "[DBG] Entered the for loop\n");
+        uart_puts(str);
 #endif
 
         // For each prime, we check if it is done, meaning finished[i] == 1
         // otherwise we perform 1 isogeny to corresponding to the primes[i]
-        // and to the correct direction. 
+        // and to the correct direction.
         for (uint8_t i = m; i < NUM_PRIMES; i = i + num_batches)
         {
 #ifdef DBG
-    sprintf(str, 
-    "[DBG][for i=%d] ========================================\n",
-    i
-    );
-    uart_puts(str);
+            sprintf(str,
+                    "[DBG][for i=%d] ========================================\n",
+                    i);
+            uart_puts(str);
 #endif
             if (finished[i] == true)
             { //depends only on randomness
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] finished[%d] == true\n", i);
+                sprintf(str,
+                        "[DBG] finished[%d] == true\n", i);
 #endif
                 continue;
             }
@@ -467,68 +459,63 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
                 // Sign of the exponent to decide which way the isogeny is computed
                 // s = (uint8_t)ec >> 7;
-                s = lookup(i, t);
+                s  = lookup(i, t);
                 ss = !isequal(s, ps);
 
                 ps = s;
 
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Pre Conditional swap: P=(%lu, %lu) and Pd=(%lu, %lu) ss=%d \n",
-     (unsigned long int) P.x.c[0],
-     (unsigned long int) P.z.c[0],
-     (unsigned long int) Pd.x.c[0],
-     (unsigned long int) Pd.z.c[0],
-     ss
-    );
-    uart_puts(str);
+                sprintf(str,
+                        "[DBG] Pre Conditional swap: P=(%lu, %lu) and Pd=(%lu, %lu) ss=%d \n",
+                        (unsigned long int)P.x.c[0],
+                        (unsigned long int)P.z.c[0],
+                        (unsigned long int)Pd.x.c[0],
+                        (unsigned long int)Pd.z.c[0],
+                        ss);
+                uart_puts(str);
 #endif
                 fp_cswap(&P.x, &Pd.x, ss);
 
                 fp_cswap(&P.z, &Pd.z, ss);
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Pre multiplication of P=(%lu, %lu) by cofactor=%lu on A=(%lu, %lu) ss=%d\n",
-     (unsigned long int) P.x.c[0],
-     (unsigned long int) P.z.c[0],
-     (unsigned long int) cof.c[0],
-     (unsigned long int) A.x.c[0],
-     (unsigned long int) A.z.c[0],
-     ss
-    );
-    uart_puts(str);
+                sprintf(str,
+                        "[DBG] Pre multiplication of P=(%lu, %lu) by cofactor=%lu on A=(%lu, %lu) ss=%d\n",
+                        (unsigned long int)P.x.c[0],
+                        (unsigned long int)P.z.c[0],
+                        (unsigned long int)cof.c[0],
+                        (unsigned long int)A.x.c[0],
+                        (unsigned long int)A.z.c[0],
+                        ss);
+                uart_puts(str);
 #endif
                 // Create isogeny kernel K
                 xMUL(&K, &A, &P, &cof);
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Result K=(%ld, %ld)\n",
-     (unsigned long int) K.x.c[0],
-     (unsigned long int) K.z.c[0]
-    );
-    uart_puts(str);
+                sprintf(str,
+                        "[DBG] Result K=(%ld, %ld)\n",
+                        (unsigned long int)K.x.c[0],
+                        (unsigned long int)K.z.c[0]);
+                uart_puts(str);
 #endif
-                // Set the prime l, which means that the l-isogeny will be computed 
+                // Set the prime l, which means that the l-isogeny will be computed
                 uint_set(&l, primes[i]);
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Pre multiplication of Pd=(%lu, %lu) by l=%lu on A=(%lu, %lu)\n",
-     (unsigned long int) Pd.x.c[0],
-     (unsigned long int) Pd.z.c[0],
-     (unsigned long int)l.c[0],
-     (unsigned long int) A.x.c[0],
-     (unsigned long int) A.z.c[0]
-    );
-    uart_puts(str);
+                sprintf(str,
+                        "[DBG] Pre multiplication of Pd=(%lu, %lu) by l=%lu on A=(%lu, %lu)\n",
+                        (unsigned long int)Pd.x.c[0],
+                        (unsigned long int)Pd.z.c[0],
+                        (unsigned long int)l.c[0],
+                        (unsigned long int)A.x.c[0],
+                        (unsigned long int)A.z.c[0]);
+                uart_puts(str);
 #endif
                 xMUL(&Pd, &A, &Pd, &l);
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Result Pd=(%ld, %ld)\n",
-     (unsigned long int) Pd.x.c[0],
-     (unsigned long int) Pd.z.c[0]
-    );
-    uart_puts(str);
+                sprintf(str,
+                        "[DBG] Result Pd=(%ld, %ld)\n",
+                        (unsigned long int)Pd.x.c[0],
+                        (unsigned long int)Pd.z.c[0]);
+                uart_puts(str);
 #endif
                 // We check if the action can be computed ?
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
@@ -536,71 +523,66 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                     if (i == last_iso[m])
                     {
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Computing lastxISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu, sign=%d\n",
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0],
-    (long unsigned int)primes[i],
-    (long unsigned int)K.x.c[0],
-    (long unsigned int)K.z.c[0],
-    (uint8_t) s
-    );
-    uart_puts(str);
+                        sprintf(str,
+                                "[DBG] Computing lastxISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu, sign=%d\n",
+                                (long unsigned int)A.x.c[0],
+                                (long unsigned int)A.z.c[0],
+                                (long unsigned int)primes[i],
+                                (long unsigned int)K.x.c[0],
+                                (long unsigned int)K.z.c[0],
+                                (uint8_t)s);
+                        uart_puts(str);
 #endif
                         // We do not do dummy isogenies, meaning, the isogeny always changes the A
                         // so the mask for isogeny function is always 0
                         lastxISOG(&A, &K, primes[i], 0); // doesn't compute the images of points
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Result lastxISOG A.x=%lu A.z=%lu\n",
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0]
-    );
-    uart_puts(str);
+                        sprintf(str,
+                                "[DBG] Result lastxISOG A.x=%lu A.z=%lu\n",
+                                (long unsigned int)A.x.c[0],
+                                (long unsigned int)A.z.c[0]);
+                        uart_puts(str);
 #endif
                     }
                     else
                     {
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Computing xISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu sign=%d\n",
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0],
-    (long unsigned int)primes[i],
-    (long unsigned int)K.x.c[0],
-    (long unsigned int)K.z.c[0],
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)Pd.x.c[0],
-    (long unsigned int)Pd.z.c[0],
-    (uint8_t) s
-    );
-    uart_puts(str);
+                        sprintf(str,
+                                "[DBG] Computing xISOG A.x=%lu A.z=%lu l=%lu K.x=%lu K.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu sign=%d\n",
+                                (long unsigned int)A.x.c[0],
+                                (long unsigned int)A.z.c[0],
+                                (long unsigned int)primes[i],
+                                (long unsigned int)K.x.c[0],
+                                (long unsigned int)K.z.c[0],
+                                (long unsigned int)P.x.c[0],
+                                (long unsigned int)P.z.c[0],
+                                (long unsigned int)Pd.x.c[0],
+                                (long unsigned int)Pd.z.c[0],
+                                (uint8_t)s);
+                        uart_puts(str);
 #endif
                         // Same as above, we always compute the actual isogeny
                         xISOG(&A, &P, &Pd, &K, primes[i], 0);
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] Result xISOG A.x=%lu A.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0],
-    (long unsigned int)P.x.c[0],
-    (long unsigned int)P.z.c[0],
-    (long unsigned int)Pd.x.c[0],
-    (long unsigned int)Pd.z.c[0]
-    );
-    uart_puts(str);
+                        sprintf(str,
+                                "[DBG] Result xISOG A.x=%lu A.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
+                                (long unsigned int)A.x.c[0],
+                                (long unsigned int)A.z.c[0],
+                                (long unsigned int)P.x.c[0],
+                                (long unsigned int)P.z.c[0],
+                                (long unsigned int)Pd.x.c[0],
+                                (long unsigned int)Pd.z.c[0]);
+                        uart_puts(str);
 #endif
                     }
 
                     // Originally we do e[i] = e[i] - (0 if e[i] == 0 else 1) + (0 if sign(e[i]) == 0 else 2)
                     // Which effectivelly does following
                     // if e[i] == 0              then e[i] = e[i]
-                    // if e[i] != 0 and e[i] > 0 then e[i] = e[i] - 1 
+                    // if e[i] != 0 and e[i] > 0 then e[i] = e[i] - 1
                     // if e[i] != 0 and e[i] < 0 then e[i] = e[i] + 1
                     //
                     // e[i] = ec - (1 ^ bc) + (s << 1);
-
 
                     // In the dummy-less approach we need to do the following
                     // first we will actually compute e[i] isogenies for each e
@@ -620,13 +602,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
                     t[i] = t[i] ^ b;
 
-                    counter[i] = counter[i] - 1;
+                    counter[i]   = counter[i] - 1;
                     isog_counter = isog_counter + 1;
                 }
             }
 
             if (counter[i] == 0)
-            {   //depends only on randomness
+            { //depends only on randomness
                 finished[i] = true;
                 uint_mul3_64(&k[m], &k[m], primes[i]);
             }
@@ -634,15 +616,15 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
         fp_inv(&A.z);
         fp_mul2(&A.x, &A.z);
-        A.z = fp_1;
+        A.z   = fp_1;
         count = count + 1;
     }
     out->A = A.x;
 #ifdef DBG
-    sprintf(str, 
-    "[DBG] END A.x=%lu A.z=%lu\n",
-    (long unsigned int)A.x.c[0],
-    (long unsigned int)A.z.c[0]
+    sprintf(str,
+            "[DBG] END A.x=%lu A.z=%lu\n",
+            (long unsigned int)A.x.c[0],
+            (long unsigned int)A.z.c[0]
 
     );
     uart_puts(str);
