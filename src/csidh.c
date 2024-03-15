@@ -615,7 +615,8 @@ bool csidh(public_key *out, public_key const *in, private_key const *priv,
 		return false;
 	}
     */
+    trigger_high();
     error = action(out, in, priv, num_batches, max_exponent, num_isogenies, my);
-
+    trigger_low();
     return error;
 }

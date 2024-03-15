@@ -13,7 +13,7 @@
 
 #define LIMBS 8
 #define NUM_PRIMES 74
-#define MAX_EXPONENT 5 /* (2*5+1)^74 is roughly 2^256 */
+#define MAX_EXPONENT 10 /* (2*5+1)^74 is roughly 2^256 */
 
 #endif
 
