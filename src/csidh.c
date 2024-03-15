@@ -304,7 +304,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     uint_c cof, l;
     bool finished[NUM_PRIMES]  = {0};
     int8_t e[NUM_PRIMES]       = {0};
-    int8_t t[NUM_PRIMES]       = {0};
     int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
     unsigned int isog_counter = 0;
@@ -320,11 +319,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
     // e array is the private key
     memcpy(e, priv->e, sizeof(priv->e));
-
-    // t array of signs of private key
-    memcpy(t, priv->e, sizeof(priv->e));
-    for (uint8_t i = 0; i < NUM_PRIMES; i++)
-        t[i] = (uint8_t)t[i] >> 7;
 
     // counter, is a copy of max exponent array
     memcpy(counter, max_exponent, sizeof(counter));
@@ -455,11 +449,9 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                         uint_mul3_64(&cof, &cof, primes[j]);
                 }
 
-                ec = lookup(i, e); // check in constant-time if normal or dummy isogeny must be computed
-
-                // Sign of the exponent to decide which way the isogeny is computed
-                // s = (uint8_t)ec >> 7;
-                s  = lookup(i, t);
+                ec = lookup(i, e);    // check in constant-time if normal or dummy isogeny must be computed
+                b  = isequal(ec, 0); 
+                s = (uint8_t)ec >> 7; // Sign of the exponent to decide which way the isogeny is computed
                 ss = !isequal(s, ps);
 
                 ps = s;
@@ -533,9 +525,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                                 (uint8_t)s);
                         uart_puts(str);
 #endif
-                        // We do not do dummy isogenies, meaning, the isogeny always changes the A
-                        // so the mask for isogeny function is always 0
-                        lastxISOG(&A, &K, primes[i], 0); // doesn't compute the images of points
+                        lastxISOG(&A, &K, primes[i], b); // doesn't compute the images of points
 #ifdef DBG
                         sprintf(str,
                                 "[DBG] Result lastxISOG A.x=%lu A.z=%lu\n",
@@ -561,8 +551,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                                 (uint8_t)s);
                         uart_puts(str);
 #endif
-                        // Same as above, we always compute the actual isogeny
-                        xISOG(&A, &P, &Pd, &K, primes[i], 0);
+                        xISOG(&A, &P, &Pd, &K, primes[i], b);
 #ifdef DBG
                         sprintf(str,
                                 "[DBG] Result xISOG A.x=%lu A.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
@@ -576,32 +565,15 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
                     }
 
-                    // Originally we do e[i] = e[i] - (0 if e[i] == 0 else 1) + (0 if sign(e[i]) == 0 else 2)
+                    // With dummies we do e[i] = e[i] - (0 if e[i] == 0 else 1) + (0 if sign(e[i]) == 0 else 2)
                     // Which effectivelly does following
                     // if e[i] == 0              then e[i] = e[i]
                     // if e[i] != 0 and e[i] > 0 then e[i] = e[i] - 1
                     // if e[i] != 0 and e[i] < 0 then e[i] = e[i] + 1
                     //
-                    // e[i] = ec - (1 ^ bc) + (s << 1);
-
-                    // In the dummy-less approach we need to do the following
-                    // first we will actually compute e[i] isogenies for each e
-                    // but when the e[i] gets to zero, we will have to alternate
-                    // the isogenies back and forth, and do the remaining
-                    // max[i] - |e[i]| isogenies.
-
-                    // That leaves us with following
-                    // bc         = isequal(e[i], 0)
-                    // e[i]       = e[i] - t[i]
-                    // t[i]       = t[i] * (-1)^b
-                    // counter[i] = counter[i] - 1
-
-                    b = isequal(ec, 0);
-
-                    e[i] = e[i] + t[i] - (1 ^ t[i]);
-
-                    t[i] = t[i] ^ b;
-
+                    
+                    e[i] = ec - (1 ^ b) + (s << 1);
+                    
                     counter[i]   = counter[i] - 1;
                     isog_counter = isog_counter + 1;
                 }
