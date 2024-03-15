@@ -1,4 +1,3 @@
-#include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,6 +83,7 @@ int main(void)
 {
     platform_init();
     init_uart();
+    trigger_setup();
 
     putch('r');
     putch('e');
