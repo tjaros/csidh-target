@@ -2,6 +2,7 @@
 #define MONT_H
 
 #include "parametrization.h"
+#include <stdbool.h>
 
 void xDBL(proj *Q, proj const *A, proj const *P);
 void xADD(proj *S, proj const *P, proj const *Q, proj const *PQ);
