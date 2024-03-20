@@ -20,8 +20,8 @@ uint8_t num_batches = 1;
 #else
 uint8_t num_batches = 3;
 #endif
-int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, MAX_EXPONENT, MAX_EXPONENT};
-unsigned int num_isogenies      = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
+int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, 0, 0};
+unsigned int num_isogenies      = 1 * MAX_EXPONENT; // 30 for F419
 uint8_t my                      = 0;
 
 uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)

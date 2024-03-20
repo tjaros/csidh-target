@@ -44,6 +44,8 @@ FUNC_SEL = TRACE
 CFLAGS += -D$(FUNC_SEL)
 CFLAGS += -DF419
 
+PLATFORM=CWLITEARM
+
 #Add simpleserial project to build
 include ./simpleserial/Makefile.simpleserial
 

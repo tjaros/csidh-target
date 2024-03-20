@@ -302,7 +302,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     uint8_t last_iso[3], b, ss;
     proj P, Pd, K;
     uint_c cof, l;
-    bool finished[NUM_PRIMES]  = {0};
+    bool finished[NUM_PRIMES]  = {0, 1, 1};
     int8_t e[NUM_PRIMES]       = {0};
     int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
@@ -331,7 +331,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             num_isogenies);
     uart_puts(str);
 #endif
-
+    trigger_high();
     // num_isogenies is a sum of the max_exponent array
     // so we compute the actions untill all values in counter are 0
     while (isog_counter < num_isogenies)
@@ -592,6 +592,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         count = count + 1;
     }
     out->A = A.x;
+    trigger_low();
 #ifdef DBG
     sprintf(str,
             "[DBG] END A.x=%lu A.z=%lu\n",
@@ -615,8 +616,6 @@ bool csidh(public_key *out, public_key const *in, private_key const *priv,
 		return false;
 	}
     */
-    trigger_high();
     error = action(out, in, priv, num_batches, max_exponent, num_isogenies, my);
-    trigger_low();
     return error;
 }
