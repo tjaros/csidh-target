@@ -20,8 +20,8 @@ uint8_t num_batches = 1;
 #else
 uint8_t num_batches = 3;
 #endif
-int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, 0, 0};
-unsigned int num_isogenies      = 1 * MAX_EXPONENT; // 30 for F419
+int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, MAX_EXPONENT, MAX_EXPONENT};
+unsigned int num_isogenies      = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
 uint8_t my                      = 0;
 
 uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
@@ -54,10 +54,10 @@ uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 // Runs a group action on current public key and the secret
 uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
-    sk.e[0] = -9;
-    sk.e[1] = 0;
-    sk.e[2] = 0;
-    pk.A.c[0] = 0;
+    sk.e[0]   = -10;
+    sk.e[1]   = 10;
+    sk.e[2]   = -10;
+    pk.A.c[0] = 0xec; // hardcoded public for bob corresponding to [-10, 10,-10]
 
     uint8_t error = csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
     pk            = result;
@@ -65,6 +65,10 @@ uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
     if (error != 0)
         return 0x10 + error;
     return 0;
+}
+
+void speed(void)
+{
 }
 
 void api(void)

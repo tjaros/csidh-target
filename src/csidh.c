@@ -13,8 +13,8 @@
 
 const public_key base = {0}; /* A = 0 */
 
-//TODO remove
-//int8_t error = 0;
+// TODO remove
+// int8_t error = 0;
 #ifdef DBG
 void uart_puts(char *s)
 {
@@ -36,10 +36,10 @@ int32_t lookup(size_t pos, int8_t const *priv)
     for (size_t i = 1; i < NUM_PRIMES; i++)
     {
         b = isequal(i, pos);
-        //ISEQUAL(i, pos, b);
-        //b = (uint8_t)(1-((-(i ^ pos)) >> 31));
+        // ISEQUAL(i, pos, b);
+        // b = (uint8_t)(1-((-(i ^ pos)) >> 31));
         cmov(&r, &priv[i], b);
-        //CMOV(&r, &priv[i], b);
+        // CMOV(&r, &priv[i], b);
     }
     return r;
 }
@@ -47,7 +47,7 @@ int32_t lookup(size_t pos, int8_t const *priv)
 /* check if a and b are equal in constant time  */
 uint32_t isequal(uint32_t a, uint32_t b)
 {
-    //size_t i;
+    // size_t i;
     uint32_t r        = 0;
     unsigned char *ta = (unsigned char *)&a;
     unsigned char *tb = (unsigned char *)&b;
@@ -161,13 +161,13 @@ bool validate(public_key const *in)
 /* compute x^3 + Ax^2 + x */
 /*
 static void montgomery_rhs(fp *rhs, fp const *A, fp const *x) {
-	fp tmp;
-	*rhs = *x;
-	fp_sq1(rhs);
-	fp_mul3(&tmp, A, x);
-	fp_add2(rhs, &tmp);
-	fp_add2(rhs, &fp_1);
-	fp_mul2(rhs, x);
+        fp tmp;
+        *rhs = *x;
+        fp_sq1(rhs);
+        fp_mul3(&tmp, A, x);
+        fp_add2(rhs, &tmp);
+        fp_add2(rhs, &fp_1);
+        fp_mul2(rhs, x);
 }
 */
 
@@ -187,7 +187,7 @@ void elligator(proj *P, proj *Pd, const fp *A)
 
     fp_sq1(&u2);                // u^2
     fp_sub3(&u2m1, &u2, &fp_1); // u^2 - 1
-                                //uart_puts("3\n");
+                                // uart_puts("3\n");
     fp_sq2(&tmp, &u2m1);        // (u^2 - 1)^2
     fp_sq2(&rhs, A);            // A^2
     fp_mul2(&rhs, &u2);         // A^2u^2
@@ -219,10 +219,10 @@ static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t 
     bool error = 0;
     bool b     = false, s1, s2;
     fp a, tmp0, tmp1, tmp2, u2m1, xz;
-    //fp_set(&a, 0);
-    // A->x = A and A->z = C
+    // fp_set(&a, 0);
+    //  A->x = A and A->z = C
     b = fp_cmp_ct(&A->x, &fp_0); // b <- isequal(A, 0)
-    //fp_cadd(&a, &fp_0, u, !b);                // a <- cadd(0, bu)
+    // fp_cadd(&a, &fp_0, u, !b);                // a <- cadd(0, bu)
     fp_cset(&a, u, !b);           // a <- cadd(0, bu)
     fp_sq2(&tmp0, u);             // u^2
     fp_sub3(&u2m1, &tmp0, &fp_1); // u^2 - 1
@@ -231,7 +231,7 @@ static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t 
     fp_add3(&P->x, &A->x, &tmp0); // X = A +aC(u^2 −1)
     fp_cset(&Pd->z, &P->z, 1);    // Z' = C(u^2 - 1)
 
-    //fp_sub3(&tmp0, u, &fp_1);                   // u - 1
+    // fp_sub3(&tmp0, u, &fp_1);                   // u - 1
     fp_mul3(&tmp2, &a, &A->z);     // aC
     fp_mul3(&tmp1, &u2m1, &tmp2);  // aC (u^2 − 1)
     fp_sq2(&tmp0, u);              // u^2
@@ -268,9 +268,9 @@ static bool new_elligator(proj *P, proj *Pd, const proj *A, const fp *u, int8_t 
 
     error |= !(s1 ^ s2);
 
-    *ps = !(s1 ^ 1); //ps stores information which point is stored in P
+    *ps = !(s1 ^ 1); // ps stores information which point is stored in P
 
-    error |= (*ps ^ !(s1 ^ 1)); //check that ps has not been manipulated
+    error |= (*ps ^ !(s1 ^ 1)); // check that ps has not been manipulated
     return error;
 }
 #endif
@@ -288,7 +288,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     uint_c k[1]    = {{{4 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
 #else
-    //factors k for different batches
+    // factors k for different batches
     uint_c k[3] = {{{0x1b5933af628d005c, 0x9d4af02b1d7b7f56, 0x8977a8435092262a, 0xb86302ff54a37ca2, 0xd6e09db2af04d095, 0x5c73f, 0x0, 0x0}},
                    {{0xd97b8b6bc6f6be1c, 0x315872c44ea6e448, 0x1aae7c54fd380c86, 0x237ec4cf2da454a2, 0x3733f9e3d9fea1b4, 0x1fdc0e, 0x0, 0x0}},
                    {{0x629ea97b02169a84, 0xc4b9616a12d48d22, 0x492a10278ad7b45a, 0xc44ac4dce55b87f8, 0x9e12876886632d6e, 0xe0c0c5, 0x0, 0x0}}};
@@ -298,11 +298,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
     int8_t ec = 0, m = 0;
     uint8_t count = 0;
-    //uint8_t elligator_index = 0;
+    // uint8_t elligator_index = 0;
     uint8_t last_iso[3], b, ss;
     proj P, Pd, K;
     uint_c cof, l;
-    bool finished[NUM_PRIMES]  = {0, 1, 1};
+    bool finished[NUM_PRIMES]  = {0};
     int8_t e[NUM_PRIMES]       = {0};
     int8_t counter[NUM_PRIMES] = {0};
     int8_t s, ps;
@@ -311,7 +311,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #ifdef F419
     last_iso[0] = 2;
 #else
-    //index for skipping point evaluations
+    // index for skipping point evaluations
     last_iso[0] = 72;
     last_iso[1] = 73;
     last_iso[2] = 71;
@@ -349,14 +349,14 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         // Compute factor k
         // If num batches = 1, then its executed only at the beginning
         if (count == my * num_batches)
-        { //merge the batches after my rounds
+        { // merge the batches after my rounds
             m = 0;
 #ifdef F419
             last_iso[0] = 2;
 #else
-            last_iso[0] = 73; //doesn't skip point evaluations anymore after merging batches
+            last_iso[0] = 73; // doesn't skip point evaluations anymore after merging batches
 #endif
-            uint_set(&k[m], 4); //recompute factor k
+            uint_set(&k[m], 4); // recompute factor k
             num_batches = 1;
 
             // no need for constant-time, depends only on randomness
@@ -412,7 +412,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         uart_puts(str);
 #endif
         // No idea what's this for.
-        ps = 1; //initialized in elligator
+        ps = 1; // initialized in elligator
 
 #ifdef DBG
         sprintf(str,
@@ -432,7 +432,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             uart_puts(str);
 #endif
             if (finished[i] == true)
-            { //depends only on randomness
+            { // depends only on randomness
 #ifdef DBG
                 sprintf(str,
                         "[DBG] finished[%d] == true\n", i);
@@ -445,13 +445,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 cof = uint_1;
                 for (uint8_t j = i + num_batches; j < NUM_PRIMES; j = j + num_batches)
                 {
-                    if (finished[j] == false) //depends only on randomness
+                    if (finished[j] == false) // depends only on randomness
                         uint_mul3_64(&cof, &cof, primes[j]);
                 }
 
-                ec = lookup(i, e);    // check in constant-time if normal or dummy isogeny must be computed
-                b  = isequal(ec, 0); 
-                s = (uint8_t)ec >> 7; // Sign of the exponent to decide which way the isogeny is computed
+                ec = lookup(i, e); // check in constant-time if normal or dummy isogeny must be computed
+                b  = isequal(ec, 0);
+                s  = (uint8_t)ec >> 7; // Sign of the exponent to decide which way the isogeny is computed
                 ss = !isequal(s, ps);
 
                 ps = s;
@@ -511,7 +511,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
                 // We check if the action can be computed ?
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
-                { //depends only on randomness
+                { // depends only on randomness
                     if (i == last_iso[m])
                     {
 #ifdef DBG
@@ -571,16 +571,16 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                     // if e[i] != 0 and e[i] > 0 then e[i] = e[i] - 1
                     // if e[i] != 0 and e[i] < 0 then e[i] = e[i] + 1
                     //
-                    
+
                     e[i] = ec - (1 ^ b) + (s << 1);
-                    
+
                     counter[i]   = counter[i] - 1;
                     isog_counter = isog_counter + 1;
                 }
             }
 
             if (counter[i] == 0)
-            { //depends only on randomness
+            { // depends only on randomness
                 finished[i] = true;
                 uint_mul3_64(&k[m], &k[m], primes[i]);
             }
@@ -611,10 +611,10 @@ bool csidh(public_key *out, public_key const *in, private_key const *priv,
 {
     int8_t error;
     /*
-	if (!validate(in)) {
-		fp_random(&out->A);
-		return false;
-	}
+        if (!validate(in)) {
+                fp_random(&out->A);
+                return false;
+        }
     */
     error = action(out, in, priv, num_batches, max_exponent, num_isogenies, my);
     return error;
