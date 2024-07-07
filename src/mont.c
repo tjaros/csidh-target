@@ -2,7 +2,9 @@
 #include "mont.h"
 #include "csidh.h"
 #include "fp.h"
+#ifdef HAL
 #include "hal.h"
+#endif
 #include "parametrization.h"
 #include "uint.h"
 #include <assert.h>
@@ -10,7 +12,7 @@
 
 void xDBLADD(proj *R, proj *S, proj const *P, proj const *Q, proj const *PQ, proj const *A24)
 {
-    fp tmp0, tmp1, tmp2; //requires precomputation of A24=(A+2C:4C)
+    fp tmp0, tmp1, tmp2; // requires precomputation of A24=(A+2C:4C)
     fp_add3(&tmp0, &P->x, &P->z);
     fp_sub3(&tmp1, &P->x, &P->z);
     fp_sq2(&R->x, &tmp0);
@@ -88,7 +90,7 @@ void xMUL(proj *Q, proj const *A, proj const *P, uint_c const *k)
     Q->x = fp_1;
     Q->z = fp_0;
 
-    fp_add3(&A24.x, &A->z, &A->z); //precomputation of A24=(A+2C:4C)
+    fp_add3(&A24.x, &A->z, &A->z); // precomputation of A24=(A+2C:4C)
     fp_add3(&A24.z, &A24.x, &A24.x);
     fp_add2(&A24.x, &A->x);
 
@@ -120,7 +122,7 @@ void xMUL(proj *Q, proj const *A, proj const *P, uint_c const *k)
     } while (i--);
 }
 
-//simultaneous square-and-multiply, computes x^exp and y^exp
+// simultaneous square-and-multiply, computes x^exp and y^exp
 void exp_by_squaring_(fp *x, fp *y, uint64_t exp)
 {
     fp result1, result2;
@@ -173,13 +175,13 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
     error |= fp_cmp_ct(&Q.z, &fp_0);
 #endif
 
-//compute twisted Edwards curve coefficients
+// compute twisted Edwards curve coefficients
 #ifdef CM
     fp_cadd2(&Aed.z, &A->z, &A->z, !mask); // t0 = cadd(b*C, b*C)
     fp_cadd(&Psum, &P->x, &P->z, !mask);
 #else
-    fp_add3(&Aed.z, &A->z, &A->z); //compute twisted Edwards curve coefficients
-    fp_add3(&Psum, &P->x, &P->z);  //precomputations
+    fp_add3(&Aed.z, &A->z, &A->z); // compute twisted Edwards curve coefficients
+    fp_add3(&Psum, &P->x, &P->z);  // precomputations
 #endif
 
     fp_add3(&Aed.x, &A->x, &Aed.z); // t0 = A + t0
@@ -194,7 +196,7 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
     fp_cadd(&prod.z, &K->x, &K->z, !mask);
 #else
     fp_sub3(&Pdif, &P->x, &P->z);
-    fp_add3(&Pdsum, &Pd->x, &Pd->z); //precomputations
+    fp_add3(&Pdsum, &Pd->x, &Pd->z); // precomputations
     fp_sub3(&Pddif, &Pd->x, &Pd->z);
 
     fp_sub3(&prod.x, &K->x, &K->z);
@@ -231,7 +233,7 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
     fp_cswap(&R->x, &S->x, mask);
     fp_cswap(&R->z, &S->z, mask);
 
-    proj M[3] = {*R}; //K for real iso, P for dum iso
+    proj M[3] = {*R}; // K for real iso, P for dum iso
     xDBL(&M[1], A, R);
 
     for (uint64_t i = 1; i < k / 2; ++i)
@@ -244,7 +246,7 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
         fp_csub(&tmp1, &M[i % 3].x, &M[i % 3].z, !mask); // t1 = csub(Xi, b*Zi)
         fp_cadd(&tmp0, &M[i % 3].x, &M[i % 3].z, !mask); // t0 = cadd(Xi, b*Zi)
 #else
-        fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); //for curve params
+        fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); // for curve params
         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
 #endif
 
@@ -317,10 +319,10 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
     fp_mul2(&Pd->x, &Qd.x);
     fp_mul2(&Pd->z, &Qd.z);
 
-    //compute Aed.x^k, Aed.z^k
+    // compute Aed.x^k, Aed.z^k
     exp_by_squaring_(&Aed.x, &Aed.z, k);
 
-    //compute prod.x^8, prod.z^8
+    // compute prod.x^8, prod.z^8
     fp_sq1(&prod.x);
     fp_sq1(&prod.x);
     fp_sq1(&prod.x);
@@ -328,11 +330,11 @@ bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
     fp_sq1(&prod.z);
     fp_sq1(&prod.z);
 
-    //compute image curve parameters
+    // compute image curve parameters
     fp_mul2(&Aed.z, &prod.x);
     fp_mul2(&Aed.x, &prod.z);
 
-    //compute Montgomery params
+    // compute Montgomery params
 #ifdef CM
 
     fp_cadd(&tmp3, &Aed.z, &Aed.x, !mask); // A' = cadd(t1, b*t0)
@@ -391,7 +393,7 @@ bool lastxISOG(proj *A, proj const *K, uint64_t k, int mask)
     fp_csub(&prod.x, &K->x, &K->z, !mask);
     fp_cadd(&prod.z, &K->x, &K->z, !mask);
 #else
-    fp_add3(&Aed.z, &A->z, &A->z); //compute twisted Edwards curve coefficients
+    fp_add3(&Aed.z, &A->z, &A->z); // compute twisted Edwards curve coefficients
     fp_sub3(&prod.x, &K->x, &K->z);
     fp_add3(&prod.z, &K->x, &K->z);
 #endif
@@ -412,17 +414,17 @@ bool lastxISOG(proj *A, proj const *K, uint64_t k, int mask)
         fp_csub(&tmp1, &M[i % 3].x, &M[i % 3].z, !mask);
         fp_cadd(&tmp0, &M[i % 3].x, &M[i % 3].z, !mask);
 #else
-        fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); //for curve params
+        fp_sub3(&tmp1, &M[i % 3].x, &M[i % 3].z); // for curve params
         fp_add3(&tmp0, &M[i % 3].x, &M[i % 3].z);
 #endif
         fp_mul2(&prod.x, &tmp1);
         fp_mul2(&prod.z, &tmp0);
     }
 
-    //compute Aed.x^k, Aed.z^k
+    // compute Aed.x^k, Aed.z^k
     exp_by_squaring_(&Aed.x, &Aed.z, k);
 
-    //compute prod.x^8, prod.z^8
+    // compute prod.x^8, prod.z^8
     fp_sq1(&prod.x);
     fp_sq1(&prod.x);
     fp_sq1(&prod.x);
@@ -430,11 +432,11 @@ bool lastxISOG(proj *A, proj const *K, uint64_t k, int mask)
     fp_sq1(&prod.z);
     fp_sq1(&prod.z);
 
-    //compute image curve parameters
+    // compute image curve parameters
     fp_mul2(&Aed.z, &prod.x);
     fp_mul2(&Aed.x, &prod.z);
 
-    //compute Montgomery params
+    // compute Montgomery params
 #ifdef CM
     fp_cadd(&tmp1, &Aed.z, &Aed.x, !mask); // A' = cadd(t1, b*t0)
     fp_cadd(&A->x, &tmp1, &tmp1, !mask);   // A' = cadd(A', b*A')

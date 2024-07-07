@@ -5,7 +5,9 @@
 
 #include "csidh.h"
 #include "fp.h"
+#ifdef HAL
 #include "hal.h"
+#endif
 #include "mont.h"
 #include "parametrization.h"
 #include "randombytes.h"
@@ -331,7 +333,9 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             num_isogenies);
     uart_puts(str);
 #endif
+#ifdef HAL
     trigger_high();
+#endif
     // num_isogenies is a sum of the max_exponent array
     // so we compute the actions untill all values in counter are 0
     while (isog_counter < num_isogenies)
@@ -592,7 +596,9 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         count = count + 1;
     }
     out->A = A.x;
+#ifdef HAL
     trigger_low();
+#endif
 #ifdef DBG
     sprintf(str,
             "[DBG] END A.x=%lu A.z=%lu\n",

@@ -1,7 +1,7 @@
+
 class CSIDH:
-    def __init__(self, p, primes, m):
+    def __init__(self, p, primes):
         self.p = p
-        self.m = m
         self.primes = primes
         self.Fp = GF(p)
 
