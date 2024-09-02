@@ -155,12 +155,13 @@ class CSIDHCW(CSIDHBase):
     CRYPTO_TARGET = "NONE"
     BIN = "main-" + PLATFORM + ".hex"
 
-    def __init__(self, src_path="../../../src") -> None:
+    def __init__(self, src_path="../../../src", attack_type="A1") -> None:
         self.scope: Optional[cw.scopes.OpenADC] = None
         self.target: Optional[cw.targets.SimpleSerial2] = None
         self.programmer = cw.programmers.STM32FProgrammer
         self.src_path: str = src_path
         self.firmware_path: str = src_path + self.BIN
+        self.attack_type = attack_type
 
         self.setup()
         self.flash_target()
@@ -191,10 +192,10 @@ class CSIDHCW(CSIDHBase):
         """Builds the target using make"""
         os.chdir(self.src_path)
         os.system(
-            "make clean PLATFORM={self.PLATFORM} CRYPTO_TARGET={self.CRYPTO_TARGET} SS_VER={self.SS_VER}"
+            f"make clean PLATFORM={self.PLATFORM} CRYPTO_TARGET={self.CRYPTO_TARGET} SS_VER={self.SS_VER} ATTACK_TYPE={self.attack_type}"
         )
         os.system(
-            f"make PLATFORM={self.PLATFORM} CRYPTO_TARGET={self.CRYPTO_TARGET} SS_VER={self.SS_VER}"
+            f"make PLATFORM={self.PLATFORM} CRYPTO_TARGET={self.CRYPTO_TARGET} SS_VER={self.SS_VER} ATTACK_TYPE={self.attack_type}"
         )
 
     def program_target(self) -> None:

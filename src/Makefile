@@ -41,7 +41,7 @@ SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 
 FUNC_SEL = TRACE
 
-CFLAGS += -D$(FUNC_SEL)
+CFLAGS += -D$(FUNC_SEL) -D$(ATTACK_TYPE)
 CFLAGS += -DF419 -DHAL
 
 PLATFORM=CWLITEARM

@@ -333,7 +333,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             num_isogenies);
     uart_puts(str);
 #endif
-#ifdef HAL
+#if defined(HAL) && defined(A1)
     trigger_high();
 #endif
     // num_isogenies is a sum of the max_exponent array
@@ -555,7 +555,13 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                                 (uint8_t)s);
                         uart_puts(str);
 #endif
+#if defined(HAL) && defined(A2)
+                        trigger_high();
+#endif
                         xISOG(&A, &P, &Pd, &K, primes[i], b);
+#if defined(HAL) && defined(A2)
+                        trigger_low();
+#endif
 #ifdef DBG
                         sprintf(str,
                                 "[DBG] Result xISOG A.x=%lu A.z=%lu P.x=%lu P.z=%lu Pd.x=%lu Pd.z=%lu\n",
@@ -596,7 +602,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         count = count + 1;
     }
     out->A = A.x;
-#ifdef HAL
+#if defined(HAL) && defined(A1)
     trigger_low();
 #endif
 #ifdef DBG
