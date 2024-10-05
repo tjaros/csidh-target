@@ -560,7 +560,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
                         xISOG(&A, &P, &Pd, &K, primes[i], b);
 #if defined(HAL) && defined(A2)
-                        trigger_low();
+                        // trigger_low();
 #endif
 #ifdef DBG
                         sprintf(str,

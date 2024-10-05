@@ -18,6 +18,7 @@ attack_type = "A2"
 # Initialize the CSIDH wrapper
 csidh = CSIDH(PATH, attack_type=attack_type)
 cw.scope_logger.info("Scope setup done")
+csidh.scope.clock.adc_src = "clkgen_x4"
 
 # Capture the first public key
 csidh.scope.arm()
@@ -42,14 +43,14 @@ csidh.scope.adc.timeout = 5
 
 key = [10, -10, 10]
 attack = "attack2" if attack_type == "A2" else "attack1"
-results_path = f"results-{key}-{attack}.csv"
+results_path = f"results-{key}-{attack}-tight-trigger-{csidh.scope.clock.adc_src}.csv"
 
 if os.path.exists(results_path):
     f = open(results_path, "a")
 else:
     f = open(results_path, "w")
     f.write(
-        "scope.glitch.width,scope.glitch.offset,scope.glitch.repeat,scope.glitch.ext_offset,good/bad/crash\n"
+        "scope.glitch.width,scope.glitch.offset,scope.glitch.repeat,scope.glitch.ext_offset,good/bad/crash,public\n"
     )
 
 
@@ -64,16 +65,36 @@ gc.set_global_step(1)
 gc.set_range("width", 40, 48)
 gc.set_range("offset", -15, 15)
 gc.set_range("repeat", 8, 8)
-gc.set_range("ext_offset", 1, max_ext_offset // 100)
-gc.set_step("ext_offset", 100)
+gc.set_range("ext_offset", 1, max_ext_offset)
+gc.set_step("ext_offset", 10)
 gc.widget_list_groups = None
 
+TOP15 = [
+    (-9.0, 46.0),
+    (-9.0, 44.0),
+    (3.0, -13.0),
+    (9.0, 3.0),
+    (14.0, -3.0),
+    (-13.0, -46.0),
+    (-12.0, -47.0),
+    (-13.0, -41.0),
+    (-6.0, 42.0),
+    (5.0, -13.0),
+    (-13.0, -47.0),
+    (5.0, 7.0),
+    (-7.0, 43.0),
+    (-3.0, 40.0),
+    (-13.0, -43.0),
+]
 
-for glitch_settings in gc.glitch_values():
-    csidh.scope.glitch.width = glitch_settings[0]
-    csidh.scope.glitch.offset = glitch_settings[1]
-    csidh.scope.glitch.repeat = glitch_settings[2]
-    csidh.scope.glitch.ext_offset = glitch_settings[3]
+
+REPEATS = 10000
+for _ in range(REPEATS):
+    i = random.randint(0, len(TOP15) - 1)
+    csidh.scope.glitch.width = TOP15[i][0]
+    csidh.scope.glitch.offset = TOP15[i][1]
+    csidh.scope.glitch.repeat = random.randint(1, 17)
+    csidh.scope.glitch.ext_offset = random.randint(0, max_ext_offset)
 
     # Reset and run the algorithm
     csidh.reset_target()
@@ -86,13 +107,14 @@ for glitch_settings in gc.glitch_values():
     public_received = csidh.public_with_errors
     if not isinstance(public_received, int):
         result = "crash"
+        public_received = None
     elif public_received == public_expected:
         result = "good"
     else:
         result = "bad"
     stats[result] += 1
 
-    line = f"{csidh.scope.glitch.width},{csidh.scope.glitch.offset},{csidh.scope.glitch.repeat},{csidh.scope.glitch.ext_offset},{result}\n"
+    line = f"{csidh.scope.glitch.width},{csidh.scope.glitch.offset},{csidh.scope.glitch.repeat},{csidh.scope.glitch.ext_offset},{result},{public_received}\n"
     f.write(line)
 
     print(stats)
