@@ -17,8 +17,6 @@ attack_type = "A2"
 
 # Initialize the CSIDH wrapper
 csidh = CSIDH(PATH, attack_type=attack_type)
-cw.scope_logger.info("Scope setup done")
-csidh.scope.clock.adc_src = "clkgen_x4"
 
 # Capture the first public key
 csidh.scope.arm()
