@@ -42,9 +42,12 @@ SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 FUNC_SEL = TRACE
 
 CFLAGS += -D$(FUNC_SEL) -D$(ATTACK_TYPE)
-CFLAGS += -DF419 -DHAL
+CFLAGS += -DF419 -DDETERMINISTIC -DHAL
 
-PLATFORM=CWLITEARM
+PLATFORM=CW308_STM32F3
+CRYPTO_TARGET=None
+SS_VER=SS_VER_2_1
+
 
 #Add simpleserial project to build
 include ./simpleserial/Makefile.simpleserial

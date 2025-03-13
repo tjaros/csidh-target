@@ -156,10 +156,6 @@ void exp_by_squaring_(fp *x, fp *y, uint64_t exp)
 /* returns the old curve coefficient A and [k]P for dummy isogenies */
 bool xISOG(proj *A, proj *P, proj *Pd, proj *K, uint64_t k, int mask)
 {
-#if defined(HAL) && defined(A2)
-    trigger_low();
-#endif
-
     assert(k >= 3);
     assert(k % 2 == 1);
 
