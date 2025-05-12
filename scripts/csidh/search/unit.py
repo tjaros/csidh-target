@@ -8,85 +8,130 @@
 
 
 import random
+import json
+import re
+import ast
 
 
 class Unit:
     is_husky = True
 
-    OFFSET_MIN = None
-    OFFSET_MAX = None
-    OFFSET_RANGE = None
+    OFFSET_MIN = 0
+    OFFSET_MAX = 0
+    OFFSET_RANGE = 0
 
-    WIDTH_MIN = None
-    WIDTH_MAX = None
-    WIDTH_RANGE = None
+    WIDTH_MIN = 0
+    WIDTH_MAX = 0
+    WIDTH_RANGE = 0
 
-    OFFSET_FINE_MIN = None
-    OFFSET_FINE_MAX = None
-    OFFSET_FINE_RANGE = None
+    OFFSET_FINE_MIN = 0
+    OFFSET_FINE_MAX = 0
+    OFFSET_FINE_RANGE = 0
 
-    WIDTH_FINE_MIN = None
-    WIDTH_FINE_MAX = None
-    WIDTH_FINE_RANGE = None
+    WIDTH_FINE_MIN = 0
+    WIDTH_FINE_MAX = 0
+    WIDTH_FINE_RANGE = 0
 
-    REPEAT_MIN = None
-    REPEAT_MAX = None
-    REPEAT_RANGE = None
+    REPEAT_MIN = 0
+    REPEAT_MAX = 0
+    REPEAT_RANGE = 0
 
-    EXT_OFFSET_MIN = None
-    EXT_OFFSET_MAX = None
-    EXT_OFFSET_RANGE = None
+    EXT_OFFSET_MIN = 0
+    EXT_OFFSET_MAX = 0
+    EXT_OFFSET_RANGE = 0
 
-    def __init__(self, repr=None):
-        measurements = []
-        responses = []
+    def __init__(self, repr=None, parser=None, num_glitches=1):
+        self.measurements = []
+        self.responses = []
         self.offset_fine = None
         self.width_fine = None
-        if not repr:
-            self.ext_offset = random.randint(self.EXT_OFFSET_MIN, self.EXT_OFFSET_MAX)
-            self.offset = (
-                random.randint(self.OFFSET_MIN, self.OFFSET_MAX)
-                if self.is_husky
-                else random.uniform(self.OFFSET_MIN, self.OFFSET_MAX)
-            )
-            self.width = (
-                random.randint(self.WIDTH_MIN, self.WIDTH_MAX)
-                if self.is_husky
-                else random.uniform(self.WIDTH_MIN, self.WIDTH_MAX)
-            )
-            self.repeat = random.randint(self.REPEAT_MIN, self.REPEAT_MAX)
-            if not self.is_husky:
-                self.offset_fine = random.randint(
-                    self.OFFSET_FINE_MIN, self.OFFSET_FINE_MAX
-                )
-                self.width_fine = random.randint(
-                    self.WIDTH_FINE_MIN, self.WIDTH_FINE_MAX
-                )
+        self.ext_offset = None
+        self.offset = None
+        self.width = None
+        self.repeat = None
+        self.num_glitches = num_glitches
+        self.fitness = None
+        self.type = None
 
-            self.fitness = None
-            self.type = None
+        if parser:
+            parser = self.parser
         else:
-            repr = repr.split(",")
-            self.ext_offset = int(repr[0])
-            self.offset = int(float(repr[1])) if self.is_husky else float(repr[1])
-            self.width = int(float(repr[2])) if self.is_husky else float(repr[2])
-            self.repeat = int(float(repr[3]))
-            self.type = repr[4]
-            if not self.is_husky:
-                self.offset_fine = int(repr[5])
-                self.width_fine = int(repr[6])
+            parser = self.old_parser
+        
 
-            if (
-                self.is_husky
-                and len(repr) == 6
-                or (not self.is_husky and len(repr) == 8)
-            ):
-                value = repr[-1]
+        if not repr:
+            self.generate_unit()
+        else:
+            parser(repr)
 
-                if value == "None":
-                    self.fitness = None
-                else:
-                    self.fitness = float(value)
+    def generate_unit(self):
+        rand_ext_offset = lambda: random.randint(self.EXT_OFFSET_MIN, self.EXT_OFFSET_MAX)
+        self.ext_offset = rand_ext_offset()
+        if self.num_glitches != 1:
+            self.ext_offset = [ rand_ext_offset() for _ in range(self.num_glitches)]
+
+        rand_ow = random.randint if self.is_husky else random.uniform  
+        self.offset = rand_ow(self.OFFSET_MIN, self.OFFSET_MAX)
+        self.width = rand_ow(self.WIDTH_MIN, self.WIDTH_MAX)
+
+        rand_repeat = lambda : random.randint(self.REPEAT_MIN, self.REPEAT_MAX)
+        self.repeat = rand_repeat()
+        if self.num_glitches != 1:
+            self.ext_offset = [ rand_repeat() for _ in range(self.num_glitches)]
+
+        
+        if not self.is_husky:
+            self.offset_fine = random.randint(
+                self.OFFSET_FINE_MIN, self.OFFSET_FINE_MAX
+            )
+            self.width_fine = random.randint(
+                self.WIDTH_FINE_MIN, self.WIDTH_FINE_MAX
+            )
+
+
+    def parser(self,data):
+        pattern = r"^\[?(\d+)(?:,\s*(\d+))?\]?,([\d.]+),([\d.]+),(\[.*?\]|\d+),(\w+),([\d.]+)$"
+        match = re.match(pattern, data)
+        if match:
+            groups = match.groups()
+            first_number = int(groups[0])
+            second_number = int(groups[1]) if groups[1] else None
+
+            if second_number:
+                self.ext_offset = [first_number, second_number]
+            else:
+                self.ext_offset = first_number
+
+            self.offset = float(groups[2])
+            self.width  = float(groups[3])
+            list_or_number = ast.literal_eval(groups[4]) if groups[4].startswith("[") else int(groups[4])
+            self.repeat = list_or_number
+            self.type = groups[5]
+            self.fitness = float(groups[6])
+    
+    def old_parser(self, data):
+        data = data.split(",")
+        self.ext_offset = int(data[0])
+        self.offset = int(float(data[1])) if self.is_husky else float(data[1])
+        self.width = int(float(data[2])) if self.is_husky else float(data[2])
+        self.repeat = int(float(data[3]))
+        self.type = data[4]
+        if not self.is_husky:
+            self.offset_fine = int(data[5])
+            self.width_fine = int(data[6])
+
+        if (
+            self.is_husky
+            and len(data) == 6
+            or (not self.is_husky and len(data) == 8)
+        ):
+            value = data[-1]
+
+            if value == "None":
+                self.fitness = None
+            else:
+                self.fitness = float(value)
+            
 
     def __dict__(self):
         return {
@@ -108,7 +153,7 @@ class Unit:
         return result + ")"
 
     def __repr__(self):
-        result = "{:d},{:f},{:f},{:d},{},{}".format(
+        result = "{},{:f},{:f},{},{},{}".format(
             self.ext_offset,
             self.offset,
             self.width,
@@ -140,10 +185,10 @@ class Unit:
         if self.is_husky:
             return hash(
             (
-                self.ext_offset,
+                self.ext_offset if not isinstance(self.ext_offset, list) else tuple(self.ext_offset),
                 self.offset,
                 self.width,
-                self.repeat,
+                self.repeat if not isinstance(self.repeat, list) else tuple(self.repeat),
             )
         )
         return hash(

@@ -152,19 +152,23 @@ class CSIDHDLL(CSIDHBase):
 class CSIDHCW(CSIDHBase):
     """Wrapper for CSIDH running on Chipwhisperer"""
 
-    SCOPETYPE = "OPENADC"
-    PLATFORM = "CWLITEARM"
-    SS_VER = "SS_VER_2_1"
-    CRYPTO_TARGET = "NONE"
-    BIN = "main-" + PLATFORM + ".hex"
 
-    def __init__(self, src_path="../../../src", attack_type="A1") -> None:
+
+
+    def __init__(self, src_path="../../../src", attack_type="A1", PLATFORM="CW308_STM32F3") -> None:
+        self.SCOPETYPE = "OPENADC"
+        self.PLATFORM = PLATFORM
+        self.SS_VER = "SS_VER_2_1"
+        self.CRYPTO_TARGET = "NONE"
+        self.BIN = "main-" + self.PLATFORM + ".hex"
+        
         self.scope = None
         self.target = None
         self.programmer = None
         self.src_path  = src_path
         self.firmware_path = src_path + self.BIN
         self.attack_type = attack_type
+        self.name=None
 
     def __str__(self) -> str:
         return f"Public:  {self.public}\nPrivate: {self.private}"
@@ -180,7 +184,10 @@ class CSIDHCW(CSIDHBase):
             if not self.scope.connectStatus:
                 self.scope.con()
         except AttributeError:
-            self.scope = cw.scope()
+            if self.name:
+                self.scope = cw.scope(name=self.name)
+            else:
+                self.scope = cw.scope()
 
         try:
             if self.SS_VER == "SS_VER_2_1":

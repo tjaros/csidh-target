@@ -33,7 +33,7 @@ def generate_population_custom(N, ext_offset_range):
     return units
 
 
-def mutate_unit(solution, p_mut, Q=1):
+def mutate_unit(solution, p_mut, Q=0.5):
     rand = random.random
     mut_and_clip = lambda x, _min, _max, _range: min(
         _max, max(_min, x + rand() * Q * _range - (Q * _range) / 2)
@@ -132,7 +132,7 @@ def crossover(parent1, parent2):
     return child
 
 
-def selection_roulette(population, elite_size=4, mutate=mutate_unit):
+def selection_roulette(population, elite_size=1, mutate=mutate_unit):
     """Roulette selection with elitism"""
     N = len(population)
     newpop = []
@@ -154,7 +154,7 @@ def selection_roulette(population, elite_size=4, mutate=mutate_unit):
     return newpop
 
 
-def evaluate_unit_default(csidh, unit, num_measurements=5):
+def evaluate_unit_default(csidh, unit, num_measurements=3):
     """Evaluates a single unit"""
     if unit.is_husky:
         csidh.scope.glitch.width = int(unit.width)
