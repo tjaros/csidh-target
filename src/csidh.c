@@ -287,7 +287,6 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
             uint8_t num_batches, int8_t const *max_exponent, unsigned int const num_isogenies, uint8_t const my)
 {
 
-
 #ifdef F419
     uint_c k[1]    = {{{4 * 3 * 5 * 7}}};
     uint_c p_order = {{119}};
@@ -328,6 +327,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     memcpy(counter, max_exponent, sizeof(counter));
 
     proj A = {in->A, fp_1};
+
 #if defined(HAL) && defined(A1)
     trigger_high();
 #endif
@@ -362,7 +362,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
         // Sample the point P, either using elligator, or set it to full order point on A=0
         if (memcmp(&A.x, &fp_0, sizeof(fp)))
         {
-            elligator(&P, &Pd, &A.x);
+            elligator(&P, &Pd, &A.x); // NOTE: ISOGENY SKIP GLITCHES FOUND HERE
         }
         else
         {
@@ -402,13 +402,14 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 fp_cswap(&P.x, &Pd.x, ss);
                 fp_cswap(&P.z, &Pd.z, ss);
                 // Create isogeny kernel K
-                xMUL(&K, &A, &P, &cof);
+                xMUL(&K, &A, &P, &cof); // NOTE: ISOGENY SKIP GLITCH FOUND HERE
                 // Set the prime l, which means that the l-isogeny will be computed
                 uint_set(&l, primes[i]);
                 xMUL(&Pd, &A, &Pd, &l);
-                // We check if the action can be computed ?
+
+                // We check if the isogeny can be computed 
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
-                { // depends only on randomness
+                {   // depends only on randomness
                     if (i == last_iso[m])
                     {
 #if defined(HAL) && defined(A2)
@@ -424,13 +425,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #if defined(HAL) && defined(A2)
                         trigger_high();
 #endif
-
                         xISOG(&A, &P, &Pd, &K, primes[i], b);
 #if defined(HAL) && defined(A2)
                         trigger_low();
 #endif
                     }
-
                     // With dummies we do e[i] = e[i] - (0 if e[i] == 0 else 1) + (0 if sign(e[i]) == 0 else 2)
                     // Which effectivelly does following
                     // if e[i] == 0              then e[i] = e[i]
