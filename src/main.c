@@ -13,7 +13,7 @@
 #include "simpleserial.h"
 
 public_key pk  = {.A.c = {0}};
-private_key sk = {.e = {0}};
+private_key sk = {.e = {-5,3,-1}};
 public_key result;
 #ifdef F419
 uint8_t num_batches = 1;
@@ -54,16 +54,8 @@ uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 // Runs a group action on current public key and the secret
 uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
-    sk.e[0]   = -10;
-    sk.e[1]   = 10;
-    sk.e[2]   = -10;
-    pk.A.c[0] = 0xec; // hardcoded public for bob corresponding to [-10, 10,-10] = 144 * 409 % 419 (projective)
-
-    uint8_t error = csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
+    csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
     pk            = result;
-
-    if (error != 0)
-        return 0x10 + error;
     return 0;
 }
 

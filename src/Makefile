@@ -41,8 +41,9 @@ SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 
 FUNC_SEL = TRACE
 
+# -DDETERMINISTIC use only after you fix the key, and the seed in random bytes generation
 CFLAGS += -D$(FUNC_SEL) -D$(ATTACK_TYPE)
-CFLAGS += -DF419 -DDETERMINISTIC -DHAL
+CFLAGS += -DF419 -DHAL
 
 PLATFORM=CW308_STM32F3
 CRYPTO_TARGET=None
