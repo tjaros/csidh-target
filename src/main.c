@@ -9,8 +9,10 @@
 #include "parametrization.h"
 #include "uint.h"
 
+#ifdef HAL
 #include "hal.h"
 #include "simpleserial.h"
+#endif
 
 public_key pk  = {.A.c = {0}};
 private_key sk = {.e = {-5,3,-1}};
@@ -24,6 +26,7 @@ int8_t max_exponent[NUM_PRIMES] = {MAX_EXPONENT, MAX_EXPONENT, MAX_EXPONENT};
 unsigned int num_isogenies      = NUM_PRIMES * MAX_EXPONENT; // 30 for F419
 uint8_t my                      = 0;
 
+#ifdef HAL
 uint8_t set_public(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
     if (scmd == 0x01)
@@ -59,9 +62,6 @@ uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
     return 0;
 }
 
-void speed(void)
-{
-}
 
 void api(void)
 {
@@ -80,8 +80,11 @@ void api(void)
     }
 }
 
+#endif
+
 int main(void)
 {
+#ifdef HAL
     platform_init();
     init_uart();
     trigger_setup();
@@ -94,4 +97,8 @@ int main(void)
 
     simpleserial_init();
     api();
+#else
+    csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
+    printf("\nResult: %ld\n", result.A.c[0]);
+#endif
 }

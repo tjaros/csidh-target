@@ -16,4 +16,14 @@ add_library(csidh SHARED
 	parametrization.c
 )
 
+
+# Executable
+add_executable(main main.c)
+
+# Link the executable with the shared library
+target_link_libraries(main PRIVATE csidh)
+
+# Install targets
 install(TARGETS csidh DESTINATION .)
+install(TARGETS main DESTINATION .)
+
