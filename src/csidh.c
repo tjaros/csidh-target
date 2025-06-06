@@ -183,7 +183,7 @@ void elligator(proj *P, proj *Pd, const fp *A)
 
 #if defined(DETERMINISTIC)
 #if defined(F419)
-    fp u2 = {{0x193}};
+    fp u2 = {{179}};
 #else
     fp u2 = {{0xf73849b0ce4e064b, 0x94bbfb03237b4a47, 0x467d743c736b034f, 0xb3fee59267e9b9e8, 0x036bafb7d4af3814, 0x05b62c28c87084ce, 0x620a625431f0111e, 0x03d7f790ac52fd83}};
 #endif
