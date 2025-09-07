@@ -15,7 +15,7 @@
 #endif
 
 public_key pk  = {.A.c = {0}};
-private_key sk = {.e = {-5,3,-1}};
+private_key sk = {.e = {-10,6,-2}};
 public_key result;
 #ifdef F419
 uint8_t num_batches = 1;
