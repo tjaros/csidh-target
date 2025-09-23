@@ -12,6 +12,9 @@
 #ifdef HAL
 #include "hal.h"
 #include "simpleserial.h"
+#ifdef PROFILE
+#include "systick.h"
+#endif
 #endif
 
 public_key pk  = {.A.c = {0}};
@@ -88,6 +91,9 @@ int main(void)
     platform_init();
     init_uart();
     trigger_setup();
+#ifdef PROFILE
+    systick_setup();
+#endif
 
     putch('r');
     putch('e');
