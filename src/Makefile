@@ -34,7 +34,7 @@ TARGET = main
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
+SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c systick.c
 
 # -----------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ SRC += main.c csidh.c fp.c mont.c randombytes.c uint.c parametrization.c
 FUNC_SEL = TRACE
 
 # -DDETERMINISTIC use only after you fix the key, and the seed in random bytes generation
-CFLAGS += -D$(FUNC_SEL) -D$(ATTACK_TYPE)
+CFLAGS += -D$(FUNC_SEL) -D$(ATTACK_TYPE) -D$(BENCH_MODE)
 CFLAGS += -DF419 -DHAL
 
 PLATFORM=CW308_STM32F3
