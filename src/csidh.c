@@ -485,7 +485,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #ifdef PROFILE
 		    t_isogeny_end[isog_counter] = hal_get_time();
-		    pn[isog_counter] = primes[i];
+		    pn[isog_counter] = (s << 7) | primes[i];
 #endif
                 }
             }
