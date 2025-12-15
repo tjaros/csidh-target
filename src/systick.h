@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 void systick_setup(void);
 uint64_t hal_get_time(void);
 
