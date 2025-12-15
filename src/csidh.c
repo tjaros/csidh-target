@@ -9,7 +9,7 @@
 #include "hal.h"
 #ifdef PROFILE
 #include "systick.h"
-#endif 
+#endif
 #endif
 #include "mont.h"
 #include "parametrization.h"
@@ -318,8 +318,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
     int8_t s, ps;
     unsigned int isog_counter = 0;
 #ifdef PROFILE
-    unsigned long long t0, t1, t_isogeny_end[num_isogenies+1], t_isogeny_start[num_isogenies+1];
-    int8_t pn[num_isogenies+1];
+    unsigned long long t0, t1, t_isogeny_end[num_isogenies + 1], t_isogeny_start[num_isogenies + 1];
+    int8_t pn[num_isogenies + 1];
 #endif
 
 #ifdef F419
@@ -341,7 +341,7 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 
 #if defined(PROFILE)
     t0 = hal_get_time();
-#endif 
+#endif
 #if defined(HAL) && defined(A1)
     trigger_high();
 #endif
@@ -421,11 +421,11 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                 uint_set(&l, primes[i]);
                 xMUL(&Pd, &A, &Pd, &l);
 
-                // We check if the isogeny can be computed 
+                // We check if the isogeny can be computed
                 if (memcmp(&K.z, &fp_0, sizeof(fp)))
-                {   // depends only on randomness
+                { // depends only on randomness
 #ifdef PROFILE
-		    t_isogeny_start[isog_counter] = hal_get_time();
+                    t_isogeny_start[isog_counter] = hal_get_time();
 #endif
                     if (i == last_iso[m])
                     {
@@ -460,8 +460,8 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
                     isog_counter = isog_counter + 1;
 
 #ifdef PROFILE
-		    t_isogeny_end[isog_counter] = hal_get_time();
-		    pn[isog_counter] = (s << 7) | primes[i];
+                    t_isogeny_end[isog_counter] = hal_get_time();
+                    pn[isog_counter]            = (s << 7) | primes[i];
 #endif
                 }
             }
@@ -484,14 +484,15 @@ bool action(public_key *out, public_key const *in, private_key const *priv,
 #endif
 #if defined(PROFILE)
     t1 = hal_get_time();
-    send_unsignedll("", t1-t0);
+    send_unsignedll("", t1 - t0);
     putch('\n');
-    for (int i = 1; i < num_isogenies+1; i++)  {
-	send_unsigned("", i-1);
-	send_unsigned(",", pn[i]);
-	send_unsignedll(",", t_isogeny_start[i-1]-t0);
-	send_unsignedll(",", t_isogeny_end[i]-t0);
-	putch('\n');
+    for (int i = 1; i < num_isogenies + 1; i++)
+    {
+        send_unsigned("", i - 1);
+        send_unsigned(",", pn[i]);
+        send_unsignedll(",", t_isogeny_start[i - 1] - t0);
+        send_unsignedll(",", t_isogeny_end[i] - t0);
+        putch('\n');
     }
     putch('#');
 #endif

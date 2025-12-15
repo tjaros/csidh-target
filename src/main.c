@@ -18,7 +18,7 @@
 #endif
 
 public_key pk  = {.A.c = {0}};
-private_key sk = {.e = {-5,3,-1}};
+private_key sk = {.e = {-5, 3, -1}};
 public_key result;
 #ifdef F419
 uint8_t num_batches = 1;
@@ -61,10 +61,9 @@ uint8_t get_secret(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 uint8_t run_csidh(uint8_t cmd, uint8_t scmd, uint8_t dlen, uint8_t *data)
 {
     csidh(&result, &pk, &sk, num_batches, max_exponent, num_isogenies, my);
-    pk            = result;
+    pk = result;
     return 0;
 }
-
 
 void api(void)
 {

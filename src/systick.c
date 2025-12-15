@@ -33,54 +33,56 @@
 
 #define STK_RVR_RELOAD 0x00FFFFFF
 #define STK_CSR_TICKINT (1 << 1)
-#define STK_CSR_ENABLE  (1 << 0)
+#define STK_CSR_ENABLE (1 << 0)
 #define STK_CVR_CURRENT 0x00FFFFFF
 
 static void systick_set_clocksource(uint8_t clocksource)
 {
-  STK_CSR = (STK_CSR & ~STK_CSR_CLKSOURCE) | (clocksource & STK_CSR_CLKSOURCE);
+    STK_CSR = (STK_CSR & ~STK_CSR_CLKSOURCE) | (clocksource & STK_CSR_CLKSOURCE);
 }
 
 static void systick_set_reload(uint32_t value)
 {
-  STK_RVR = (value & STK_RVR_RELOAD);
+    STK_RVR = (value & STK_RVR_RELOAD);
 }
 
 static void systick_interrupt_enable(void)
 {
-  STK_CSR |= STK_CSR_TICKINT;
+    STK_CSR |= STK_CSR_TICKINT;
 }
 static void systick_counter_enable(void)
 {
-  STK_CSR |= STK_CSR_ENABLE;
+    STK_CSR |= STK_CSR_ENABLE;
 }
 
 static uint32_t systick_get_value(void)
 {
-  return STK_CVR & STK_CVR_CURRENT;
+    return STK_CVR & STK_CVR_CURRENT;
 }
 
 void systick_setup(void)
 {
-  systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
-  systick_set_reload(16777215);
-  systick_interrupt_enable();
-  systick_counter_enable();
+    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+    systick_set_reload(16777215);
+    systick_interrupt_enable();
+    systick_counter_enable();
 }
 
 static volatile unsigned long long overflowcnt = 0;
 void SysTick_Handler(void)
 {
-  ++overflowcnt;
+    ++overflowcnt;
 }
 
 uint64_t hal_get_time(void)
 {
-  while (1) {
-    unsigned long long before = overflowcnt;
-    unsigned long long result = (before + 1) * 16777216llu - systick_get_value();
-    if (overflowcnt == before) {
-      return result;
+    while (1)
+    {
+        unsigned long long before = overflowcnt;
+        unsigned long long result = (before + 1) * 16777216llu - systick_get_value();
+        if (overflowcnt == before)
+        {
+            return result;
+        }
     }
-  }
 }
